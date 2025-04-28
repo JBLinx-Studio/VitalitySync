@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  base: "/Health-and-Fitness-Webapp/", // Updated to match your GitHub repository name
+  base: "/Health-and-Fitness-Webapp/",
   plugins: [
     react(),
     mode === 'development' &&

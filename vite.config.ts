@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  base: "./", // This ensures assets use relative paths for GitHub Pages
+  base: "/Health-and-Fitness-Webapp/", // Updated to match your GitHub repository name
   plugins: [
     react(),
     mode === 'development' &&

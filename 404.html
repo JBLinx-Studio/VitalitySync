@@ -1,0 +1,21 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Health & Fitness Tracker</title>
+  <script type="text/javascript">
+    // Redirect to the main page with the current path as a hash
+    var segmentCount = 1;
+    var repoName = "Health-and-Fitness-Webapp";
+    var l = window.location;
+    var redirectPath = l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + 
+      '/' + repoName + '/#' + l.pathname.slice(segmentCount + repoName.length + 1);
+    
+    window.location.href = redirectPath;
+  </script>
+</head>
+<body>
+  Redirecting...
+</body>
+</html>

@@ -16,6 +16,8 @@ import UserProfile from "@/pages/UserProfile";
 import SleepTracker from "@/pages/SleepTracker";
 import MentalWellness from "@/pages/MentalWellness";
 import BodyMeasurements from "@/pages/BodyMeasurements";
+import AddictionTracker from "@/pages/AddictionTracker";
+import Achievements from "@/pages/Achievements";
 import NotFound from "./pages/NotFound";
 
 // Create a client
@@ -27,9 +29,6 @@ const queryClient = new QueryClient({
     },
   },
 });
-
-// Add console log for debugging
-console.log("App component is rendering");
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -47,6 +46,8 @@ const App = () => (
               <Route path="/sleep" element={<SleepTracker />} />
               <Route path="/mental" element={<MentalWellness />} />
               <Route path="/body" element={<BodyMeasurements />} />
+              <Route path="/addiction" element={<AddictionTracker />} />
+              <Route path="/achievements" element={<Achievements />} />
               <Route path="/profile" element={<UserProfile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

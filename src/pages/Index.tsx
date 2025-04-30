@@ -5,9 +5,6 @@ import { ArrowRight, Heart, Brain, Moon, Activity, Shield, Ruler, Award, Zap, Ut
 import { useHealth } from '@/contexts/HealthContext';
 import { Card, CardContent } from "@/components/ui/card";
 
-// Add console log for debugging
-console.log("Index component is rendering");
-
 const Index = () => {
   const navigate = useNavigate();
   const { userProfile } = useHealth();

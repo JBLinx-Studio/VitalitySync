@@ -54,7 +54,6 @@ const AddictionTracker: React.FC = () => {
       toast({
         title: "🏆 Achievement unlocked!",
         description: `You've stayed under your daily ${selectedAddiction} goal. Great work!`,
-        variant: "success"
       });
     }
   };
@@ -132,7 +131,7 @@ const AddictionTracker: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Addiction Recovery Tracker</h1>
-        <Bell className="h-6 w-6 text-health-primary cursor-pointer" title="View notifications" />
+        <Bell className="h-6 w-6 text-health-primary cursor-pointer" aria-label="View notifications" />
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

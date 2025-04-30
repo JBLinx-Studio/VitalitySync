@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { useHealth } from '@/contexts/HealthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Activity, Weight, Heart, Utensils, CigaretteOff, Brain, Award, Moon, Star } from 'lucide-react';
+import { Activity, Weight, Heart, Utensils, CigaretteOff, Brain, Award, Sleep } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Bar, BarChart } from 'recharts';
 import NotificationsMenu from '@/components/Notifications/NotificationsMenu';
 import { Button } from '@/components/ui/button';
@@ -383,7 +384,7 @@ const Dashboard: React.FC = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center text-lg">
-                  <Moon className="mr-2 h-5 w-5 text-health-primary" />
+                  <Sleep className="mr-2 h-5 w-5 text-health-primary" />
                   Sleep Quality
                 </CardTitle>
                 <CardDescription>Your sleep patterns</CardDescription>

@@ -121,7 +121,6 @@ const AchievementsList: React.FC = () => {
         description: a.description,
         isUnlocked: true,
         unlockDate: a.date,
-        icon: <Award className="h-4 w-4" />
       })),
   ];
 
@@ -174,7 +173,6 @@ const AchievementsList: React.FC = () => {
                   title={achievement.title}
                   description={achievement.description}
                   isUnlocked={false}
-                  icon={achievement.icon}
                 />
               ))}
             </div>

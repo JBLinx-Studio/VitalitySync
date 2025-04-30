@@ -28,6 +28,9 @@ const queryClient = new QueryClient({
   },
 });
 
+// Add console log for debugging
+console.log("App component is rendering");
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>

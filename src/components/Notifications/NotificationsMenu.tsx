@@ -1,132 +1,133 @@
 
-import React, { useState } from 'react';
-import { Bell } from 'lucide-react';
+import React, { useState } from "react";
+import { Bell } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useHealth } from '@/contexts/HealthContext';
-import { cn } from '@/lib/utils';
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useHealth } from "@/contexts/HealthContext";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
-const NotificationsMenu = () => {
+const NotificationsMenu: React.FC = () => {
   const { notifications, markNotificationAsRead, getUnreadNotificationsCount } = useHealth();
   const [open, setOpen] = useState(false);
-  
   const unreadCount = getUnreadNotificationsCount();
-  
-  const handleMarkAsRead = (id: string) => {
-    markNotificationAsRead(id);
-  };
-  
-  const getTimeAgo = (dateStr: string) => {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.round(diffMs / 60000);
-    
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins} min ago`;
-    
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours}h ago`;
-    
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays}d ago`;
-  };
-  
+
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'achievement':
-        return '🏆';
-      case 'goal':
-        return '🎯';
-      case 'reminder':
-        return '⏰';
-      case 'addiction':
-        return '📊';
+      case "achievement":
+        return "🏆";
+      case "addiction":
+        return "📊";
+      case "exercise":
+        return "🏃";
+      case "food":
+        return "🍎";
+      case "goal":
+        return "🎯";
+      case "sleep":
+        return "💤";
+      case "water":
+        return "💧";
       default:
-        return '📝';
+        return "📌";
     }
   };
-  
+
+  const getRelativeTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 30) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+  };
+
+  const handleNotificationClick = (id: string) => {
+    markNotificationAsRead(id);
+  };
+
+  const markAllAsRead = () => {
+    notifications.forEach((notification) => {
+      if (!notification.read) {
+        markNotificationAsRead(notification.id);
+      }
+    });
+    setOpen(false);
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="relative p-2 h-9 w-9"
-          aria-label="Notifications"
-        >
-          <Bell className="h-5 w-5" />
+        <Button variant="outline" size="icon" className="relative">
+          <Bell className="h-[1.2rem] w-[1.2rem]" />
           {unreadCount > 0 && (
-            <Badge 
-              className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-red-500 text-white" 
+            <Badge
               variant="destructive"
+              className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0"
             >
-              {unreadCount > 9 ? '9+' : unreadCount}
+              {unreadCount}
             </Badge>
           )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
-        <div className="p-3 border-b">
+        <div className="flex items-center justify-between p-4 border-b">
           <h4 className="font-medium">Notifications</h4>
+          {unreadCount > 0 && (
+            <Button variant="ghost" size="sm" onClick={markAllAsRead}>
+              Mark all as read
+            </Button>
+          )}
         </div>
-        <div className="max-h-[400px] overflow-y-auto">
+        <ScrollArea className="h-[300px]">
           {notifications.length === 0 ? (
-            <div className="py-6 text-center text-gray-500">
+            <div className="flex flex-col items-center justify-center h-[200px] p-4 text-center text-muted-foreground">
+              <Bell className="h-8 w-8 mb-2 opacity-50" />
               <p>No notifications yet</p>
             </div>
           ) : (
-            notifications.map((notification) => (
-              <div 
-                key={notification.id}
-                className={cn(
-                  "p-3 border-b hover:bg-gray-50 cursor-pointer transition-colors",
-                  notification.read ? "opacity-70" : "bg-blue-50"
-                )}
-                onClick={() => handleMarkAsRead(notification.id)}
-              >
-                <div className="flex items-start">
-                  <div className="mr-2 text-lg">
-                    {getNotificationIcon(notification.type)}
-                  </div>
-                  <div className="flex-1">
-                    <p className={cn("text-sm", notification.read ? "" : "font-medium")}>
-                      {notification.message}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {getTimeAgo(notification.date)}
-                    </p>
-                  </div>
-                  {!notification.read && (
-                    <div className="h-2 w-2 bg-blue-500 rounded-full mt-1"></div>
+            <div className="flex flex-col">
+              {notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={cn(
+                    "p-4 border-b hover:bg-muted/50 cursor-pointer transition-colors",
+                    notification.read ? "" : "bg-muted/30"
                   )}
+                  onClick={() => handleNotificationClick(notification.id)}
+                >
+                  <div className="flex gap-3">
+                    <div className="text-xl">
+                      {getNotificationIcon(notification.type)}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm">{notification.message}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {getRelativeTime(notification.date)}
+                      </p>
+                    </div>
+                    {!notification.read && (
+                      <div className="flex items-start">
+                        <div className="h-2 w-2 rounded-full bg-primary" />
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))
+              ))}
+            </div>
           )}
-        </div>
-        {notifications.length > 0 && (
-          <div className="p-2 border-t">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="w-full"
-              onClick={() => {
-                notifications
-                  .filter(n => !n.read)
-                  .forEach(n => markNotificationAsRead(n.id));
-              }}
-            >
-              Mark all as read
-            </Button>
-          </div>
-        )}
+        </ScrollArea>
       </PopoverContent>
     </Popover>
   );

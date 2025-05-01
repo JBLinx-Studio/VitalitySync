@@ -147,8 +147,8 @@ const NotificationsMenu = () => {
                     )}
                   </div>
                 </div>
-              )}
-            ))
+              );
+            })
           )}
         </div>
         {notifications.length > 0 && (

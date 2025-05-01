@@ -1,21 +1,24 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useHealth } from '@/contexts/HealthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { searchFoods, Food, extractNutrients } from '@/services/foodService';
-import { Utensils, Search, Plus, Minus } from 'lucide-react';
+import { searchFoods, Food } from '@/services/foodService';
+import { Utensils, Search } from 'lucide-react';
+
+// Import our new components
+import FoodEntryForm from '@/components/FoodDiary/FoodEntryForm';
+import FoodDiaryItem from '@/components/FoodDiary/FoodDiaryItem';
+import NutritionSummaryCard from '@/components/FoodDiary/NutritionSummaryCard';
+import FoodSearchResults from '@/components/FoodDiary/FoodSearchResults';
+import WaterTracker from '@/components/FoodDiary/WaterTracker';
 
 const FoodTracker: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Food[]>([]);
   const [selectedFood, setSelectedFood] = useState<Food | null>(null);
-  const [selectedMeal, setSelectedMeal] = useState('breakfast');
-  const [servingSize, setServingSize] = useState('1');
   const [isSearching, setIsSearching] = useState(false);
   
   const { 
@@ -24,10 +27,10 @@ const FoodTracker: React.FC = () => {
     getNutritionSummary,
     dailyGoals,
     updateWaterIntake,
-    getTodaysWaterIntake
+    getTodaysWaterIntake,
+    removeFoodItem
   } = useHealth();
   
-  const [waterAmount, setWaterAmount] = useState(250);
   const waterIntake = getTodaysWaterIntake();
   const todaysFoodItems = getTodaysFoodItems();
   const nutritionSummary = getNutritionSummary();
@@ -54,43 +57,27 @@ const FoodTracker: React.FC = () => {
 
   const handleSelectFood = (food: Food) => {
     setSelectedFood(food);
-    setServingSize('1');
   };
 
-  const handleAddFood = () => {
-    if (!selectedFood) return;
-    
+  const handleAddFood = (foodItem: any) => {
     const today = new Date().toISOString().split('T')[0];
-    const nutrients = extractNutrients(selectedFood);
-    const servingSizeNum = parseFloat(servingSize);
     
-    if (isNaN(servingSizeNum) || servingSizeNum <= 0) {
-      alert('Please enter a valid serving size');
-      return;
-    }
-    
-    const foodItem = {
+    const newFoodItem = {
       id: crypto.randomUUID(),
-      name: selectedFood.description,
-      servingSize: `${servingSizeNum} ${nutrients.servingSizeUnit}`,
-      calories: Math.round(nutrients.calories * servingSizeNum),
-      protein: Math.round(nutrients.protein * servingSizeNum * 10) / 10,
-      carbs: Math.round(nutrients.carbs * servingSizeNum * 10) / 10,
-      fat: Math.round(nutrients.fat * servingSizeNum * 10) / 10,
-      meal: selectedMeal,
+      name: foodItem.name,
+      servingSize: foodItem.servingSize,
+      calories: foodItem.calories,
+      protein: foodItem.protein,
+      carbs: foodItem.carbs,
+      fat: foodItem.fat,
+      meal: foodItem.meal,
       date: today
     };
     
-    addFoodItem(foodItem);
+    addFoodItem(newFoodItem);
     setSelectedFood(null);
     setSearchResults([]);
     setSearchQuery('');
-  };
-
-  const handleAddWater = () => {
-    if (waterAmount > 0) {
-      updateWaterIntake(waterAmount);
-    }
   };
   
   // Group food items by meal
@@ -105,340 +92,168 @@ const FoodTracker: React.FC = () => {
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-gray-800">Food & Nutrition</h1>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Utensils className="mr-2 h-5 w-5 text-health-primary" />
-              Food Diary
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="diary">
-              <TabsList className="mb-4">
-                <TabsTrigger value="diary">Food Diary</TabsTrigger>
-                <TabsTrigger value="search">Add Food</TabsTrigger>
-                <TabsTrigger value="water">Water</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="diary" className="space-y-4">
-                {Object.entries(foodByMeal).map(([meal, items]) => (
-                  <div key={meal} className="space-y-2">
-                    <h3 className="font-medium capitalize text-lg">{meal}</h3>
-                    {items.length > 0 ? (
-                      <div className="space-y-2">
-                        {items.map(item => (
-                          <div key={item.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                            <div>
-                              <div className="font-medium">{item.name}</div>
-                              <div className="text-sm text-gray-500">{item.servingSize}</div>
-                            </div>
-                            <div className="text-right">
-                              <div className="font-medium">{item.calories} kcal</div>
-                              <div className="text-xs text-gray-500">
-                                P: {item.protein}g | C: {item.carbs}g | F: {item.fat}g
-                              </div>
-                            </div>
-                          </div>
-                        ))}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2 space-y-6">
+          <Card className="shadow-card overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-health-primary/10 to-health-secondary/10">
+              <CardTitle className="flex items-center">
+                <Utensils className="mr-2 h-5 w-5 text-health-primary" />
+                Food Diary
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <Tabs defaultValue="diary">
+                <TabsList className="mb-4 bg-gray-100">
+                  <TabsTrigger value="diary">Food Diary</TabsTrigger>
+                  <TabsTrigger value="search">Add Food</TabsTrigger>
+                  <TabsTrigger value="water">Water</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="diary" className="space-y-6">
+                  {Object.entries(foodByMeal).map(([meal, items]) => (
+                    <div key={meal} className="space-y-3">
+                      <h3 className="font-medium capitalize text-lg flex items-center">
+                        <div className="w-2 h-2 rounded-full bg-health-primary mr-2"></div>
+                        {meal}
+                      </h3>
+                      {items.length > 0 ? (
+                        <div className="space-y-2">
+                          {items.map(item => (
+                            <FoodDiaryItem 
+                              key={item.id}
+                              id={item.id}
+                              name={item.name}
+                              servingSize={item.servingSize}
+                              calories={item.calories}
+                              protein={item.protein}
+                              carbs={item.carbs}
+                              fat={item.fat}
+                              meal={item.meal}
+                              onDelete={removeFoodItem}
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-gray-500 text-sm italic p-3 bg-gray-50 rounded-lg">
+                          No foods added
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  
+                  <div className="mt-6 pt-6 border-t border-dashed">
+                    <h3 className="font-medium text-lg mb-4">Daily Totals</h3>
+                    <div className="grid grid-cols-4 gap-3">
+                      <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl shadow-sm text-center">
+                        <div className="text-sm text-gray-600">Calories</div>
+                        <div className="font-bold text-xl text-gray-800">{nutritionSummary.totalCalories}</div>
+                        <div className="text-xs text-gray-500">/ {dailyGoals.calories}</div>
                       </div>
-                    ) : (
-                      <div className="text-gray-500 text-sm italic">No foods added</div>
+                      <div className="bg-gradient-to-br from-health-protein/10 to-health-protein/20 p-4 rounded-xl shadow-sm text-center">
+                        <div className="text-sm text-gray-600">Protein</div>
+                        <div className="font-bold text-xl text-gray-800">{nutritionSummary.totalProtein}g</div>
+                        <div className="text-xs text-gray-500">/ {dailyGoals.protein}g</div>
+                      </div>
+                      <div className="bg-gradient-to-br from-health-carbs/10 to-health-carbs/20 p-4 rounded-xl shadow-sm text-center">
+                        <div className="text-sm text-gray-600">Carbs</div>
+                        <div className="font-bold text-xl text-gray-800">{nutritionSummary.totalCarbs}g</div>
+                        <div className="text-xs text-gray-500">/ {dailyGoals.carbs}g</div>
+                      </div>
+                      <div className="bg-gradient-to-br from-health-fat/10 to-health-fat/20 p-4 rounded-xl shadow-sm text-center">
+                        <div className="text-sm text-gray-600">Fat</div>
+                        <div className="font-bold text-xl text-gray-800">{nutritionSummary.totalFat}g</div>
+                        <div className="text-xs text-gray-500">/ {dailyGoals.fat}g</div>
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="search">
+                  <div className="space-y-4">
+                    <div className="flex">
+                      <Input
+                        placeholder="Search for foods..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        className="flex-1 mr-2 bg-white"
+                      />
+                      <Button 
+                        onClick={handleSearch} 
+                        disabled={isSearching}
+                        className="bg-gradient-primary hover:shadow-highlight transition-shadow"
+                      >
+                        <Search className="h-4 w-4 mr-2" />
+                        {isSearching ? 'Searching...' : 'Search'}
+                      </Button>
+                    </div>
+                    
+                    <FoodSearchResults 
+                      results={searchResults}
+                      isSearching={isSearching}
+                      onSelectFood={handleSelectFood}
+                    />
+                    
+                    {selectedFood && (
+                      <FoodEntryForm
+                        food={selectedFood}
+                        onAddFood={handleAddFood}
+                        onCancel={() => setSelectedFood(null)}
+                      />
                     )}
                   </div>
-                ))}
+                </TabsContent>
                 
-                <div className="mt-6 pt-4 border-t">
-                  <h3 className="font-medium text-lg">Daily Totals</h3>
-                  <div className="grid grid-cols-4 gap-2 mt-2">
-                    <div className="bg-gray-100 p-3 rounded-lg text-center">
-                      <div className="text-sm text-gray-600">Calories</div>
-                      <div className="font-bold">{nutritionSummary.totalCalories}</div>
-                      <div className="text-xs text-gray-500">/ {dailyGoals.calories}</div>
-                    </div>
-                    <div className="bg-health-protein bg-opacity-10 p-3 rounded-lg text-center">
-                      <div className="text-sm text-gray-600">Protein</div>
-                      <div className="font-bold">{nutritionSummary.totalProtein}g</div>
-                      <div className="text-xs text-gray-500">/ {dailyGoals.protein}g</div>
-                    </div>
-                    <div className="bg-health-carbs bg-opacity-10 p-3 rounded-lg text-center">
-                      <div className="text-sm text-gray-600">Carbs</div>
-                      <div className="font-bold">{nutritionSummary.totalCarbs}g</div>
-                      <div className="text-xs text-gray-500">/ {dailyGoals.carbs}g</div>
-                    </div>
-                    <div className="bg-health-fat bg-opacity-10 p-3 rounded-lg text-center">
-                      <div className="text-sm text-gray-600">Fat</div>
-                      <div className="font-bold">{nutritionSummary.totalFat}g</div>
-                      <div className="text-xs text-gray-500">/ {dailyGoals.fat}g</div>
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="search">
-                <div className="space-y-4">
-                  <div className="flex">
-                    <Input
-                      placeholder="Search for foods..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      className="flex-1 mr-2"
-                    />
-                    <Button onClick={handleSearch} disabled={isSearching}>
-                      <Search className="h-4 w-4 mr-2" />
-                      {isSearching ? 'Searching...' : 'Search'}
-                    </Button>
-                  </div>
-                  
-                  {searchResults.length > 0 && !selectedFood && (
-                    <div className="mt-4">
-                      <h3 className="font-medium mb-2">Search Results</h3>
-                      <div className="max-h-80 overflow-y-auto space-y-2">
-                        {searchResults.map((food) => (
-                          <div
-                            key={food.fdcId}
-                            onClick={() => handleSelectFood(food)}
-                            className="p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
-                          >
-                            <div className="font-medium">{food.description}</div>
-                            <div className="text-sm text-gray-500">
-                              {food.brandName ? `${food.brandName}` : 'Generic'}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {selectedFood && (
-                    <div className="border p-4 rounded-lg mt-4">
-                      <h3 className="font-medium text-lg mb-3">{selectedFood.description}</h3>
-                      
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor="meal">Meal</Label>
-                            <Select
-                              value={selectedMeal}
-                              onValueChange={setSelectedMeal}
-                            >
-                              <SelectTrigger id="meal">
-                                <SelectValue placeholder="Select meal" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="breakfast">Breakfast</SelectItem>
-                                <SelectItem value="lunch">Lunch</SelectItem>
-                                <SelectItem value="dinner">Dinner</SelectItem>
-                                <SelectItem value="snacks">Snacks</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          
-                          <div>
-                            <Label htmlFor="servingSize">Servings</Label>
-                            <Input
-                              id="servingSize"
-                              type="number"
-                              min="0.25"
-                              step="0.25"
-                              value={servingSize}
-                              onChange={(e) => setServingSize(e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="pt-2">
-                          <h4 className="text-sm font-medium mb-2">Nutrition (per serving)</h4>
-                          <div className="grid grid-cols-4 gap-2">
-                            {(() => {
-                              const nutrients = extractNutrients(selectedFood);
-                              const servingSizeNum = parseFloat(servingSize) || 0;
-                              
-                              return (
-                                <>
-                                  <div className="bg-gray-100 p-2 rounded text-center">
-                                    <div className="text-xs text-gray-600">Calories</div>
-                                    <div className="font-bold">{Math.round(nutrients.calories * servingSizeNum)}</div>
-                                  </div>
-                                  <div className="bg-health-protein bg-opacity-10 p-2 rounded text-center">
-                                    <div className="text-xs text-gray-600">Protein</div>
-                                    <div className="font-bold">
-                                      {Math.round(nutrients.protein * servingSizeNum * 10) / 10}g
-                                    </div>
-                                  </div>
-                                  <div className="bg-health-carbs bg-opacity-10 p-2 rounded text-center">
-                                    <div className="text-xs text-gray-600">Carbs</div>
-                                    <div className="font-bold">
-                                      {Math.round(nutrients.carbs * servingSizeNum * 10) / 10}g
-                                    </div>
-                                  </div>
-                                  <div className="bg-health-fat bg-opacity-10 p-2 rounded text-center">
-                                    <div className="text-xs text-gray-600">Fat</div>
-                                    <div className="font-bold">
-                                      {Math.round(nutrients.fat * servingSizeNum * 10) / 10}g
-                                    </div>
-                                  </div>
-                                </>
-                              );
-                            })()}
-                          </div>
-                        </div>
-                        
-                        <div className="flex justify-end space-x-2 pt-2">
-                          <Button variant="outline" onClick={() => setSelectedFood(null)}>
-                            Cancel
-                          </Button>
-                          <Button onClick={handleAddFood}>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add to Diary
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="water">
-                <div className="space-y-4">
-                  <div className="bg-health-water bg-opacity-10 p-4 rounded-lg">
-                    <h3 className="font-medium mb-2">Water Intake</h3>
-                    <div className="mb-4">
-                      <div className="flex justify-between mb-1">
-                        <span>Today's intake</span>
-                        <span className="font-medium">{waterIntake}ml / {dailyGoals.water}ml</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div 
-                          className="bg-health-water h-2.5 rounded-full" 
-                          style={{ width: `${Math.min((waterIntake / dailyGoals.water) * 100, 100)}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-2 flex-1">
-                        <Button 
-                          variant="outline" 
-                          size="icon"
-                          onClick={() => setWaterAmount(Math.max(50, waterAmount - 50))}
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <Input
-                          type="number"
-                          value={waterAmount}
-                          onChange={(e) => setWaterAmount(parseInt(e.target.value) || 0)}
-                          className="text-center"
-                        />
-                        <Button 
-                          variant="outline" 
-                          size="icon"
-                          onClick={() => setWaterAmount(waterAmount + 50)}
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <div className="text-gray-500 text-sm mr-3">ml</div>
-                      <Button onClick={handleAddWater}>Add Water</Button>
-                    </div>
-                    
-                    <div className="flex justify-between mt-4">
-                      <Button variant="ghost" onClick={() => updateWaterIntake(250)}>+ 250ml</Button>
-                      <Button variant="ghost" onClick={() => updateWaterIntake(500)}>+ 500ml</Button>
-                      <Button variant="ghost" onClick={() => updateWaterIntake(1000)}>+ 1000ml</Button>
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+                <TabsContent value="water">
+                  <WaterTracker
+                    waterIntake={waterIntake}
+                    dailyGoal={dailyGoals.water}
+                    onAddWater={updateWaterIntake}
+                  />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
         
-        <Card>
-          <CardHeader>
-            <CardTitle>Nutrition Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium">Calories</span>
-                  <span className="text-sm text-gray-500">
-                    {nutritionSummary.totalCalories} / {dailyGoals.calories}
-                  </span>
+        <div>
+          <NutritionSummaryCard
+            nutritionSummary={nutritionSummary}
+            dailyGoals={dailyGoals}
+            waterIntake={waterIntake}
+          />
+          
+          {/* Additional Nutrition Tips Card */}
+          <Card className="mt-6 shadow-card overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-health-primary/5 to-health-secondary/5 pb-2">
+              <CardTitle className="text-lg text-gray-800">Nutrition Tips</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="space-y-3">
+                <div className="bg-gradient-to-r from-green-50 to-teal-50 p-3 rounded-lg border border-green-100">
+                  <h4 className="font-medium text-sm text-gray-800">Balance Your Plate</h4>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Aim to fill half your plate with vegetables, a quarter with proteins and a quarter with complex carbs.
+                  </p>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-health-primary h-2 rounded-full" 
-                    style={{ width: `${Math.min((nutritionSummary.totalCalories / dailyGoals.calories) * 100, 100)}%` }}
-                  ></div>
+                
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3 rounded-lg border border-blue-100">
+                  <h4 className="font-medium text-sm text-gray-800">Stay Hydrated</h4>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Drinking enough water can help boost metabolism and prevent overeating.
+                  </p>
                 </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium">Protein</span>
-                  <span className="text-sm text-gray-500">
-                    {nutritionSummary.totalProtein}g / {dailyGoals.protein}g
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-health-protein h-2 rounded-full" 
-                    style={{ width: `${Math.min((nutritionSummary.totalProtein / dailyGoals.protein) * 100, 100)}%` }}
-                  ></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium">Carbohydrates</span>
-                  <span className="text-sm text-gray-500">
-                    {nutritionSummary.totalCarbs}g / {dailyGoals.carbs}g
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-health-carbs h-2 rounded-full" 
-                    style={{ width: `${Math.min((nutritionSummary.totalCarbs / dailyGoals.carbs) * 100, 100)}%` }}
-                  ></div>
+                
+                <div className="bg-gradient-to-r from-yellow-50 to-amber-50 p-3 rounded-lg border border-yellow-100">
+                  <h4 className="font-medium text-sm text-gray-800">Mindful Eating</h4>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Pay attention to hunger cues and eat slowly to enjoy your food and prevent overeating.
+                  </p>
                 </div>
               </div>
-              
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium">Fat</span>
-                  <span className="text-sm text-gray-500">
-                    {nutritionSummary.totalFat}g / {dailyGoals.fat}g
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-health-fat h-2 rounded-full" 
-                    style={{ width: `${Math.min((nutritionSummary.totalFat / dailyGoals.fat) * 100, 100)}%` }}
-                  ></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium">Water</span>
-                  <span className="text-sm text-gray-500">
-                    {waterIntake}ml / {dailyGoals.water}ml
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-health-water h-2 rounded-full" 
-                    style={{ width: `${Math.min((waterIntake / dailyGoals.water) * 100, 100)}%` }}
-                  ></div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

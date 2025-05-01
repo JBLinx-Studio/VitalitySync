@@ -105,6 +105,7 @@ export interface HealthContextType {
   };
   updateUserProfile: (profile: UserProfile) => void;
   addFoodItem: (item: NutritionItem) => void;
+  removeFoodItem: (id: string) => void;
   addExerciseItem: (item: ExerciseItem) => void;
   updateWaterIntake: (amount: number) => void;
   addSleepRecord: (record: SleepRecord) => void;
@@ -266,6 +267,10 @@ export const HealthProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const addFoodItem = (item: NutritionItem) => {
     setFoodItems(current => [...current, { ...item, id: crypto.randomUUID() }]);
+  };
+  
+  const removeFoodItem = (id: string) => {
+    setFoodItems(current => current.filter(item => item.id !== id));
   };
 
   const addExerciseItem = (item: ExerciseItem) => {
@@ -620,6 +625,7 @@ export const HealthProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     dailyGoals,
     updateUserProfile,
     addFoodItem,
+    removeFoodItem,
     addExerciseItem,
     updateWaterIntake,
     addSleepRecord,

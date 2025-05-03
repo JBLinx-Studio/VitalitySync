@@ -93,7 +93,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
     font-family: 'Poppins', system-ui, sans-serif;
   }
   
@@ -116,11 +116,16 @@
   button {
     @apply transition-all duration-200;
   }
+
+  /* Fix for dark mode switches */
+  .dark .switch-thumb {
+    @apply bg-white;
+  }
 }
 
 @layer utilities {
   .nutrition-card {
-    @apply rounded-xl p-4 mb-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow;
+    @apply rounded-xl p-4 mb-4 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow;
   }
 
   .nutrition-bar {
@@ -128,15 +133,15 @@
   }
   
   .glass-effect {
-    @apply backdrop-blur-md bg-white/70 border border-white/20 shadow-soft;
+    @apply backdrop-blur-md bg-white/70 dark:bg-gray-800/70 border border-white/20 dark:border-gray-700/30 shadow-soft;
   }
   
   .glass-card {
-    @apply backdrop-blur-md bg-white/80 border border-gray-100 shadow-soft rounded-xl;
+    @apply backdrop-blur-md bg-white/80 dark:bg-gray-800/80 border border-gray-100 dark:border-gray-700 shadow-soft rounded-xl;
   }
   
   .frosted-glass {
-    @apply backdrop-blur-lg bg-white/60 border border-white/30 shadow-soft;
+    @apply backdrop-blur-lg bg-white/60 dark:bg-gray-800/60 border border-white/30 dark:border-gray-700/30 shadow-soft;
   }
   
   .animate-float-slow {
@@ -178,15 +183,28 @@
   }
   
   .shadow-soft {
-    @apply shadow-[0_4px_12px_-2px_rgba(0,0,0,0.05)];
+    @apply shadow-[0_4px_12px_-2px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_12px_-2px_rgba(0,0,0,0.2)];
   }
   
   .shadow-glow {
-    @apply shadow-[0_0_15px_rgba(79,209,197,0.2)];
+    @apply shadow-[0_0_15px_rgba(79,209,197,0.2)] dark:shadow-[0_0_15px_rgba(79,209,197,0.3)];
   }
   
   .animate-pulse-soft {
     animation: pulseSoft 2s ease-in-out infinite;
+  }
+
+  /* Dark mode adaptive styles */
+  .dark .bg-white {
+    @apply bg-gray-900;
+  }
+
+  .dark .bg-gradient-to-b.from-white.to-gray-50 {
+    @apply from-gray-900 to-gray-800;
+  }
+
+  .interactive-card {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-md;
   }
 }
 

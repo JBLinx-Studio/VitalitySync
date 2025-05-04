@@ -187,6 +187,51 @@ const FloatingCard = React.forwardRef<
 ))
 FloatingCard.displayName = "FloatingCard"
 
+// New cosmic card with space-like effects
+const CosmicCard = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      "rounded-lg cosmic-glass shadow-cosmic transition-all duration-500 hover:shadow-cosmic-glow relative overflow-hidden",
+      className
+    )}
+    {...props}
+  >
+    <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/40 to-purple-900/30 z-0"></div>
+    <div className="absolute inset-0 cosmic-stars z-0"></div>
+    <div className="absolute inset-0 cosmic-nebula z-0"></div>
+    <div className="relative z-10">
+      {props.children}
+    </div>
+  </div>
+))
+CosmicCard.displayName = "CosmicCard"
+
+// New prismatic card with rainbow reflections
+const PrismaticCard = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      "rounded-lg prismatic-glass shadow-rainbow transition-all duration-500 hover:shadow-prismatic relative overflow-hidden",
+      className
+    )}
+    {...props}
+  >
+    <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-white/10 dark:from-white/5 dark:to-white/10 z-0"></div>
+    <div className="absolute inset-0 prismatic-effect z-0"></div>
+    <div className="relative z-10">
+      {props.children}
+    </div>
+  </div>
+))
+PrismaticCard.displayName = "PrismaticCard"
+
 export { 
   Card, 
   CardHeader, 
@@ -199,5 +244,7 @@ export {
   NeoCard,
   UltraCard,
   IridescentCard,
-  FloatingCard
+  FloatingCard,
+  CosmicCard,
+  PrismaticCard
 }

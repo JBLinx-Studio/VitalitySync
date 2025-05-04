@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -133,9 +132,9 @@ const Header: React.FC = () => {
                   to="/profile"
                   className="relative flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-br from-health-primary to-health-secondary text-white font-medium overflow-hidden"
                 >
-                  {userProfile?.avatar ? (
+                  {userProfile?.profileImage ? (
                     <img 
-                      src={userProfile.avatar} 
+                      src={userProfile.profileImage} 
                       alt={userProfile.name || 'User'} 
                       className="w-full h-full object-cover"
                     />

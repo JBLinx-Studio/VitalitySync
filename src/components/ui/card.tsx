@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
@@ -469,6 +468,66 @@ const AuroraCard = React.forwardRef<
 })
 AuroraCard.displayName = "AuroraCard"
 
+// Premium prismatic card with rainbow reflections and interactive effects
+const PrismaticCard = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, children, ...props }, ref) => {
+  const [position, setPosition] = React.useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = React.useState(false);
+  const cardRef = React.useRef<HTMLDivElement>(null);
+  
+  const handleMouseMove = React.useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) - 0.5;
+    const y = ((e.clientY - rect.top) / rect.height) - 0.5;
+    
+    setPosition({ x, y });
+  }, []);
+  
+  const handleMouseEnter = React.useCallback(() => {
+    setIsHovering(true);
+  }, []);
+  
+  const handleMouseLeave = React.useCallback(() => {
+    setIsHovering(false);
+    setPosition({ x: 0, y: 0 });
+  }, []);
+  
+  const style = {
+    transform: isHovering ? 
+      `perspective(1000px) rotateX(${position.y * -7}deg) rotateY(${position.x * 7}deg) scale(1.02)` :
+      'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)',
+    transition: 'all 0.4s ease'
+  };
+  
+  return (
+    <div
+      ref={mergeRefs(ref, cardRef)}
+      className={cn(
+        "rounded-xl premium-prismatic shadow-prismatic transition-all duration-500 relative overflow-hidden",
+        isHovering ? "shadow-prismatic-hover" : "",
+        className
+      )}
+      style={style}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      {...props}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent z-0 rounded-xl"></div>
+      <div className="absolute inset-0 premium-prismatic-effect z-0 rounded-xl"></div>
+      <div className={`absolute inset-0 prismatic-highlight transition-opacity duration-500 ${isHovering ? 'opacity-100' : 'opacity-70'} z-0 rounded-xl`}></div>
+      <div className="relative z-10">
+        {children}
+      </div>
+    </div>
+  );
+})
+PrismaticCard.displayName = "PrismaticCard"
+
 export { 
   Card, 
   CardHeader, 
@@ -484,5 +543,6 @@ export {
   FloatingCard,
   CosmicCard,
   GradientCard,
-  AuroraCard
+  AuroraCard,
+  PrismaticCard
 }

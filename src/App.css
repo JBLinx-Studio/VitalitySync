@@ -1,4 +1,3 @@
-
 #root {
   margin: 0 auto;
   padding: 0;
@@ -7,20 +6,20 @@
 
 .app-background {
   background-image: 
-    radial-gradient(circle at top right, rgba(79, 209, 197, 0.18), transparent 70%),
-    radial-gradient(circle at bottom left, rgba(155, 135, 245, 0.18), transparent 70%),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.92), rgba(245, 245, 255, 0.96));
+    radial-gradient(circle at top right, rgba(79, 209, 197, 0.22), transparent 70%),
+    radial-gradient(circle at bottom left, rgba(155, 135, 245, 0.22), transparent 70%),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(245, 245, 255, 0.98));
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
-  transition: background-image 0.5s ease-in-out;
+  transition: background-image 0.8s ease-in-out;
 }
 
 .dark .app-background {
   background-image: 
-    radial-gradient(circle at top right, rgba(79, 209, 197, 0.22), transparent 70%),
-    radial-gradient(circle at bottom left, rgba(155, 135, 245, 0.22), transparent 70%),
-    linear-gradient(to bottom, rgba(15, 15, 25, 0.95), rgba(10, 10, 20, 0.98));
+    radial-gradient(circle at top right, rgba(79, 209, 197, 0.25), transparent 70%),
+    radial-gradient(circle at bottom left, rgba(155, 135, 245, 0.25), transparent 70%),
+    linear-gradient(to bottom, rgba(15, 15, 25, 0.97), rgba(10, 10, 20, 1));
 }
 
 .app-container {
@@ -35,7 +34,7 @@
 .bg-particle {
   position: absolute;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(79, 209, 197, 0.7), rgba(155, 135, 245, 0.7));
+  background: linear-gradient(135deg, rgba(79, 209, 197, 0.8), rgba(155, 135, 245, 0.8));
   opacity: 0.2;
   pointer-events: none;
   z-index: 0;
@@ -46,17 +45,17 @@
 .dark .bg-particle {
   opacity: 0.3;
   filter: blur(3px);
-  background: linear-gradient(135deg, rgba(79, 209, 197, 0.8), rgba(155, 135, 245, 0.8));
+  background: linear-gradient(135deg, rgba(79, 209, 197, 0.9), rgba(155, 135, 245, 0.9));
 }
 
-/* Interactive orbs with improved visuals */
+/* Enhanced interactive orbs with improved visuals */
 .interactive-orb {
   position: absolute;
   width: 150px;
   height: 150px;
   border-radius: 50%;
   opacity: 0.6;
-  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2));
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.2));
   filter: blur(15px);
   transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   pointer-events: none;
@@ -64,11 +63,12 @@
 }
 
 .dark .interactive-orb {
-  background: radial-gradient(circle at 30% 30%, rgba(79, 209, 197, 0.5), rgba(155, 135, 245, 0.2));
+  background: radial-gradient(circle at 30% 30%, rgba(79, 209, 197, 0.6), rgba(155, 135, 245, 0.2));
   opacity: 0.7;
   mix-blend-mode: overlay;
 }
 
+/* Enhanced floating animation for particles */
 @keyframes float-particle {
   0%, 100% { 
     transform: translateY(0) translateX(0) scale(1);
@@ -117,7 +117,7 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius);
 }
 
-/* Improved shimmer effect for cards */
+/* Enhanced shimmer effect for cards */
 .glass-effect::after {
   content: '';
   position: absolute;
@@ -128,7 +128,7 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(
     135deg,
     rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.2) 50%,
     rgba(255, 255, 255, 0) 100%
   );
   transform: rotate(45deg);
@@ -146,12 +146,12 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(
     135deg,
     rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.1) 50%,
     rgba(255, 255, 255, 0) 100%
   );
 }
 
-/* Animation utilities */
+/* Enhanced animation utilities */
 .animate-float-slow {
   animation: float 4s ease-in-out infinite;
 }
@@ -160,29 +160,33 @@ h1, h2, h3, h4, h5, h6 {
   animation: float 6s ease-in-out infinite;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
+.animate-float-slowest {
+  animation: float 8s ease-in-out infinite;
 }
 
-/* Interactive hover effects */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+/* Enhanced Interactive hover effects */
 .interactive-card {
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
   will-change: transform, box-shadow;
   position: relative;
   z-index: 1;
 }
 
 .interactive-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
 .dark .interactive-card:hover {
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
-/* Custom scrollbar styling */
+/* Enhanced Custom scrollbar styling */
 .scrollbar-thin {
   scrollbar-width: thin;
 }
@@ -197,20 +201,20 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(79, 209, 197, 0.3);
+  background: rgba(79, 209, 197, 0.4);
   border-radius: 10px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(79, 209, 197, 0.5);
+  background: rgba(79, 209, 197, 0.6);
 }
 
 .dark .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(155, 135, 245, 0.4);
+  background: rgba(155, 135, 245, 0.5);
 }
 
 .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(155, 135, 245, 0.6);
+  background: rgba(155, 135, 245, 0.7);
 }
 
 /* Enhanced pulsing effect */
@@ -221,10 +225,10 @@ h1, h2, h3, h4, h5, h6 {
 
 @keyframes pulse-subtle {
   0% {
-    box-shadow: 0 0 0 0 rgba(79, 209, 197, 0.5);
+    box-shadow: 0 0 0 0 rgba(79, 209, 197, 0.6);
   }
   70% {
-    box-shadow: 0 0 0 15px rgba(79, 209, 197, 0);
+    box-shadow: 0 0 0 20px rgba(79, 209, 197, 0);
   }
   100% {
     box-shadow: 0 0 0 0 rgba(79, 209, 197, 0);
@@ -237,10 +241,10 @@ h1, h2, h3, h4, h5, h6 {
 
 @keyframes pulse-subtle-dark {
   0% {
-    box-shadow: 0 0 0 0 rgba(155, 135, 245, 0.5);
+    box-shadow: 0 0 0 0 rgba(155, 135, 245, 0.6);
   }
   70% {
-    box-shadow: 0 0 0 15px rgba(155, 135, 245, 0);
+    box-shadow: 0 0 0 20px rgba(155, 135, 245, 0);
   }
   100% {
     box-shadow: 0 0 0 0 rgba(155, 135, 245, 0);
@@ -250,15 +254,15 @@ h1, h2, h3, h4, h5, h6 {
 /* Enhanced page transitions */
 .page-enter {
   opacity: 0;
-  transform: translateY(15px);
-  filter: blur(8px);
+  transform: translateY(20px);
+  filter: blur(10px);
 }
 
 .page-enter-active {
   opacity: 1;
   transform: translateY(0);
   filter: blur(0);
-  transition: opacity 400ms, transform 400ms, filter 400ms;
+  transition: opacity 500ms, transform 500ms, filter 500ms;
 }
 
 .page-exit {
@@ -268,14 +272,14 @@ h1, h2, h3, h4, h5, h6 {
 
 .page-exit-active {
   opacity: 0;
-  transform: translateY(-15px);
-  filter: blur(8px);
-  transition: opacity 400ms, transform 400ms, filter 400ms;
+  transform: translateY(-20px);
+  filter: blur(10px);
+  transition: opacity 500ms, transform 500ms, filter 500ms;
 }
 
 /* Enhanced Button hover effects */
 .btn-hover-effect {
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   overflow: hidden;
 }
@@ -287,9 +291,9 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.2);
   transform: translateX(-100%);
-  transition: transform 0.4s ease;
+  transition: transform 0.5s ease;
 }
 
 .btn-hover-effect:hover::before {
@@ -297,45 +301,143 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dark .btn-hover-effect::before {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
 }
 
-/* Active section indicator with enhanced animation */
-.active-section {
-  position: relative;
-}
-
-.active-section::after {
-  content: '';
+/* New animated background orbs */
+.animated-orb {
   position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, #4FD1C5, #9b87f5);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.4;
+  background-image: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  animation: orb-float 20s ease-in-out infinite alternate;
+  pointer-events: none;
 }
 
-.active-section:hover::after,
-.active-section.active::after {
-  transform: scaleX(1);
+@keyframes orb-float {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(5%, 5%) scale(1.1);
+  }
+  66% {
+    transform: translate(-5%, 10%) scale(0.9);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
 }
 
-/* New enhanced 3D effects */
-.scene {
-  perspective: 1200px;
+/* Enhanced dynamic spotlight effect */
+.spotlight-container {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
 }
 
-.card-3d {
-  transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.spotlight {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, 
+    rgba(255, 255, 255, 0.25) 0%, 
+    rgba(255, 255, 255, 0) 60%);
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.spotlight-container:hover .spotlight {
+  opacity: 1;
+}
+
+.dark .spotlight {
+  background: radial-gradient(circle at center, 
+    rgba(79, 209, 197, 0.15) 0%, 
+    rgba(79, 209, 197, 0) 70%);
+}
+
+/* Enhanced text glowing effect */
+.text-glow {
+  text-shadow: 0 0 10px rgba(79, 209, 197, 0.5);
+  transition: text-shadow 0.3s ease;
+}
+
+.text-glow:hover {
+  text-shadow: 0 0 15px rgba(79, 209, 197, 0.8);
+}
+
+.dark .text-glow {
+  text-shadow: 0 0 10px rgba(155, 135, 245, 0.6);
+}
+
+.dark .text-glow:hover {
+  text-shadow: 0 0 15px rgba(155, 135, 245, 0.9);
+}
+
+/* New color shift effect for buttons */
+.btn-color-shift {
+  background-size: 200% 200%;
+  background-image: linear-gradient(to right, #4FD1C5, #9b87f5, #4FD1C5);
+  transition: all 0.5s ease;
+}
+
+.btn-color-shift:hover {
+  background-position: 100% 0;
+}
+
+/* Enhanced click ripple effect */
+.click-ripple {
+  position: fixed;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple 1.2s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+  pointer-events: none;
+  z-index: 9999;
+  background: radial-gradient(circle, 
+    rgba(79, 209, 197, 0.4) 0%, 
+    rgba(79, 209, 197, 0) 70%);
+}
+
+.dark .click-ripple {
+  background: radial-gradient(circle, 
+    rgba(155, 135, 245, 0.5) 0%, 
+    rgba(155, 135, 245, 0) 70%);
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(6);
+    opacity: 0;
+  }
+}
+
+/* New parallax effect for cards */
+.parallax-card {
   transform-style: preserve-3d;
-  cursor: pointer;
+  transform: perspective(1000px);
 }
 
-.card-3d:hover {
-  transform: rotateY(15deg) rotateX(8deg);
+.parallax-card-content {
+  transform: translateZ(20px);
+  transition: all 0.3s ease;
+}
+
+.parallax-card-bg {
+  position: absolute;
+  inset: 0;
+  transform: translateZ(0);
+  z-index: -1;
 }
 
 @media (min-width: 768px) {
@@ -439,26 +541,5 @@ h1, h2, h3, h4, h5, h6 {
   }
   100% {
     transform: rotate(-45deg) translateY(-30%);
-  }
-}
-
-/* Click ripple effect */
-.click-ripple {
-  position: fixed;
-  border-radius: 50%;
-  transform: scale(0);
-  animation: ripple 1s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
-  pointer-events: none;
-  z-index: 9999;
-}
-
-@keyframes ripple {
-  0% {
-    transform: scale(0);
-    opacity: 0.6;
-  }
-  100% {
-    transform: scale(6);
-    opacity: 0;
   }
 }

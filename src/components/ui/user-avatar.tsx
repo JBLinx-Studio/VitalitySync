@@ -1,14 +1,19 @@
 
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UserProfile } from '@/types/health';
+import type { UserProfile } from '@/types/health';
 
 interface UserAvatarProps {
   userProfile: UserProfile | null;
   className?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
-export const UserAvatar: React.FC<UserAvatarProps> = ({ userProfile, className = "" }) => {
+export const UserAvatar: React.FC<UserAvatarProps> = ({ 
+  userProfile, 
+  className = "",
+  size = 'md'
+}) => {
   // Get user's initials for the fallback
   const getInitials = () => {
     if (!userProfile || !userProfile.name) return "U";
@@ -24,15 +29,28 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ userProfile, className =
   // Use a safe property access for the avatar/profileImage
   const getAvatarSrc = () => {
     // Check for various possible profile image properties
-    // @ts-ignore - We're checking for existence of properties that might not be in the type
     const imageSrc = userProfile?.avatar || userProfile?.profileImage || userProfile?.photoUrl || userProfile?.image;
     return imageSrc || "/placeholder.svg";
   };
 
+  // Size classes
+  const sizeClasses = {
+    sm: "w-8 h-8",
+    md: "w-10 h-10",
+    lg: "w-12 h-12",
+    xl: "w-16 h-16"
+  };
+
   return (
-    <Avatar className={className}>
-      <AvatarImage src={getAvatarSrc()} alt={userProfile?.name || "User"} />
-      <AvatarFallback>{getInitials()}</AvatarFallback>
+    <Avatar className={`${sizeClasses[size]} ${className}`}>
+      <AvatarImage 
+        src={getAvatarSrc()} 
+        alt={userProfile?.name || "User"} 
+        className="object-cover" 
+      />
+      <AvatarFallback className="bg-gradient-to-br from-health-primary to-health-secondary text-white">
+        {getInitials()}
+      </AvatarFallback>
     </Avatar>
   );
 };

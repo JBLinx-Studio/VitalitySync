@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
@@ -121,7 +121,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         )}
       </main>
       
-      <Footer />
+      {/* Show footer only on home page */}
+      {isHomePage && <Footer />}
       <Toaster />
     </div>
   );

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Heart, Brain, Moon, Activity, Shield, Ruler, Award, Zap, Utensils } from 'lucide-react';
 import { useHealth } from '@/contexts/HealthContext';
-import { Card, CardContent, CosmicCard, PrismaticCard, UltraCard } from "@/components/ui/card";
+import { Card, CardContent, CosmicCard, PrismaticCard, UltraCard, FloatingCard, IridescentCard } from "@/components/ui/card";
 import { useTheme } from '@/contexts/ThemeContext';
 import VisualEffects from '@/components/ui/VisualEffects';
 
@@ -19,7 +19,7 @@ const Index = () => {
       case 'ultra':
         return UltraCard;
       case 'iridescent':
-        return PrismaticCard;
+        return IridescentCard;
       case 'standard':
         return Card;
       default:
@@ -31,10 +31,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen space-y-12 relative">
-      <VisualEffects type="cosmic" density="medium" />
-      
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-health-primary/20 to-health-secondary/10 py-16 md:py-24 rounded-3xl">
+      <section className="relative bg-gradient-to-br from-health-primary/20 to-health-secondary/10 py-16 md:py-24 rounded-3xl overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full">
+          <VisualEffects type="cosmic" density="medium" interactive={true} />
+        </div>
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-3xl">
           <div className="absolute -top-10 -right-10 w-40 h-40 bg-health-primary/10 rounded-full blur-3xl"></div>
           <div className="absolute top-40 right-20 w-32 h-32 bg-health-secondary/20 rounded-full blur-3xl"></div>
@@ -60,7 +61,7 @@ const Index = () => {
                 {userProfile ? (
                   <Button 
                     onClick={() => navigate('/dashboard')}
-                    className="bg-health-primary hover:bg-health-primary/90 text-white flex items-center gap-2"
+                    className="bg-health-primary hover:bg-health-primary/90 text-white flex items-center gap-2 shadow-glow"
                     size="lg"
                   >
                     Go to Dashboard <ArrowRight className="h-4 w-4" />
@@ -68,7 +69,7 @@ const Index = () => {
                 ) : (
                   <Button 
                     onClick={() => navigate('/profile')}
-                    className="bg-health-primary hover:bg-health-primary/90 text-white flex items-center gap-2 hover-glow-intense"
+                    className="bg-health-primary hover:bg-health-primary/90 text-white flex items-center gap-2 hover-glow-intense shadow-glow"
                     size="lg"
                   >
                     Get Started <ArrowRight className="h-4 w-4" />
@@ -89,22 +90,22 @@ const Index = () => {
               <div className="relative">
                 <div className="w-full h-80 md:h-[400px] rounded-2xl bg-gradient-to-r from-health-primary/20 to-health-secondary/20 flex items-center justify-center shadow-xl cosmic-glass overflow-hidden">
                   <div className="grid grid-cols-2 gap-4 p-6 relative z-10">
-                    <div className="animate-float-slow bg-white/90 dark:bg-cosmic-deep/80 backdrop-blur rounded-xl shadow-lg p-4 flex flex-col items-center">
+                    <FloatingCard className="animate-float-slow bg-white/90 dark:bg-cosmic-deep/80 backdrop-blur rounded-xl shadow-lg p-4 flex flex-col items-center">
                       <Activity className="h-8 w-8 text-health-primary mb-2" strokeWidth={1.5} />
                       <span className="text-sm font-medium dark:text-white">Exercise</span>
-                    </div>
-                    <div className="animate-float-slower bg-white/90 dark:bg-cosmic-deep/80 backdrop-blur rounded-xl shadow-lg p-4 flex flex-col items-center delay-300">
+                    </FloatingCard>
+                    <FloatingCard className="animate-float-slower bg-white/90 dark:bg-cosmic-deep/80 backdrop-blur rounded-xl shadow-lg p-4 flex flex-col items-center delay-300">
                       <Utensils className="h-8 w-8 text-amber-500 mb-2" strokeWidth={1.5} />
                       <span className="text-sm font-medium dark:text-white">Nutrition</span>
-                    </div>
-                    <div className="animate-float-slow bg-white/90 dark:bg-cosmic-deep/80 backdrop-blur rounded-xl shadow-lg p-4 flex flex-col items-center delay-150">
+                    </FloatingCard>
+                    <FloatingCard className="animate-float-slow bg-white/90 dark:bg-cosmic-deep/80 backdrop-blur rounded-xl shadow-lg p-4 flex flex-col items-center delay-150">
                       <Moon className="h-8 w-8 text-indigo-600 mb-2" strokeWidth={1.5} />
                       <span className="text-sm font-medium dark:text-white">Sleep</span>
-                    </div>
-                    <div className="animate-float-slower bg-white/90 dark:bg-cosmic-deep/80 backdrop-blur rounded-xl shadow-lg p-4 flex flex-col items-center delay-200">
+                    </FloatingCard>
+                    <FloatingCard className="animate-float-slower bg-white/90 dark:bg-cosmic-deep/80 backdrop-blur rounded-xl shadow-lg p-4 flex flex-col items-center delay-200">
                       <Brain className="h-8 w-8 text-health-secondary mb-2" strokeWidth={1.5} />
                       <span className="text-sm font-medium dark:text-white">Mental</span>
-                    </div>
+                    </FloatingCard>
                   </div>
                   <div className="absolute inset-0 cosmic-stars opacity-50"></div>
                 </div>
@@ -166,7 +167,9 @@ const Index = () => {
 
       {/* How It Works */}
       <section className="py-16 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-cosmic-deep dark:to-cosmic-space rounded-3xl relative overflow-hidden">
-        <VisualEffects type="fireflies" density="low" />
+        <div className="absolute inset-0 h-full w-full">
+          <VisualEffects type="fireflies" density="low" speed="slow" />
+        </div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-12">
             <span className="inline-block px-4 py-1 rounded-full bg-health-secondary/10 text-health-secondary font-medium text-sm mb-4">Seamless Experience</span>
@@ -258,7 +261,9 @@ const Index = () => {
 
       {/* Call to Action */}
       <section className="py-16 bg-gradient-to-br from-cosmic-nebula to-cosmic-highlight dark:from-health-primary dark:to-health-secondary rounded-3xl text-white relative overflow-hidden">
-        <VisualEffects type="aurora" density="high" />
+        <div className="absolute inset-0 h-full w-full">
+          <VisualEffects type="particles" density="medium" />
+        </div>
         <div className="container mx-auto px-4 text-center relative z-10">
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute top-0 left-0 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>

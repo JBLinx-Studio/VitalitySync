@@ -63,14 +63,29 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     purple: "bg-purple-500"
   };
 
+  // Different avatar borders based on size for more cosmic aesthetics
+  const getBorderClass = (size: string) => {
+    switch(size) {
+      case 'xl':
+        return "ring-[3px] ring-offset-2 ring-offset-background";
+      case 'lg':
+        return "ring-2 ring-offset-2 ring-offset-background";
+      case 'xs':
+        return "ring-1 ring-offset-1 ring-offset-background";
+      default:
+        return "ring-2 ring-offset-2 ring-offset-background";
+    }
+  };
+
   return (
     <div className="relative inline-block group">
       <Avatar 
         className={cn(
           `${sizeClasses[size]} transition-all duration-300 transform group-hover:scale-105`,
-          showStatus ? "ring-2 ring-offset-2 ring-offset-background ring-cosmic-nebula/30" : 
-                      "ring-2 ring-offset-2 ring-offset-background ring-cosmic-highlight/40 group-hover:ring-cosmic-nebula",
+          showStatus ? `${getBorderClass(size)} ring-cosmic-nebula/30` : 
+                      `${getBorderClass(size)} ring-cosmic-highlight/40 group-hover:ring-cosmic-nebula`,
           onClick && "cursor-pointer backdrop-blur-sm",
+          "bg-gradient-to-br from-cosmic-nebula/20 to-cosmic-highlight/20 overflow-hidden",
           className
         )}
         onClick={onClick}
@@ -78,10 +93,10 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
         <AvatarImage 
           src={getAvatarSrc()} 
           alt={userProfile?.name || "User"} 
-          className="object-cover" 
+          className="object-cover"
           onError={() => setImageError(true)}
         />
-        <AvatarFallback className="bg-gradient-cosmic text-white font-medium animate-shimmer">
+        <AvatarFallback className="bg-gradient-to-br from-cosmic-nebula to-cosmic-highlight text-white font-medium animate-shimmer">
           {getInitials()}
         </AvatarFallback>
       </Avatar>
@@ -95,6 +110,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
           )}
         />
       )}
+
+      {/* Add cosmic glow effect on hover */}
+      <span className="absolute inset-0 rounded-full bg-cosmic-nebula/0 group-hover:bg-cosmic-nebula/10 transition-all duration-300 -z-10 blur-md group-hover:blur-lg"></span>
     </div>
   );
 };

@@ -13,7 +13,8 @@ import {
   Eye,
   Scale,
   Lock,
-  HelpCircle
+  HelpCircle,
+  Star
 } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import {

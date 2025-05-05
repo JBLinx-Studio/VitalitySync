@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 type Theme = 'light' | 'dark';
 type MeasurementSystem = 'metric' | 'imperial';
 type ColorTheme = 'teal-purple' | 'blue-pink' | 'green-yellow' | 'sunset' | 'ocean';
-type GlassEffect = 'standard' | 'frosted' | 'neo' | 'ultra' | 'iridescent';
+type GlassEffect = 'standard' | 'frosted' | 'neo' | 'ultra' | 'iridescent' | 'cosmic';
 type AnimationLevel = 'minimal' | 'moderate' | 'full';
 
 interface ThemeContextType {
@@ -226,17 +226,20 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       case 'iridescent':
         blurAmount = '16px';
         break;
+      case 'cosmic':
+        blurAmount = '14px';
+        break;
       default:
         blurAmount = '12px';
     }
     
     // Update backdrop blur for all glass elements if blur is enabled
     if (enableBlur) {
-      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass').forEach((el: Element) => {
+      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass, .cosmic-glass').forEach((el: Element) => {
         (el as HTMLElement).style.backdropFilter = `blur(${blurAmount})`;
       });
     } else {
-      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass').forEach((el: Element) => {
+      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass, .cosmic-glass').forEach((el: Element) => {
         (el as HTMLElement).style.backdropFilter = 'none';
       });
     }
@@ -278,7 +281,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('vitality-enable-blur', String(enableBlur));
     
     if (!enableBlur) {
-      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass').forEach((el: Element) => {
+      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass, .cosmic-glass').forEach((el: Element) => {
         (el as HTMLElement).style.backdropFilter = 'none';
       });
     } else {
@@ -298,11 +301,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         case 'iridescent':
           blurAmount = '16px';
           break;
+        case 'cosmic':
+          blurAmount = '14px';
+          break;
         default:
           blurAmount = '12px';
       }
       
-      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass').forEach((el: Element) => {
+      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass, .cosmic-glass').forEach((el: Element) => {
         (el as HTMLElement).style.backdropFilter = `blur(${blurAmount})`;
       });
     }

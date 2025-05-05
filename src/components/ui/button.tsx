@@ -22,11 +22,15 @@ const buttonVariants = cva(
         cosmic: "bg-gradient-to-r from-cosmic-nebula to-cosmic-highlight text-white shadow-cosmic hover:shadow-cosmic-glow hover:scale-105 transition-all duration-300",
         nebula: "bg-gradient-to-r from-cosmic-nebula to-cosmic-accent text-white shadow-cosmic hover:shadow-cosmic-glow hover:scale-105 transition-all duration-300",
         stellar: "bg-gradient-to-r from-cosmic-highlight to-cosmic-star text-cosmic-deep shadow-cosmic hover:shadow-cosmic-glow hover:scale-105 transition-all duration-300",
+        aurora: "bg-gradient-to-r from-green-400 to-cosmic-highlight text-white shadow-cosmic hover:shadow-cosmic-glow hover:scale-105 transition-all duration-300",
+        galaxy: "bg-gradient-to-r from-cosmic-deep to-cosmic-nebula text-white border border-cosmic-nebula/30 shadow-cosmic hover:shadow-cosmic-glow hover:scale-105 transition-all duration-300",
+        stardust: "bg-gradient-to-br from-cosmic-deep/40 via-cosmic-nebula/20 to-cosmic-highlight/30 backdrop-blur-md text-white border border-white/10 shadow-cosmic hover:shadow-cosmic-glow hover:scale-105 transition-all duration-300"
       },
       size: {
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
+        xl: "h-12 rounded-lg px-10 text-base",
         icon: "h-10 w-10",
       },
     },

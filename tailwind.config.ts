@@ -25,7 +25,8 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Poppins', 'system-ui', 'sans-serif'],
-        display: ['Quicksand', 'sans-serif']
+        display: ['Quicksand', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace']
       },
       colors: {
         border: 'hsl(var(--border))',
@@ -81,6 +82,14 @@ export default {
           fiber: '#38B2AC',
           sugar: '#F56565',
           sodium: '#D69E2E'
+        },
+        cosmic: {
+          deep: 'rgb(15, 23, 42)',
+          space: 'rgb(30, 41, 59)',
+          nebula: 'rgb(124, 58, 237)',
+          star: 'rgb(251, 191, 36)',
+          accent: 'rgb(236, 72, 153)',
+          highlight: 'rgb(6, 182, 212)'
         }
       },
       borderRadius: {
@@ -95,10 +104,14 @@ export default {
         'soft': '0 4px 20px rgba(0, 0, 0, 0.07)',
         'hover': '0 10px 30px rgba(0, 0, 0, 0.12)',
         'card': '0 2px 8px rgba(0, 0, 0, 0.05)',
-        'highlight': '0 0 20px rgba(79, 209, 197, 0.6)',
-        'glow': '0 0 25px rgba(155, 135, 245, 0.7)',
+        'highlight': '0 0 20px rgba(124, 58, 237, 0.6)',
+        'glow': '0 0 25px rgba(6, 182, 212, 0.7)',
         'rainbow': '0 5px 20px rgba(155, 135, 245, 0.5), 0 12px 30px rgba(79, 209, 197, 0.4)',
-        'intense': '0 10px 30px rgba(0, 0, 0, 0.2), 0 0 10px rgba(79, 209, 197, 0.5)',
+        'intense': '0 10px 30px rgba(0, 0, 0, 0.2), 0 0 10px rgba(124, 58, 237, 0.5)',
+        'cosmic': '0 8px 32px rgba(15, 23, 42, 0.3), 0 4px 16px rgba(124, 58, 237, 0.2)',
+        'cosmic-glow': '0 0 30px rgba(124, 58, 237, 0.6), 0 0 60px rgba(6, 182, 212, 0.3)',
+        'prismatic': '0 5px 20px rgba(236, 72, 153, 0.5), 0 12px 30px rgba(6, 182, 212, 0.4)',
+        'nebula': '0 8px 20px rgba(124, 58, 237, 0.3), 0 6px 12px rgba(15, 23, 42, 0.5)',
       },
       keyframes: {
         'accordion-down': {
@@ -139,10 +152,58 @@ export default {
         },
         'glow': {
           '0%, 100%': { 
-            boxShadow: '0 0 10px rgba(79, 209, 197, 0.6), 0 0 20px rgba(79, 209, 197, 0.2)' 
+            boxShadow: '0 0 10px rgba(124, 58, 237, 0.6), 0 0 20px rgba(124, 58, 237, 0.2)' 
           },
           '50%': { 
-            boxShadow: '0 0 20px rgba(79, 209, 197, 0.8), 0 0 30px rgba(79, 209, 197, 0.4)' 
+            boxShadow: '0 0 20px rgba(124, 58, 237, 0.8), 0 0 30px rgba(124, 58, 237, 0.4)' 
+          },
+        },
+        'cosmic-pulse': {
+          '0%, 100%': { 
+            opacity: '0.8',
+            transform: 'scale(1)'
+          },
+          '50%': { 
+            opacity: '0.4',
+            transform: 'scale(1.5)'
+          },
+        },
+        'star-twinkle': {
+          '0%, 100%': { 
+            opacity: '1',
+            transform: 'scale(1)'
+          },
+          '50%': { 
+            opacity: '0.5',
+            transform: 'scale(0.8)'
+          },
+        },
+        'nebula-drift': {
+          '0%': { 
+            transform: 'rotate(0deg) scale(1)',
+            opacity: '0.8'
+          },
+          '50%': { 
+            transform: 'rotate(180deg) scale(1.2)',
+            opacity: '0.6'
+          },
+          '100%': { 
+            transform: 'rotate(360deg) scale(1)',
+            opacity: '0.8'
+          },
+        },
+        'prismatic-shift': {
+          '0%': { 
+            backgroundPosition: '0% 50%',
+            filter: 'hue-rotate(0deg)'
+          },
+          '50%': { 
+            backgroundPosition: '100% 50%',
+            filter: 'hue-rotate(180deg)'
+          },
+          '100%': { 
+            backgroundPosition: '0% 50%',
+            filter: 'hue-rotate(360deg)'
           },
         },
       },
@@ -158,25 +219,36 @@ export default {
         'shimmer': 'shimmer 3s ease-in-out infinite',
         'glow': 'glow 3s ease-in-out infinite',
         'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'cosmic-pulse': 'cosmic-pulse 8s ease-in-out infinite',
+        'star-twinkle': 'star-twinkle 3s ease-in-out infinite',
+        'nebula-drift': 'nebula-drift 30s linear infinite',
+        'prismatic-shift': 'prismatic-shift 6s linear infinite',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-primary': 'linear-gradient(135deg, #4FD1C5 0%, #9b87f5 100%)',
-        'gradient-secondary': 'linear-gradient(135deg, #9b87f5 0%, #63B3ED 100%)',
+        'gradient-primary': 'linear-gradient(135deg, rgb(124, 58, 237) 0%, rgb(6, 182, 212) 100%)',
+        'gradient-secondary': 'linear-gradient(135deg, rgb(6, 182, 212) 0%, rgb(236, 72, 153) 100%)',
         'gradient-card': 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(249,250,251,0.8) 100%)',
-        'gradient-highlight': 'linear-gradient(90deg, #4FD1C5 0%, #9b87f5 100%)',
-        'gradient-rainbow': 'linear-gradient(90deg, #4FD1C5, #9b87f5, #EC4899, #F59E0B)',
+        'gradient-highlight': 'linear-gradient(90deg, rgb(124, 58, 237) 0%, rgb(6, 182, 212) 100%)',
+        'gradient-rainbow': 'linear-gradient(90deg, rgb(124, 58, 237), rgb(6, 182, 212), rgb(236, 72, 153), rgb(251, 191, 36))',
         'gradient-neon': 'linear-gradient(to right, #12c2e9, #c471ed, #f64f59)',
         'gradient-sunset': 'linear-gradient(to right, #fa709a, #fee140)',
         'gradient-vapor': 'linear-gradient(to top, #a18cd1, #fbc2eb)',
+        'gradient-cosmic': 'linear-gradient(to bottom right, rgb(15, 23, 42), rgb(30, 41, 59), rgb(124, 58, 237))',
+        'gradient-aurora': 'linear-gradient(to right, #4ade80, #06b6d4, #8b5cf6)',
+        'gradient-nebula': 'radial-gradient(circle at center, rgba(124, 58, 237, 0.8) 0%, rgba(15, 23, 42, 0) 70%)',
+        'gradient-space': 'radial-gradient(ellipse at bottom, rgb(30, 41, 59) 0%, rgb(15, 23, 42) 100%)',
+        'gradient-star-field': 'radial-gradient(1px 1px at 25px 25px, white, rgba(255, 255, 255, 0)), radial-gradient(1px 1px at 50px 50px, white, rgba(255, 255, 255, 0))',
       },
       transitionProperty: {
         'height': 'height',
         'spacing': 'margin, padding',
         'glow': 'box-shadow',
+        'backdrop': 'backdrop-filter',
       },
       transitionTimingFunction: {
         'bounce': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        'cosmic': 'cubic-bezier(0.19, 1, 0.22, 1)',
       },
     }
   },

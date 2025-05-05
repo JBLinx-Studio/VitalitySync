@@ -74,7 +74,7 @@ const App = () => {
         <TooltipProvider>
           <HealthProvider>
             <Toaster />
-            <Sonner theme="cosmic" />
+            <Sonner theme="dark" />
             <HashRouter>
               <Layout>
                 <Routes>

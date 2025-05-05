@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 
 type Theme = 'light' | 'dark';
 type MeasurementSystem = 'metric' | 'imperial';
-type ColorTheme = 'teal-purple' | 'blue-pink' | 'green-yellow' | 'sunset' | 'ocean';
+type ColorTheme = 'teal-purple' | 'blue-pink' | 'green-yellow' | 'sunset' | 'ocean' | 'cosmic-nebula';
 type GlassEffect = 'standard' | 'frosted' | 'neo' | 'ultra' | 'iridescent' | 'cosmic';
 type AnimationLevel = 'minimal' | 'moderate' | 'full';
 
@@ -35,7 +35,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Theme state
   const [theme, setTheme] = useState<Theme>(() => {
     const savedTheme = localStorage.getItem('vitality-theme');
-    return (savedTheme as Theme) || 'light';
+    return (savedTheme as Theme) || 'dark';
   });
   
   // Measurement system state
@@ -47,7 +47,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Color theme state
   const [colorTheme, setColorTheme] = useState<ColorTheme>(() => {
     const savedColorTheme = localStorage.getItem('vitality-color-theme');
-    return (savedColorTheme as ColorTheme) || 'teal-purple';
+    return (savedColorTheme as ColorTheme) || 'cosmic-nebula';
   });
 
   // Reduced motion state
@@ -59,7 +59,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Glass effect state
   const [glassEffect, setGlassEffect] = useState<GlassEffect>(() => {
     const savedEffect = localStorage.getItem('vitality-glass-effect');
-    return (savedEffect as GlassEffect) || 'neo';
+    return (savedEffect as GlassEffect) || 'cosmic';
   });
 
   // Animation level state
@@ -83,7 +83,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Card style state
   const [cardStyle, setCardStyle] = useState(() => {
     const savedCardStyle = localStorage.getItem('vitality-card-style');
-    return savedCardStyle || 'standard'; // Default to standard
+    return savedCardStyle || 'cosmic'; // Default to cosmic
   });
 
   // Apply theme with enhanced transition
@@ -134,6 +134,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         secondaryColor = '#10B981'; // green-500
         document.documentElement.style.setProperty('--primary', '199 89% 48%');
         document.documentElement.style.setProperty('--secondary', '158 64% 40%');
+        break;
+      case 'cosmic-nebula':
+        primaryColor = '#7C3AED'; // cosmic-nebula
+        secondaryColor = '#06B6D4'; // cosmic-highlight
+        document.documentElement.style.setProperty('--primary', '265 84% 58%');
+        document.documentElement.style.setProperty('--secondary', '187 85% 43%');
         break;
       default: // teal-purple
         primaryColor = '#4FD1C5'; // health-primary

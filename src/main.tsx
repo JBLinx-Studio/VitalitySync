@@ -6,7 +6,7 @@ import './index.css'
 import './App.css'
 import './styles/premium.css'
 
-// Add performance optimization - preconnect to API domain
+// Performance optimizations - preconnect to API domain
 const preconnect = document.createElement('link');
 preconnect.rel = 'preconnect';
 preconnect.href = 'https://api.vitalitysync.com';
@@ -62,7 +62,7 @@ const renderApp = () => {
         <div style="padding: 20px; text-align: center; font-family: system-ui, sans-serif;">
           <h2>Something went wrong</h2>
           <p>We're sorry, but there was an error loading the application. Please try refreshing the page.</p>
-          <button onclick="location.reload()" style="padding: 8px 16px; background: #4FD1C5; border: none; border-radius: 4px; color: white; cursor: pointer; margin-top: 20px;">
+          <button onclick="location.reload()" style="padding: 8px 16px; background: linear-gradient(90deg, #7C3AED, #06B6D4); border: none; border-radius: 4px; color: white; cursor: pointer; margin-top: 20px;">
             Refresh Page
           </button>
         </div>
@@ -93,6 +93,19 @@ window.addEventListener('load', () => {
       console.log('Lazy loading supported');
     }
   }, 100);
+  
+  // Add custom font loading optimization
+  if ('fonts' in document) {
+    Promise.all([
+      document.fonts.load('1em Quicksand'),
+      document.fonts.load('1em Poppins')
+    ]).then(() => {
+      document.documentElement.classList.add('fonts-loaded');
+      console.log('All fonts loaded successfully');
+    }).catch(err => {
+      console.warn('Some fonts could not be loaded:', err);
+    });
+  }
 });
 
 // Add enhanced error handling for uncaught errors

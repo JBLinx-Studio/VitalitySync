@@ -64,12 +64,13 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   };
 
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block group">
       <Avatar 
         className={cn(
-          `${sizeClasses[size]} ring-2 ring-offset-2 ring-offset-background transition-all`,
-          showStatus ? "ring-health-primary/20" : "ring-health-primary/30 hover:ring-health-primary",
-          onClick && "cursor-pointer hover:scale-105",
+          `${sizeClasses[size]} transition-all duration-300 transform group-hover:scale-105`,
+          showStatus ? "ring-2 ring-offset-2 ring-offset-background ring-cosmic-nebula/30" : 
+                      "ring-2 ring-offset-2 ring-offset-background ring-cosmic-highlight/40 group-hover:ring-cosmic-nebula",
+          onClick && "cursor-pointer backdrop-blur-sm",
           className
         )}
         onClick={onClick}
@@ -80,7 +81,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
           className="object-cover" 
           onError={() => setImageError(true)}
         />
-        <AvatarFallback className="bg-gradient-to-br from-health-primary to-health-secondary text-white font-medium">
+        <AvatarFallback className="bg-gradient-cosmic text-white font-medium animate-shimmer">
           {getInitials()}
         </AvatarFallback>
       </Avatar>
@@ -88,7 +89,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
       {showStatus && (
         <span 
           className={cn(
-            "absolute bottom-0 right-0 rounded-full border-2 border-background",
+            "absolute bottom-0 right-0 rounded-full border-2 border-background animate-pulse",
             size === 'xs' ? "w-2 h-2" : size === 'sm' ? "w-2.5 h-2.5" : "w-3 h-3",
             statusColorClasses[statusColor]
           )}

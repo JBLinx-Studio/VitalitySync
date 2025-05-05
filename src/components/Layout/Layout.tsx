@@ -7,7 +7,7 @@ import { useHealth } from '@/contexts/HealthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Toaster } from '@/components/ui/toaster';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
-import { Info } from 'lucide-react';
+import { Info, Star } from 'lucide-react';
 import PremiumEffects from '../ui/PremiumEffects';
 import { UltraCard } from '../ui/card';
 
@@ -84,9 +84,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen relative overflow-hidden" ref={appRef}>
-      {/* Dynamic background */}
-      <div className="fixed inset-0 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 transition-colors duration-500">
+    <div className="flex flex-col min-h-screen relative overflow-hidden bg-cosmic-space" ref={appRef}>
+      {/* Enhanced dynamic background with cosmic theme */}
+      <div className="fixed inset-0 bg-gradient-cosmic transition-colors duration-500">
         {/* Background effects */}
         {enableParticles && !isReducedMotion && (
           <PremiumEffects 
@@ -97,8 +97,15 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           />
         )}
         
+        {/* Animated background orbs for visual interest */}
+        <div className="absolute top-20 right-20 w-64 h-64 bg-cosmic-nebula/10 rounded-full blur-3xl animate-nebula-drift"></div>
+        <div className="absolute bottom-40 left-10 w-80 h-80 bg-cosmic-highlight/10 rounded-full blur-3xl animate-cosmic-pulse"></div>
+        
         {/* Bottom gradient overlay for better text contrast */}
-        <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t from-gray-100/90 to-transparent dark:from-gray-950/90"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-cosmic-deep/90 to-transparent"></div>
+        
+        {/* Subtle star field effect */}
+        <div className="absolute inset-0 premium-stars opacity-30"></div>
       </div>
 
       <Header />
@@ -109,7 +116,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       >
         {/* Conditional wrapper for non-home pages */}
         {!isHomePage ? (
-          <UltraCard className="p-4 md:p-6 lg:p-8 shadow-xl relative overflow-hidden">
+          <UltraCard className="p-4 md:p-6 lg:p-8 shadow-cosmic relative overflow-hidden">
+            <div className="absolute inset-0 premium-nebula opacity-20"></div>
             <div className="relative z-10">
               {children}
             </div>
@@ -121,8 +129,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         )}
       </main>
       
-      {/* Show footer only on home page */}
-      {isHomePage && <Footer />}
+      {/* Show footer only on home page with enhanced appearance */}
+      {isHomePage && (
+        <div className="relative z-10 mt-auto">
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-cosmic-deep/60 to-transparent"></div>
+          <Footer />
+        </div>
+      )}
       <Toaster />
     </div>
   );

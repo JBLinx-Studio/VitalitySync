@@ -42,7 +42,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   };
 
   return (
-    <Avatar className={`${sizeClasses[size]} ${className}`}>
+    <Avatar className={`${sizeClasses[size]} ${className} ring-2 ring-offset-2 ring-offset-background ring-health-primary/30 hover:ring-health-primary transition-all`}>
       <AvatarImage 
         src={getAvatarSrc()} 
         alt={userProfile?.name || "User"} 

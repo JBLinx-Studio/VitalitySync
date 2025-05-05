@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   User, 
@@ -20,7 +19,6 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 import NotificationsMenu from '../Notifications/NotificationsMenu';
 import { UltraCard } from '../ui/card';
-import UserAvatar from '../ui/user-avatar';
 
 const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -30,18 +28,18 @@ const Header: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [animatedElements, setAnimatedElements] = useState<HTMLElement[]>([]);
 
-  const handleScroll = useCallback(() => {
-    if (window.scrollY > 10) {
-      setScrolled(true);
-    } else {
-      setScrolled(false);
-    }
-  }, []);
-
   useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
+  }, []);
 
   useEffect(() => {
     // Close mobile menu when route changes
@@ -130,8 +128,19 @@ const Header: React.FC = () => {
                 >
                   <SettingsIcon className="w-5 h-5" />
                 </Link>
-                <Link to="/profile">
-                  <UserAvatar userProfile={userProfile} />
+                <Link 
+                  to="/profile"
+                  className="relative flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-br from-health-primary to-health-secondary text-white font-medium overflow-hidden"
+                >
+                  {userProfile?.profileImage ? (
+                    <img 
+                      src={userProfile.profileImage} 
+                      alt={userProfile.name || 'User'} 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span>{userProfile.name?.charAt(0) || 'U'}</span>
+                  )}
                 </Link>
               </div>
             ) : (

@@ -1,21 +1,77 @@
-
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Health & Fitness Tracker</title>
+  <title>VitalitySync - Redirecting...</title>
   <script type="text/javascript">
-    // Redirect to the main page with the current path as a hash
-    var segmentCount = 1;
-    var repoName = "Health-and-Fitness-Webapp";
-    var l = window.location;
-    var redirectPath = l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + 
-      '/' + repoName + '/#' + l.pathname.slice(segmentCount + repoName.length + 1);
-    
-    window.location.href = redirectPath;
+    // Single Page Apps for GitHub Pages
+    // MIT License
+    // https://github.com/rafgraph/spa-github-pages
+    // This script takes the current URL and converts it into a path that the
+    // app's router can handle.
+    (function(l) {
+      if (l.search[1] === '/' ) {
+        var decoded = l.search.slice(1).split('&').map(function(s) { 
+          return s.replace(/~and~/g, '&')
+        }).join('?');
+        window.history.replaceState(null, null,
+            l.pathname.slice(0, -1) + decoded + l.hash
+        );
+      }
+    }(window.location))
   </script>
+  <script>
+    // Redirect to the main app, which will handle the routing
+    const pathSegmentsToKeep = 1; // Change this to match your repo name depth
+    const redirectPath = sessionStorage.redirect;
+    delete sessionStorage.redirect;
+    
+    if (redirectPath) {
+      // If we have a stored path, redirect to it
+      window.location.href = redirectPath;
+    } else {
+      // Otherwise, extract the path from the current URL
+      const l = window.location;
+      const segments = l.pathname.split('/');
+      const repo = segments.slice(0, pathSegmentsToKeep + 1).join('/');
+      const path = segments.slice(pathSegmentsToKeep + 1).join('/');
+      window.location.href = `${repo}/?/${path}${l.search}`;
+    }
+  </script>
+  <meta http-equiv="refresh" content="0;URL='/Health-and-Fitness-Webapp/'">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #0F172A, #1E293B);
+      color: #fff;
+      text-align: center;
+    }
+    .loader {
+      border: 5px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      border-top: 5px solid #7C3AED;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
-  Redirecting...
+  <div>
+    <div class="loader"></div>
+    <h1>Redirecting...</h1>
+    <p>If you are not redirected automatically, <a href="/Health-and-Fitness-Webapp/" style="color: #7C3AED;">click here</a>.</p>
+  </div>
 </body>
 </html>

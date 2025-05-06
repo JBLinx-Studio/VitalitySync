@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { GlassEffect } from '@/types';
 
 interface OptionsMenuProps {
   userLoggedIn?: boolean;
@@ -63,7 +64,7 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ userLoggedIn = false }) => {
   };
 
   const handleGlassEffectChange = (value: string) => {
-    setGlassEffect(value as any);
+    setGlassEffect(value as GlassEffect);
     toast({
       description: `Glass effect changed to ${value}`,
       variant: "cosmic",
@@ -74,7 +75,7 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ userLoggedIn = false }) => {
     setAnimationLevel(value as any);
     toast({
       description: `Animation level changed to ${value}`,
-      variant: "cosmic",
+      variant: "default",
     });
   };
 
@@ -82,7 +83,7 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ userLoggedIn = false }) => {
     setIsReducedMotion(checked);
     toast({
       description: `Reduced motion ${checked ? 'enabled' : 'disabled'}`,
-      variant: "cosmic",
+      variant: "default",
     });
   };
 
@@ -90,7 +91,7 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ userLoggedIn = false }) => {
     setEnableParticles(checked);
     toast({
       description: `Particles ${checked ? 'enabled' : 'disabled'}`,
-      variant: "cosmic",
+      variant: "default",
     });
   };
 
@@ -98,7 +99,7 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ userLoggedIn = false }) => {
     setEnableBlur(checked);
     toast({
       description: `Blur effects ${checked ? 'enabled' : 'disabled'}`,
-      variant: "cosmic",
+      variant: "default",
     });
   };
 

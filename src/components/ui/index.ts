@@ -7,6 +7,8 @@ export * from './dropdown-menu';
 export * from './dialog';
 export * from './select';
 export * from './toast';
-export * from './toaster';
+// Ensure we only export Toaster once
+export { Toaster } from './toaster';
 export * from './sonner';
 export * from './tooltip';
+export * from './switch';

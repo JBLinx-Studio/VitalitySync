@@ -6,8 +6,9 @@ import Footer from './Footer';
 import { useHealth } from '@/contexts/HealthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Toaster } from '@/components/ui/toaster';
-import PremiumEffects from '@/components/ui/PremiumEffects';
+import { PremiumEffects } from '@/components/common';
 import { UltraCard } from '@/components/ui/card';
+import { VisualEffectType } from '@/types';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { getUnreadNotificationsCount } = useHealth();
@@ -46,7 +47,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }, [location.pathname, isReducedMotion]);
 
   // Choose background effect based on route
-  const getBackgroundEffect = () => {
+  const getBackgroundEffect = (): VisualEffectType => {
     if (isHomePage) {
       return 'cosmic';
     }

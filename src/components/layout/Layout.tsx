@@ -5,7 +5,7 @@ import { Header, Footer } from '@/components/layout';
 import { useHealth } from '@/contexts/HealthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Toaster } from '@/components/ui/toaster';
-import { PremiumEffects } from '@/components/common';
+import { PremiumEffects } from '@/components/ui/PremiumEffects';
 import { UltraCard } from '@/components/ui/card';
 import { VisualEffectType } from '@/types';
 
@@ -24,7 +24,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const appRef = useRef<HTMLDivElement>(null);
   const mainContentRef = useRef<HTMLDivElement>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const isHomePage = location.pathname === "/" || location.pathname === "/Health-and-Fitness-Webapp/";
+
+  // Determine if we're on the home page, considering GitHub Pages base path
+  const isHomePage = location.pathname === "/" || 
+                     location.pathname === "/Health-and-Fitness-Webapp/" || 
+                     location.pathname === "/Health-and-Fitness-Webapp";
   
   // Handle page transitions with enhanced animation
   useEffect(() => {
@@ -47,23 +51,25 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   // Choose background effect based on route
   const getBackgroundEffect = (): VisualEffectType => {
+    const pathWithoutBase = location.pathname.replace('/Health-and-Fitness-Webapp', '');
+    
     if (isHomePage) {
       return 'cosmic';
     }
     
-    if (location.pathname.includes('/exercise')) {
+    if (pathWithoutBase.includes('/exercise')) {
       return 'particles';
     }
     
-    if (location.pathname.includes('/food')) {
+    if (pathWithoutBase.includes('/food')) {
       return 'gradient';
     }
     
-    if (location.pathname.includes('/sleep')) {
+    if (pathWithoutBase.includes('/sleep')) {
       return 'aurora';
     }
     
-    if (location.pathname.includes('/mental')) {
+    if (pathWithoutBase.includes('/mental')) {
       return 'atmosphere';
     }
     

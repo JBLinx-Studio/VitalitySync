@@ -1,121 +1,60 @@
 
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
-import './index.css'
-import './App.css'
-import './styles/premium.css'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { HealthProvider } from './contexts/HealthContext';
+import App from './App';
+import Dashboard from '@/pages/Dashboard';
+import FoodTracker from '@/pages/FoodTracker';
+import ExerciseTracker from '@/pages/ExerciseTracker';
+import SleepTracker from '@/pages/SleepTracker';
+import MentalWellness from '@/pages/MentalWellness';
+import BodyMeasurements from '@/pages/BodyMeasurements';
+import UserProfile from '@/pages/UserProfile';
+import Settings from '@/pages/Settings';
+import Achievements from '@/pages/Achievements';
+import NotFound from '@/pages/NotFound';
+import Index from '@/pages/Index';
+import { Layout } from '@/components/layout';
+import '@/index.css';
 
-// Performance optimizations - preconnect to API domain
-const preconnect = document.createElement('link');
-preconnect.rel = 'preconnect';
-preconnect.href = 'https://api.vitalitysync.com';
-document.head.appendChild(preconnect);
-
-// Add DNS prefetch
-const dnsPrefetch = document.createElement('link');
-dnsPrefetch.rel = 'dns-prefetch';
-dnsPrefetch.href = 'https://api.vitalitysync.com';
-document.head.appendChild(dnsPrefetch);
-
-// Add preload for fonts
-const fontPreload = document.createElement('link');
-fontPreload.rel = 'preload';
-fontPreload.href = '/fonts/quicksand-v30-latin-600.woff2';
-fontPreload.as = 'font';
-fontPreload.type = 'font/woff2';
-fontPreload.crossOrigin = 'anonymous';
-document.head.appendChild(fontPreload);
-
-// Create a feature detection function
-const supportsIntersectionObserver = 'IntersectionObserver' in window;
-
-// Create and append a performance mark
-performance.mark('app-start');
-
-// Add passive event listeners for better scrolling performance
-document.addEventListener('touchstart', function() {}, {passive: true});
-document.addEventListener('wheel', function() {}, {passive: true});
-
-// Error handling for React rendering
-const renderApp = () => {
-  try {
-    const rootElement = document.getElementById('root');
-    if (!rootElement) {
-      console.error('Root element not found');
-      return;
-    }
-    
-    ReactDOM.createRoot(rootElement).render(
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>,
-    );
-    
-    console.log('App successfully mounted');
-  } catch (error) {
-    console.error('Failed to render the app:', error);
-    // Display a user-friendly error message
-    const rootElement = document.getElementById('root');
-    if (rootElement) {
-      rootElement.innerHTML = `
-        <div style="padding: 20px; text-align: center; font-family: system-ui, sans-serif;">
-          <h2>Something went wrong</h2>
-          <p>We're sorry, but there was an error loading the application. Please try refreshing the page.</p>
-          <button onclick="location.reload()" style="padding: 8px 16px; background: linear-gradient(90deg, #7C3AED, #06B6D4); border: none; border-radius: 4px; color: white; cursor: pointer; margin-top: 20px;">
-            Refresh Page
-          </button>
-        </div>
-      `;
-    }
-  }
-};
-
-// Render the app
-renderApp();
-
-// Measure initial render time
-window.addEventListener('load', () => {
-  performance.mark('app-loaded');
-  performance.measure('app-render-time', 'app-start', 'app-loaded');
-  
-  // Log performance metrics
-  const perfEntries = performance.getEntriesByType('measure');
-  if (perfEntries.length > 0) {
-    console.log(`Initial render took: ${perfEntries[0].duration.toFixed(2)}ms`);
-  }
-  
-  // Lazy load non-critical resources after page load
-  setTimeout(() => {
-    // Load any secondary scripts or resources here
-    if (supportsIntersectionObserver) {
-      // Initialize lazy loading for images/components if needed
-      console.log('Lazy loading supported');
-    }
-  }, 100);
-  
-  // Add custom font loading optimization
-  if ('fonts' in document) {
-    Promise.all([
-      document.fonts.load('1em Quicksand'),
-      document.fonts.load('1em Poppins')
-    ]).then(() => {
-      document.documentElement.classList.add('fonts-loaded');
-      console.log('All fonts loaded successfully');
-    }).catch(err => {
-      console.warn('Some fonts could not be loaded:', err);
-    });
-  }
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: false,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+    },
+  },
 });
 
-// Add enhanced error handling for uncaught errors
-window.addEventListener('error', (event) => {
-  console.error('Global error caught:', event.error);
-  // You could send this error to a monitoring service here
-});
+// Get base path for GitHub Pages or use "/" for development
+const BASE_PATH = import.meta.env.MODE === 'production' ? '/Health-and-Fitness-Webapp' : '';
 
-// Add unhandled promise rejection handler
-window.addEventListener('unhandledrejection', (event) => {
-  console.error('Unhandled promise rejection:', event.reason);
-  // You could send this error to a monitoring service here
-});
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <HealthProvider>
+          <BrowserRouter basename={BASE_PATH}>
+            <Routes>
+              <Route path="/" element={<Layout><Index /></Layout>} />
+              <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
+              <Route path="/food" element={<Layout><FoodTracker /></Layout>} />
+              <Route path="/exercise" element={<Layout><ExerciseTracker /></Layout>} />
+              <Route path="/sleep" element={<Layout><SleepTracker /></Layout>} />
+              <Route path="/mental" element={<Layout><MentalWellness /></Layout>} />
+              <Route path="/body" element={<Layout><BodyMeasurements /></Layout>} />
+              <Route path="/profile" element={<Layout><UserProfile /></Layout>} />
+              <Route path="/settings" element={<Layout><Settings /></Layout>} />
+              <Route path="/achievements" element={<Layout><Achievements /></Layout>} />
+              <Route path="*" element={<Layout><NotFound /></Layout>} />
+            </Routes>
+          </BrowserRouter>
+        </HealthProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  </React.StrictMode>
+);

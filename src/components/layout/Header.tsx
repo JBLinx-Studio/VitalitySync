@@ -18,6 +18,8 @@ import { Button } from '@/components/ui/button';
 import NotificationsMenu from '@/components/Notifications/NotificationsMenu';
 import { UltraCard } from '@/components/ui/card';
 import { UserAvatar } from '@/components/common';
+import { useIsMobile } from '@/hooks';
+import { cn } from '@/lib/utils';
 import OptionsMenu from '@/components/common/OptionsMenu';
 
 const Header: React.FC = () => {
@@ -25,6 +27,7 @@ const Header: React.FC = () => {
   const { userProfile } = useHealth();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleScroll = useCallback(() => {
     if (window.scrollY > 10) {
@@ -55,7 +58,11 @@ const Header: React.FC = () => {
   ];
 
   const isActive = (path: string) => {
-    return location.pathname === path ? 
+    // Adjust for GitHub Pages base path
+    const currentPath = location.pathname.replace('/Health-and-Fitness-Webapp', '');
+    const targetPath = path === '/' ? '/' : path;
+    
+    return currentPath === targetPath ? 
       "text-health-primary dark:text-health-primary font-medium" : 
       "text-gray-600 hover:text-health-primary dark:text-gray-300 dark:hover:text-health-primary";
   };
@@ -73,7 +80,7 @@ const Header: React.FC = () => {
           {/* Logo */}
           <Link 
             to="/" 
-            className="flex items-center space-x-2"
+            className="flex items-center space-x-2 flex-shrink-0"
           >
             <UltraCard className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-health-primary to-health-secondary shadow-glow">
               <span className="text-white font-bold text-xl">V</span>
@@ -84,12 +91,12 @@ const Header: React.FC = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center space-x-1 overflow-x-auto scrollbar-none flex-grow justify-center mx-4">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center space-x-1 px-3 py-2 rounded-full transition-all duration-200 hover:bg-health-primary/10 ${isActive(item.path)}`}
+                className={`flex items-center space-x-1 px-3 py-2 rounded-full transition-all duration-200 hover:bg-health-primary/10 whitespace-nowrap ${isActive(item.path)}`}
               >
                 {item.icon}
                 <span>{item.label}</span>
@@ -98,14 +105,14 @@ const Header: React.FC = () => {
           </nav>
 
           {/* Right side - Actions */}
-          <div className="flex items-center space-x-3">
-            {/* Options Menu (includes Theme Toggle) */}
-            <OptionsMenu userLoggedIn={!!userProfile} />
-
+          <div className="flex items-center space-x-2 flex-shrink-0">
             {/* Notifications */}
             <div className="hidden sm:block">
               <NotificationsMenu />
             </div>
+
+            {/* Options Menu (includes Theme Toggle) */}
+            <OptionsMenu userLoggedIn={!!userProfile} />
 
             {/* Profile */}
             {userProfile ? (
@@ -116,9 +123,13 @@ const Header: React.FC = () => {
             ) : (
               <Link to="/profile">
                 <Button 
-                  className="bg-gradient-to-r from-health-primary to-health-secondary hover:shadow-glow transition-all text-white"
+                  className={cn(
+                    "bg-gradient-to-r from-health-primary to-health-secondary hover:shadow-glow transition-all text-white",
+                    isMobile ? "px-2 py-1 text-xs" : "px-4 py-2"
+                  )}
+                  size={isMobile ? "sm" : "default"}
                 >
-                  Get Started
+                  {isMobile ? "Start" : "Get Started"}
                 </Button>
               </Link>
             )}
@@ -160,7 +171,7 @@ const Header: React.FC = () => {
                 key={item.path}
                 to={item.path}
                 className={`flex items-center space-x-3 p-3 rounded-xl ${
-                  location.pathname === item.path 
+                  location.pathname.replace('/Health-and-Fitness-Webapp', '') === item.path 
                     ? 'bg-gradient-to-r from-health-primary/20 to-health-secondary/20 text-health-primary font-medium' 
                     : 'hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
@@ -187,6 +198,11 @@ const Header: React.FC = () => {
                 <User className="w-5 h-5" />
                 <span>Settings</span>
               </Link>
+
+              {/* Mobile Notifications access */}
+              <div className="p-3">
+                <NotificationsMenu />
+              </div>
             </div>
           </nav>
         </div>

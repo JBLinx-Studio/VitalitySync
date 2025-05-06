@@ -1,4 +1,4 @@
 
-// Export all types for easier imports
-export * from './health';
+// Export all types
+export * from './health.d';
 export * from './effects';

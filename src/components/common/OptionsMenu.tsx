@@ -60,6 +60,7 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ userLoggedIn = false }) => {
     toast({
       title: "Theme Updated",
       description: `Color theme changed to ${value}`,
+      variant: "default",
     });
   };
 

@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { HealthProvider } from "@/contexts/HealthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import Layout from "@/components/Layout/Layout";
+import { Layout } from "@/components/layout";
 import { useEffect } from "react";
 
 // Pages

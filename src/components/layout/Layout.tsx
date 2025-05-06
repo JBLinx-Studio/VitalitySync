@@ -1,8 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import Header from './Header';
-import Footer from './Footer';
+import { Header, Footer } from '@/components/layout';
 import { useHealth } from '@/contexts/HealthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Toaster } from '@/components/ui/toaster';

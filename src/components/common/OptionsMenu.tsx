@@ -67,7 +67,7 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ userLoggedIn = false }) => {
     setGlassEffect(value as GlassEffect);
     toast({
       description: `Glass effect changed to ${value}`,
-      variant: "cosmic",
+      variant: "default",
     });
   };
 

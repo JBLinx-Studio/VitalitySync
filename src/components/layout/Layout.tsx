@@ -51,11 +51,16 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   }, [location.pathname, isReducedMotion]);
 
-  // Update viewport dimensions on resize
+  // Update viewport dimensions on resize with throttling
   useEffect(() => {
+    let resizeTimeout: number;
+    
     const handleResize = () => {
-      setViewportHeight(window.innerHeight);
-      setViewportWidth(window.innerWidth);
+      clearTimeout(resizeTimeout);
+      resizeTimeout = window.setTimeout(() => {
+        setViewportHeight(window.innerHeight);
+        setViewportWidth(window.innerWidth);
+      }, 100); // Throttle resize events
     };
     
     window.addEventListener('resize', handleResize);
@@ -63,6 +68,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     
     return () => {
       window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimeout);
     };
   }, []);
 
@@ -139,6 +145,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       return "p-4 md:p-6 lg:p-8";
     }
   };
+  
+  // Determine main content max width for better readability on large screens
+  const getMainContentMaxWidth = () => {
+    if (viewportWidth < 640) return '100%'; // Mobile: full width
+    if (viewportWidth < 1024) return '100%'; // Tablet: full width
+    return '1400px'; // Desktop: max width
+  };
 
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden bg-cosmic-deep" ref={appRef}>
@@ -173,10 +186,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-cosmic-deep/90 to-transparent"></div>
       </div>
 
+      {/* Fixed header with improved styling */}
       <Header />
       
       <main 
         ref={mainContentRef}
+        style={{ maxWidth: getMainContentMaxWidth(), margin: '0 auto', width: '100%' }}
         className={`${getContentContainerClass()} ${isTransitioning ? 'opacity-0' : ''}`}
       >
         {/* Conditional wrapper for non-home pages */}

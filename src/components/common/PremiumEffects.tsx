@@ -39,7 +39,7 @@ const PremiumEffects: React.FC<VisualEffectProps> = ({
         density={density}
         speed={speed}
         interactive={interactive}
-        color={color}
+        // Remove the color prop as it's not supported by VisualEffectsProps
         className={className}
       />
     </Suspense>

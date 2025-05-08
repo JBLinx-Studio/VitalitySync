@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -76,13 +77,13 @@ const App = () => {
   }, []);
   
   return (
-    <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
         <TooltipProvider>
           <HealthProvider>
-            <Toaster />
-            <Sonner theme="dark" />
             <HashRouter>
+              <Toaster />
+              <Sonner theme="dark" />
               <Routes>
                 <Route path="/" element={<Layout><Index /></Layout>} />
                 <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
@@ -100,8 +101,8 @@ const App = () => {
             </HashRouter>
           </HealthProvider>
         </TooltipProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 };
 

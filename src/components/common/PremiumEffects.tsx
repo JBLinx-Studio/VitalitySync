@@ -1,9 +1,7 @@
 
 import React, { lazy, Suspense } from 'react';
 import { VisualEffectProps } from '@/types';
-
-// Use lazy loading for better performance
-const VisualEffectsUI = lazy(() => import('@/components/ui/VisualEffects'));
+import { ParticlesEffect, CosmicEffect, AuroraEffect, FirefliesEffect } from '@/components/effects';
 
 interface PremiumEffectsProps extends Omit<VisualEffectProps, 'type'> {
   type: 'aurora' | 'particles' | 'cosmic' | 'matrix' | 'gradient' | 'atmosphere';
@@ -18,34 +16,55 @@ const PremiumEffects: React.FC<PremiumEffectsProps> = ({
   color,
   className = ''
 }) => {
-  // Map unsupported types to supported ones
-  const mapTypeToSupported = (inputType: string): "aurora" | "particles" | "cosmic" | "fireflies" => {
-    switch (inputType) {
-      case 'aurora': return 'aurora';
-      case 'particles': return 'particles';
-      case 'cosmic': return 'cosmic';
-      // Map unsupported types to similar supported ones
+  // Determine which effect component to render based on type
+  const renderEffect = () => {
+    switch (type) {
+      case 'aurora':
+        return (
+          <AuroraEffect 
+            density={density}
+            speed={speed} 
+            interactive={interactive}
+            color={color}
+          />
+        );
+      case 'particles':
+        return (
+          <ParticlesEffect 
+            density={density}
+            speed={speed}
+            interactive={interactive}
+            color={color}
+          />
+        );
+      case 'cosmic':
+        return (
+          <CosmicEffect
+            density={density}
+            speed={speed}
+            interactive={interactive}
+            color={color}
+          />
+        );
       case 'matrix':
-      case 'gradient':
+      case 'gradient': 
       case 'atmosphere':
-        return 'cosmic';
       default:
-        return 'cosmic';
+        return (
+          <FirefliesEffect
+            density={density}
+            speed={speed}
+            interactive={interactive}
+            color={color}
+          />
+        );
     }
   };
-  
-  // Ensure we only pass allowed types
-  const safeType = mapTypeToSupported(type);
   
   return (
     <div className={`w-full h-full ${className}`}>
       <Suspense fallback={<div className="w-full h-full"></div>}>
-        <VisualEffectsUI 
-          type={safeType}
-          density={density}
-          speed={speed}
-          interactive={interactive}
-        />
+        {renderEffect()}
       </Suspense>
     </div>
   );

@@ -1,11 +1,11 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks';
-import { motion } from '@/utils/animation';
+import { motion, animations } from '@/utils/animation';
 import { useNavigation, NavigationItem } from '@/hooks/use-navigation';
 
 interface MainNavigationProps {
@@ -21,15 +21,29 @@ const MainNavigation: React.FC<MainNavigationProps> = ({ navItems, className = '
     showScrollButtons, 
     setContainerElement, 
     scrollNav,
-    isActive 
+    isActive,
+    activeIndex
   } = useNavigation(navItems);
   
   // Set container element for navigation hook
-  React.useEffect(() => {
+  useEffect(() => {
     if (navRef.current) {
       setContainerElement(navRef.current);
     }
   }, [setContainerElement]);
+
+  // Apply entrance animations to navigation items
+  useEffect(() => {
+    if (!navRef.current) return;
+    
+    const items = navRef.current.querySelectorAll('.nav-item');
+    
+    items.forEach((item, index) => {
+      if (item instanceof HTMLElement) {
+        animations.smoothEntrance(item, index * 50, 400);
+      }
+    });
+  }, []);
 
   return (
     <nav className={cn(
@@ -55,14 +69,14 @@ const MainNavigation: React.FC<MainNavigationProps> = ({ navItems, className = '
           ref={navRef}
           className="flex items-center space-x-2 overflow-x-auto scrollbar-none scroll-smooth max-w-full px-10 py-1"
         >
-          {navItems.map((item) => {
+          {navItems.map((item, index) => {
             const active = isActive(item.path);
             return (
               <Link
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  "flex items-center space-x-2 px-4 py-2 rounded-full transition-all whitespace-nowrap relative",
+                  "nav-item flex items-center space-x-2 px-4 py-2 rounded-full transition-all whitespace-nowrap relative",
                   active 
                     ? "text-health-primary font-medium" 
                     : "text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
@@ -73,11 +87,12 @@ const MainNavigation: React.FC<MainNavigationProps> = ({ navItems, className = '
                 {active && (
                   <>
                     <span className="absolute inset-0 rounded-full bg-gradient-to-r from-health-primary/20 to-health-secondary/20"></span>
-                    <motion.span 
-                      className="absolute inset-0 bg-white/30 dark:bg-white/10 rounded-full"
-                      layoutId="nav-highlight"
-                      transition={{ type: "spring", duration: 0.5 }}
-                    />
+                    {React.createElement(motion.span, {
+                      className: "absolute inset-0 bg-white/30 dark:bg-white/10 rounded-full",
+                      layoutId: "nav-highlight",
+                      transition: { type: "spring", duration: 0.5 },
+                      children: null
+                    })}
                   </>
                 )}
               </Link>

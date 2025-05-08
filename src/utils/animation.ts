@@ -14,16 +14,17 @@ export const motion = {
     transition: any,
     children?: React.ReactNode
   }) => {
-    return (
-      <span
-        className={className}
-        data-layout-id={layoutId}
-        style={{
+    // Instead of returning JSX, we'll return a React.createElement call
+    return React.createElement(
+      'span',
+      {
+        className: className,
+        'data-layout-id': layoutId,
+        style: {
           transition: `all ${transition.duration || 0.3}s ${transition.type === 'spring' ? 'cubic-bezier(0.34, 1.56, 0.64, 1)' : 'ease'}`
-        }}
-      >
-        {children}
-      </span>
+        }
+      },
+      children
     );
   }
 };
@@ -97,6 +98,39 @@ export const animations = {
         { transform: 'scale(1)', opacity: 0.9 }
       ],
       { duration, easing: 'ease-in-out', iterations: Infinity }
+    );
+  },
+  
+  // Add smooth entrance animation
+  smoothEntrance: (element: HTMLElement, delay = 0, duration = 500) => {
+    return animateElement(
+      element,
+      [
+        { opacity: 0, transform: 'translateY(20px)' },
+        { opacity: 1, transform: 'translateY(0)' }
+      ],
+      { 
+        duration, 
+        delay, 
+        easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)', 
+        fill: 'forwards' 
+      }
+    );
+  },
+  
+  // Reveal animation (for tooltips, popovers)
+  reveal: (element: HTMLElement, duration = 200) => {
+    return animateElement(
+      element,
+      [
+        { opacity: 0, transform: 'scale(0.95)' },
+        { opacity: 1, transform: 'scale(1)' }
+      ],
+      { 
+        duration, 
+        easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)', 
+        fill: 'forwards' 
+      }
     );
   }
 };

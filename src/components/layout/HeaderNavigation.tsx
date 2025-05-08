@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,22 +21,31 @@ const HeaderNavigation: React.FC<HeaderNavigationProps> = ({ navItems }) => {
     showScrollButtons, 
     setContainerElement, 
     scrollNav,
-    isActive 
+    isActive,
+    activeIndex 
   } = useNavigation(navItems);
 
   // Set container element for navigation hook
-  React.useEffect(() => {
+  useEffect(() => {
     if (navRef.current) {
       setContainerElement(navRef.current);
     }
   }, [setContainerElement]);
   
-  // Add hover effects to items
-  React.useEffect(() => {
+  // Apply entrance animations and hover effects
+  useEffect(() => {
     if (!navRef.current) return;
     
     const items = navRef.current.querySelectorAll('.nav-item');
     
+    // Apply entrance animations with staggered delay
+    items.forEach((item, index) => {
+      if (item instanceof HTMLElement) {
+        animations.smoothEntrance(item, index * 40, 300);
+      }
+    });
+    
+    // Add hover effects to items
     const hoverListeners = Array.from(items).map(item => {
       const handleMouseEnter = () => {
         const indicator = item.querySelector('.nav-indicator');
@@ -116,7 +125,7 @@ const HeaderNavigation: React.FC<HeaderNavigationProps> = ({ navItems }) => {
             })}
           </nav>
           
-          {/* Elegant fade gradients at the edges */}
+          {/* Elegant fade gradients at the edges for scroll indication */}
           <div className="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-white dark:from-gray-900 to-transparent pointer-events-none"></div>
           <div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-white dark:from-gray-900 to-transparent pointer-events-none"></div>
         </div>
@@ -135,7 +144,7 @@ const HeaderNavigation: React.FC<HeaderNavigationProps> = ({ navItems }) => {
         )}
       </div>
 
-      {/* Mobile Navigation - Horizontal scrolling tabs */}
+      {/* Mobile Navigation - Horizontal scrolling tabs with improved visual styling */}
       <div className="md:hidden w-full overflow-x-auto scrollbar-none py-2 px-1 snap-mandatory snap-x flex gap-2">
         {navItems.map((item) => {
           const isItemActive = isActive(item.path);

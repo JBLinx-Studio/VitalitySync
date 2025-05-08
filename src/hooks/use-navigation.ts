@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { throttle } from '@/utils/performance';
 
@@ -24,14 +24,14 @@ export function useNavigation(items: NavigationItem[]) {
     }
   }, [location.pathname, items]);
   
-  // Handle scroll check with throttling
-  const checkForScrollButtons = throttle(() => {
+  // Handle scroll check with throttling to improve performance
+  const checkForScrollButtons = useCallback(throttle(() => {
     if (!containerElement) return;
     
     const { scrollWidth, clientWidth } = containerElement;
     setShowScrollButtons(scrollWidth > clientWidth);
     
-    // Scroll active item into view
+    // Scroll active item into view with smooth animation
     const activeItem = containerElement.children[activeIndex] as HTMLElement;
     if (activeItem) {
       const containerWidth = containerElement.offsetWidth;
@@ -44,7 +44,7 @@ export function useNavigation(items: NavigationItem[]) {
         behavior: 'smooth'
       });
     }
-  }, 100);
+  }, 100), [containerElement, activeIndex]);
   
   useEffect(() => {
     if (containerElement) {
@@ -57,13 +57,18 @@ export function useNavigation(items: NavigationItem[]) {
       
       resizeObserver.observe(containerElement);
       
+      // Handle window resize events
+      window.addEventListener('resize', checkForScrollButtons);
+      
       return () => {
         resizeObserver.disconnect();
+        window.removeEventListener('resize', checkForScrollButtons);
       };
     }
   }, [containerElement, activeIndex, checkForScrollButtons]);
   
-  const scrollNav = (direction: 'left' | 'right') => {
+  // Scroll navigation in given direction with improved animation
+  const scrollNav = useCallback((direction: 'left' | 'right') => {
     if (!containerElement) return;
     
     const scrollAmount = containerElement.offsetWidth * 0.75;
@@ -75,16 +80,19 @@ export function useNavigation(items: NavigationItem[]) {
       left: newPosition,
       behavior: 'smooth'
     });
-  };
+  }, [containerElement]);
+  
+  // Check if item is currently active
+  const isActive = useCallback((path: string) => {
+    const currentPath = location.pathname.replace('/Health-and-Fitness-Webapp', '');
+    return currentPath === path;
+  }, [location.pathname]);
   
   return {
     activeIndex,
     showScrollButtons,
     setContainerElement,
     scrollNav,
-    isActive: (path: string) => {
-      const currentPath = location.pathname.replace('/Health-and-Fitness-Webapp', '');
-      return currentPath === path;
-    }
+    isActive
   };
 }

@@ -5,7 +5,7 @@ import { Header, Footer } from '@/components/layout';
 import { useHealth } from '@/contexts/HealthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Toaster } from '@/components/ui/toaster';
-import PremiumEffects from '@/components/ui/PremiumEffects';
+import { PremiumEffects } from '@/components/common';
 import { UltraCard } from '@/components/ui/card';
 import { VisualEffectType } from '@/types';
 

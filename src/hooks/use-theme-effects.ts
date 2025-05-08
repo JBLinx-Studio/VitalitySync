@@ -49,7 +49,6 @@ export const useThemeEffects = (elementRef: React.RefObject<HTMLElement>, option
         
         // Apply intensity reduction based on animation level
         if (animationLevel === 'moderate') intensityFactor *= 0.5;
-        if (animationLevel === 'minimal') intensityFactor *= 0.2;
         
         // Calculate parallax effect
         const rect = element.getBoundingClientRect();

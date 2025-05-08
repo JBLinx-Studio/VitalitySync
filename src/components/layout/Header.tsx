@@ -18,10 +18,10 @@ import { Button } from '@/components/ui/button';
 import NotificationsMenu from '@/components/Notifications/NotificationsMenu';
 import { UltraCard } from '@/components/ui/card';
 import { UserAvatar } from '@/components/common';
-import { useIsMobile } from '@/hooks';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import OptionsMenu from '@/components/common/OptionsMenu';
-import HeaderNavigation from './HeaderNavigation';
+import MainNavigation from './MainNavigation';
 
 const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -62,16 +62,16 @@ const Header: React.FC = () => {
     <header 
       className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled 
-          ? 'py-2 bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg shadow-lg' 
+          ? 'py-2 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-lg' 
           : 'py-4 bg-transparent'
       }`}
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
           {/* Logo */}
           <Link 
             to="/" 
-            className="flex items-center space-x-2 flex-shrink-0"
+            className="flex items-center gap-2 flex-shrink-0"
           >
             <UltraCard className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-health-primary to-health-secondary shadow-glow">
               <span className="text-white font-bold text-xl">V</span>
@@ -81,11 +81,13 @@ const Header: React.FC = () => {
             </span>
           </Link>
 
-          {/* Navigation Component */}
-          <HeaderNavigation navItems={navItems} />
+          {/* Main Navigation - rendered in center for larger screens, hidden on mobile */}
+          <div className="hidden md:flex flex-grow justify-center">
+            <MainNavigation navItems={navItems} className="max-w-3xl w-full" />
+          </div>
 
           {/* Right side - Actions */}
-          <div className="flex items-center space-x-2 flex-shrink-0">
+          <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
             {/* Notifications */}
             <div className="hidden sm:block">
               <NotificationsMenu />
@@ -128,6 +130,13 @@ const Header: React.FC = () => {
               )}
             </Button>
           </div>
+        </div>
+
+        {/* Mobile Navigation - only visible on small screens */}
+        <div className="md:hidden mt-3">
+          {!mobileMenuOpen && (
+            <MainNavigation navItems={navItems} />
+          )}
         </div>
       </div>
 

@@ -42,13 +42,13 @@ const ParticlesEffect: React.FC<ParticlesEffectProps> = ({
     }
   }, [density]);
   
-  // Get speed factor based on the speed prop
+  // Get speed factor based on the speed prop - REDUCED for smoother effect
   const getSpeedFactor = useCallback(() => {
     switch (speed) {
-      case 'slow': return 0.5;
-      case 'medium': return 1;
-      case 'fast': return 2;
-      default: return 1;
+      case 'slow': return 0.2;
+      case 'medium': return 0.5;
+      case 'fast': return 1;
+      default: return 0.5;
     }
   }, [speed]);
   
@@ -58,9 +58,9 @@ const ParticlesEffect: React.FC<ParticlesEffectProps> = ({
     
     // Default colors based on theme
     if (theme === 'dark') {
-      return 'rgba(79, 209, 197, 0.6)';
+      return 'rgba(79, 209, 197, 0.4)';
     } else {
-      return 'rgba(79, 209, 197, 0.3)';
+      return 'rgba(79, 209, 197, 0.2)';
     }
   }, [color, theme]);
   
@@ -73,10 +73,10 @@ const ParticlesEffect: React.FC<ParticlesEffectProps> = ({
       newParticles.push({
         x: Math.random() * dimensions.width,
         y: Math.random() * dimensions.height,
-        size: Math.random() * 3 + 0.5,
-        speedX: (Math.random() - 0.5) * getSpeedFactor(),
-        speedY: (Math.random() - 0.5) * getSpeedFactor(),
-        opacity: Math.random() * 0.8 + 0.2
+        size: Math.random() * 2 + 0.5, // Smaller particles
+        speedX: (Math.random() - 0.5) * getSpeedFactor() * 0.5, // Reduce speed by half
+        speedY: (Math.random() - 0.5) * getSpeedFactor() * 0.5, // Reduce speed by half
+        opacity: Math.random() * 0.6 + 0.1 // Lower opacity
       });
     }
     
@@ -134,7 +134,7 @@ const ParticlesEffect: React.FC<ParticlesEffectProps> = ({
     const updatedParticles = particles.map(particle => {
       let { x, y, speedX, speedY } = particle;
       
-      // Interactive behavior
+      // Interactive behavior - gentler interaction
       if (interactive && isMouseInCanvas) {
         const dx = x - mousePosition.x;
         const dy = y - mousePosition.y;
@@ -144,14 +144,14 @@ const ParticlesEffect: React.FC<ParticlesEffectProps> = ({
           const forceDirectionX = dx / distance;
           const forceDirectionY = dy / distance;
           const force = (100 - distance) / 100;
-          speedX += forceDirectionX * force * 0.5;
-          speedY += forceDirectionY * force * 0.5;
+          speedX += forceDirectionX * force * 0.2; // Reduced force
+          speedY += forceDirectionY * force * 0.2; // Reduced force
         }
       }
       
-      // Apply speed limits
-      speedX = Math.max(-speedFactor, Math.min(speedFactor, speedX));
-      speedY = Math.max(-speedFactor, Math.min(speedFactor, speedY));
+      // Apply speed limits - tighter limits
+      speedX = Math.max(-speedFactor * 0.5, Math.min(speedFactor * 0.5, speedX));
+      speedY = Math.max(-speedFactor * 0.5, Math.min(speedFactor * 0.5, speedY));
       
       x += speedX;
       y += speedY;
@@ -165,9 +165,9 @@ const ParticlesEffect: React.FC<ParticlesEffectProps> = ({
       return { ...particle, x, y, speedX, speedY };
     });
     
-    // Draw connecting lines
-    ctx.strokeStyle = particleColor.replace(')', ',0.15)');
-    ctx.lineWidth = 0.5;
+    // Draw connecting lines - fewer connections, more subtle
+    ctx.strokeStyle = particleColor.replace(')', ',0.05)'); // More subtle lines
+    ctx.lineWidth = 0.3;
     
     for (let i = 0; i < updatedParticles.length; i++) {
       for (let j = i; j < updatedParticles.length; j++) {
@@ -175,7 +175,7 @@ const ParticlesEffect: React.FC<ParticlesEffectProps> = ({
         const dy = updatedParticles[i].y - updatedParticles[j].y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         
-        if (distance < 100) {
+        if (distance < 70) { // Shorter connection distance
           ctx.beginPath();
           ctx.moveTo(updatedParticles[i].x, updatedParticles[i].y);
           ctx.lineTo(updatedParticles[j].x, updatedParticles[j].y);

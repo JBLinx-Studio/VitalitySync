@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from 'react';
+import { throttle } from '@/utils/performance';
 
-interface ViewportDimensions {
+interface ViewportState {
   width: number;
   height: number;
   isMobile: boolean;
@@ -9,48 +10,49 @@ interface ViewportDimensions {
   isDesktop: boolean;
 }
 
-export function useViewport(): ViewportDimensions {
-  const [dimensions, setDimensions] = useState<ViewportDimensions>({
-    width: window.innerWidth,
-    height: window.innerHeight,
-    isMobile: window.innerWidth < 768,
-    isTablet: window.innerWidth >= 768 && window.innerWidth < 1024,
-    isDesktop: window.innerWidth >= 1024
+// Breakpoints
+const MOBILE_BREAKPOINT = 640;  // sm
+const TABLET_BREAKPOINT = 1024; // lg
+
+const useViewport = (): ViewportState => {
+  const [viewport, setViewport] = useState<ViewportState>({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1024,
+    height: typeof window !== 'undefined' ? window.innerHeight : 768,
+    isMobile: false,
+    isTablet: false,
+    isDesktop: true,
   });
 
   useEffect(() => {
-    const handleResize = () => {
+    // Initialize on mount
+    const updateViewport = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
       
-      setDimensions({
+      setViewport({
         width,
         height,
-        isMobile: width < 768,
-        isTablet: width >= 768 && width < 1024,
-        isDesktop: width >= 1024
+        isMobile: width < MOBILE_BREAKPOINT,
+        isTablet: width >= MOBILE_BREAKPOINT && width < TABLET_BREAKPOINT,
+        isDesktop: width >= TABLET_BREAKPOINT,
       });
     };
-
-    // Throttle resize events for better performance
-    let timeoutId: number | null = null;
-    const throttledResize = () => {
-      if (timeoutId === null) {
-        timeoutId = window.setTimeout(() => {
-          timeoutId = null;
-          handleResize();
-        }, 100);
-      }
-    };
-
-    window.addEventListener('resize', throttledResize);
-    handleResize(); // Initialize on mount
+    
+    // Initial call
+    updateViewport();
+    
+    // Throttled event handler to prevent too many updates
+    const throttledUpdateViewport = throttle(updateViewport, 100);
+    
+    // Add resize listener
+    window.addEventListener('resize', throttledUpdateViewport);
     
     return () => {
-      window.removeEventListener('resize', throttledResize);
-      if (timeoutId) window.clearTimeout(timeoutId);
+      window.removeEventListener('resize', throttledUpdateViewport);
     };
   }, []);
 
-  return dimensions;
-}
+  return viewport;
+};
+
+export default useViewport;

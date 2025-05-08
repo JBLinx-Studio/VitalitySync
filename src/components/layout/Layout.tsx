@@ -161,8 +161,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         {enableParticles && !isReducedMotion && (
           <PremiumEffects 
             type={getBackgroundEffect()} 
-            density={animationLevel === 'full' ? 'high' : animationLevel === 'moderate' ? 'medium' : 'low'}
-            speed={animationLevel === 'full' ? 'medium' : 'slow'}
+            density={animationLevel === 'full' ? 'medium' : animationLevel === 'moderate' ? 'low' : 'low'}
+            speed={animationLevel === 'full' ? 'slow' : 'slow'}
             interactive={animationLevel !== 'minimal'}
           />
         )}
@@ -186,7 +186,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-cosmic-deep/90 to-transparent"></div>
       </div>
 
-      {/* Fixed header with improved styling */}
+      {/* Fixed header */}
       <Header />
       
       <main 

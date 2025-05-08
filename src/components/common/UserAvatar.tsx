@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { UserProfile } from '@/types/health';
 import { cn } from '@/lib/utils';
 
-interface UserAvatarProps {
+export interface UserAvatarProps {
   userProfile: UserProfile | null;
   className?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';

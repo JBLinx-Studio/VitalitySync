@@ -13,16 +13,34 @@ const PremiumEffects: React.FC<VisualEffectProps> = ({
   color,
   className
 }) => {
-  // Ensure we're only passing allowed types to VisualEffectsUI
-  const safeType = type === 'matrix' ? 'cosmic' : type;
+  // Map unsupported types to supported ones
+  const mapTypeToSupported = (inputType: string): "aurora" | "particles" | "cosmic" | "fireflies" => {
+    switch (inputType) {
+      case 'aurora': return 'aurora';
+      case 'particles': return 'particles';
+      case 'cosmic': return 'cosmic';
+      // Map unsupported types to similar supported ones
+      case 'matrix':
+      case 'gradient':
+      case 'atmosphere':
+        return 'cosmic';
+      default:
+        return 'cosmic';
+    }
+  };
+  
+  // Ensure we only pass allowed types
+  const safeType = mapTypeToSupported(type);
   
   return (
     <Suspense fallback={<div className="w-full h-full"></div>}>
       <VisualEffectsUI 
-        type={safeType} 
-        density={density} 
-        speed={speed} 
-        interactive={interactive} 
+        type={safeType}
+        density={density}
+        speed={speed}
+        interactive={interactive}
+        color={color}
+        className={className}
       />
     </Suspense>
   );

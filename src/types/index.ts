@@ -3,10 +3,10 @@
 export * from './health.d';
 export * from './effects';
 
-// Re-export the types from effects.d.ts to ensure they're available
+// Re-export the specific types from effects.d.ts to ensure they're available
 export type { 
-  VisualEffectType, 
-  VisualEffectDensity, 
-  VisualEffectSpeed, 
+  VisualEffectType,
+  EffectDensity as VisualEffectDensity, 
+  EffectSpeed as VisualEffectSpeed, 
   VisualEffectProps 
 } from './effects';

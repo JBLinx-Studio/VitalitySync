@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,8 +8,6 @@
     // Single Page Apps for GitHub Pages
     // MIT License
     // https://github.com/rafgraph/spa-github-pages
-    // This script takes the current URL and converts it into a path that the
-    // app's router can handle.
     (function(l) {
       if (l.search[1] === '/' ) {
         var decoded = l.search.slice(1).split('&').map(function(s) { 
@@ -21,22 +20,10 @@
     }(window.location))
   </script>
   <script>
-    // Redirect to the main app, which will handle the routing
-    const pathSegmentsToKeep = 1; // Change this to match your repo name depth
-    const redirectPath = sessionStorage.redirect;
-    delete sessionStorage.redirect;
-    
-    if (redirectPath) {
-      // If we have a stored path, redirect to it
-      window.location.href = redirectPath;
-    } else {
-      // Otherwise, extract the path from the current URL
-      const l = window.location;
-      const segments = l.pathname.split('/');
-      const repo = segments.slice(0, pathSegmentsToKeep + 1).join('/');
-      const path = segments.slice(pathSegmentsToKeep + 1).join('/');
-      window.location.href = `${repo}/?/${path}${l.search}`;
-    }
+    // Store the current path for redirect after page load
+    const path = window.location.pathname.replace('/Health-and-Fitness-Webapp', '');
+    sessionStorage.setItem('redirectPath', path);
+    window.location.href = window.location.origin + '/Health-and-Fitness-Webapp/';
   </script>
   <meta http-equiv="refresh" content="0;URL='/Health-and-Fitness-Webapp/'">
   <style>

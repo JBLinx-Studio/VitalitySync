@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HealthProvider } from "@/contexts/HealthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Layout } from "@/components/layout";
@@ -61,6 +61,14 @@ const App = () => {
       // Could send to error tracking service here
       originalConsoleError(...args);
     };
+    
+    // Handle any redirect from 404.html
+    const redirectPath = sessionStorage.getItem('redirectPath');
+    if (redirectPath) {
+      sessionStorage.removeItem('redirectPath');
+      // We're using HashRouter so we don't need to do anything here
+      // HashRouter will handle the navigation automatically
+    }
     
     return () => {
       // Cleanup custom handlers

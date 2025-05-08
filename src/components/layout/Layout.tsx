@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Header, Footer } from '@/components/layout';
 import { useHealth } from '@/contexts/HealthContext';
@@ -8,6 +8,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { PremiumEffects } from '@/components/common';
 import { UltraCard } from '@/components/ui/card';
 import { VisualEffectType } from '@/types';
+import { animations } from '@/utils/animation';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { getUnreadNotificationsCount } = useHealth();
@@ -26,6 +27,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
+  const [motionEnabled, setMotionEnabled] = useState(!isReducedMotion);
 
   // Determine if we're on the home page, considering GitHub Pages base path
   const isHomePage = location.pathname === "/" || 
@@ -37,17 +39,14 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     if (mainContentRef.current && !isReducedMotion) {
       setIsTransitioning(true);
       
-      // Apply entrance animation
-      const entranceAnimation = () => {
-        if (mainContentRef.current) {
-          mainContentRef.current.classList.add('animate-fade-in');
-          mainContentRef.current.classList.remove('opacity-0');
+      // Apply entrance animation using our animation utilities
+      const element = mainContentRef.current;
+      setTimeout(() => {
+        if (element) {
+          animations.fadeIn(element, 500);
         }
         setIsTransitioning(false);
-      };
-      
-      // Brief timeout to ensure state updates and animations work properly
-      setTimeout(entranceAnimation, 50);
+      }, 50);
     }
   }, [location.pathname, isReducedMotion]);
 
@@ -71,6 +70,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       clearTimeout(resizeTimeout);
     };
   }, []);
+  
+  // Apply animation settings effect
+  useEffect(() => {
+    setMotionEnabled(!isReducedMotion);
+  }, [isReducedMotion]);
 
   // Choose background effect based on route
   const getBackgroundEffect = (): VisualEffectType => {
@@ -152,17 +156,31 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     if (viewportWidth < 1024) return '100%'; // Tablet: full width
     return '1400px'; // Desktop: max width
   };
+  
+  // Get animation speed based on settings
+  const getAnimationSpeed = () => {
+    switch (animationLevel) {
+      case 'minimal':
+        return 'slow';
+      case 'moderate':
+        return 'medium';
+      case 'full':
+        return 'normal';
+      default:
+        return 'slow';
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden bg-cosmic-deep" ref={appRef}>
       {/* Enhanced dynamic background with cosmic theme */}
       <div className="fixed inset-0 bg-gradient-to-br from-cosmic-deep via-cosmic-space to-cosmic-deep transition-colors duration-500">
         {/* Background effects */}
-        {enableParticles && !isReducedMotion && (
+        {enableParticles && motionEnabled && (
           <PremiumEffects 
             type={getBackgroundEffect()} 
-            density={animationLevel === 'full' ? 'medium' : animationLevel === 'moderate' ? 'low' : 'low'}
-            speed={animationLevel === 'full' ? 'slow' : 'slow'}
+            density={animationLevel === 'full' ? 'medium' : 'low'}
+            speed={getAnimationSpeed()}
             interactive={animationLevel !== 'minimal'}
           />
         )}
@@ -191,8 +209,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       
       <main 
         ref={mainContentRef}
-        style={{ maxWidth: getMainContentMaxWidth(), margin: '0 auto', width: '100%' }}
-        className={`${getContentContainerClass()} ${isTransitioning ? 'opacity-0' : ''}`}
+        style={{ 
+          maxWidth: getMainContentMaxWidth(), 
+          margin: '0 auto', 
+          width: '100%',
+          opacity: isTransitioning ? 0 : 1
+        }}
+        className={getContentContainerClass()}
       >
         {/* Conditional wrapper for non-home pages */}
         {!isHomePage ? (

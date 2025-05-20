@@ -12,19 +12,16 @@ import {
   Menu, 
   X,
   Award,
-  Settings
 } from 'lucide-react';
 import { useHealth } from '@/contexts/HealthContext';
 import { Button } from '@/components/ui/button';
 import NotificationsMenu from '@/components/Notifications/NotificationsMenu';
 import { UltraCard } from '@/components/ui/card';
 import { UserAvatar } from '@/components/common';
-import { useIsMobile, useViewport } from '@/hooks';
+import { useIsMobile } from '@/hooks';
 import { cn } from '@/lib/utils';
 import OptionsMenu from '@/components/common/OptionsMenu';
-import MainNavigation from './MainNavigation';
-import { NavigationItem } from '@/hooks/use-navigation';
-import { animations } from '@/utils/animation';
+import HeaderNavigation from './HeaderNavigation';
 
 const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -32,12 +29,9 @@ const Header: React.FC = () => {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const isMobile = useIsMobile();
-  const { width } = useViewport();
-  const headerRef = useRef<HTMLDivElement>(null);
 
-  // Apply scroll animation to header
   const handleScroll = useCallback(() => {
-    if (window.scrollY > 20) {
+    if (window.scrollY > 10) {
       setScrolled(true);
     } else {
       setScrolled(false);
@@ -49,20 +43,12 @@ const Header: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
 
-  // Close mobile menu when route changes
   useEffect(() => {
+    // Close mobile menu when route changes
     setMobileMenuOpen(false);
   }, [location.pathname]);
-  
-  // Apply entrance animation
-  useEffect(() => {
-    if (headerRef.current) {
-      animations.fadeIn(headerRef.current, 400);
-    }
-  }, []);
 
-  // Define navigation items in a consistent way
-  const navItems: NavigationItem[] = [
+  const navItems = [
     { path: "/dashboard", icon: <BarChart className="w-5 h-5" />, label: "Dashboard" },
     { path: "/food", icon: <Utensils className="w-5 h-5" />, label: "Nutrition" },
     { path: "/exercise", icon: <Activity className="w-5 h-5" />, label: "Fitness" },
@@ -74,36 +60,32 @@ const Header: React.FC = () => {
 
   return (
     <header 
-      ref={headerRef}
-      className={cn(
-        "sticky top-0 z-50 transition-all duration-500",
+      className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled 
-          ? 'py-2 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl shadow-lg' 
+          ? 'py-2 bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg shadow-lg' 
           : 'py-4 bg-transparent'
-      )}
+      }`}
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center gap-4">
-          {/* Logo with enhanced animation */}
+        <div className="flex items-center justify-between">
+          {/* Logo */}
           <Link 
             to="/" 
-            className="flex items-center gap-2 flex-shrink-0 group"
+            className="flex items-center space-x-2 flex-shrink-0"
           >
-            <UltraCard className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-health-primary to-health-secondary shadow-glow transition-all duration-300 group-hover:shadow-glow-intense">
+            <UltraCard className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-health-primary to-health-secondary shadow-glow">
               <span className="text-white font-bold text-xl">V</span>
             </UltraCard>
-            <span className="text-xl font-display font-bold bg-gradient-to-r from-health-primary to-health-secondary bg-clip-text text-transparent transition-transform group-hover:scale-105">
+            <span className="text-xl font-display font-bold bg-gradient-to-r from-health-primary to-health-secondary bg-clip-text text-transparent">
               VitalitySync
             </span>
           </Link>
 
-          {/* Main Navigation - rendered in center for larger screens, hidden on mobile */}
-          <div className="hidden md:flex flex-grow justify-center">
-            <MainNavigation navItems={navItems} className="max-w-3xl w-full" />
-          </div>
+          {/* Navigation Component */}
+          <HeaderNavigation navItems={navItems} />
 
           {/* Right side - Actions */}
-          <div className="flex items-center gap-3 flex-shrink-0 ml-auto">
+          <div className="flex items-center space-x-2 flex-shrink-0">
             {/* Notifications */}
             <div className="hidden sm:block">
               <NotificationsMenu />
@@ -111,17 +93,6 @@ const Header: React.FC = () => {
 
             {/* Options Menu (includes Theme Toggle) */}
             <OptionsMenu userLoggedIn={!!userProfile} />
-
-            {/* Settings Link */}
-            <Link 
-              to="/settings"
-              className={cn(
-                "hidden sm:flex items-center justify-center rounded-full p-2 transition-colors",
-                "hover:bg-gray-100 dark:hover:bg-gray-800"
-              )}
-            >
-              <Settings className="w-5 h-5" />
-            </Link>
 
             {/* Profile */}
             {userProfile ? (
@@ -133,12 +104,12 @@ const Header: React.FC = () => {
               <Link to="/profile">
                 <Button 
                   className={cn(
-                    "bg-gradient-to-r from-health-primary to-health-secondary hover:shadow-glow-intense transition-all text-white",
-                    isMobile ? "px-3 py-1.5 text-xs" : "px-4 py-2"
+                    "bg-gradient-to-r from-health-primary to-health-secondary hover:shadow-glow transition-all text-white",
+                    isMobile ? "px-2 py-1 text-xs" : "px-4 py-2"
                   )}
                   size={isMobile ? "sm" : "default"}
                 >
-                  {width < 400 ? "Start" : "Get Started"}
+                  {isMobile ? "Start" : "Get Started"}
                 </Button>
               </Link>
             )}
@@ -157,13 +128,6 @@ const Header: React.FC = () => {
               )}
             </Button>
           </div>
-        </div>
-
-        {/* Mobile Navigation - only visible on small screens */}
-        <div className="md:hidden mt-3">
-          {!mobileMenuOpen && (
-            <MainNavigation navItems={navItems} />
-          )}
         </div>
       </div>
 
@@ -188,25 +152,21 @@ const Header: React.FC = () => {
             </button>
           </div>
           <nav className="flex-1 overflow-y-auto p-5 space-y-2">
-            {navItems.map((item) => {
-              const active = location.pathname.replace('/Health-and-Fitness-Webapp', '') === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={cn(
-                    "flex items-center space-x-3 p-3 rounded-xl",
-                    active
-                      ? "bg-gradient-to-r from-health-primary/20 to-health-secondary/20 text-health-primary font-medium shadow-inner" 
-                      : "hover:bg-gray-100 dark:hover:bg-gray-800"
-                  )}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center space-x-3 p-3 rounded-xl ${
+                  location.pathname.replace('/Health-and-Fitness-Webapp', '') === item.path 
+                    ? 'bg-gradient-to-r from-health-primary/20 to-health-secondary/20 text-health-primary font-medium shadow-inner' 
+                    : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </Link>
+            ))}
             <div className="border-t border-gray-200 dark:border-gray-800 pt-5 mt-5 space-y-2">
               <Link
                 to="/profile"
@@ -221,7 +181,7 @@ const Header: React.FC = () => {
                 className="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <Settings className="w-5 h-5" />
+                <User className="w-5 h-5" />
                 <span>Settings</span>
               </Link>
 

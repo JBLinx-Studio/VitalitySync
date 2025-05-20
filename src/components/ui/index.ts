@@ -12,5 +12,3 @@ export { Toaster } from './toaster';
 export * from './sonner';
 export * from './tooltip';
 export * from './switch';
-export * from './toggle';
-export * from './navigation-menu';

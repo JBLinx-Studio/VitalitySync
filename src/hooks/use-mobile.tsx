@@ -18,5 +18,3 @@ export function useIsMobile() {
 
   return !!isMobile
 }
-
-// Do not include default export as it's causing the error

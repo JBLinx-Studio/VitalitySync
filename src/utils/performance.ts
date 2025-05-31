@@ -1,102 +1,117 @@
 
 /**
- * Performance utilities to help optimize the application
+ * Throttle a function call to limit how often it can be executed
+ * @param func The function to throttle
+ * @param limit The time limit in milliseconds
+ * @returns A throttled version of the function
  */
-
-/**
- * Debounce function to limit how often a function is called
- * @param fn Function to be debounced
- * @param ms Milliseconds to wait before calling the function
- * @returns Debounced function
- */
-export const debounce = <T extends (...args: any[]) => any>(
-  fn: T, 
-  ms = 300
-): ((...args: Parameters<T>) => void) => {
-  let timeoutId: ReturnType<typeof setTimeout>;
-  
-  return function(this: any, ...args: Parameters<T>): void {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn.apply(this, args), ms);
-  };
-};
-
-/**
- * Throttle function to limit the rate at which a function is called
- * @param fn Function to be throttled
- * @param ms Milliseconds to wait between function calls
- * @returns Throttled function
- */
-export const throttle = <T extends (...args: any[]) => any>(
-  fn: T, 
-  ms = 100
-): ((...args: Parameters<T>) => void) => {
+export function throttle<T extends (...args: any[]) => any>(func: T, limit: number): (...args: Parameters<T>) => void {
   let inThrottle = false;
-  let lastFunc: ReturnType<typeof setTimeout>;
-  let lastRan: number;
+  let lastResult: ReturnType<T>;
   
   return function(this: any, ...args: Parameters<T>): void {
     if (!inThrottle) {
-      fn.apply(this, args);
-      lastRan = Date.now();
+      lastResult = func.apply(this, args);
       inThrottle = true;
       
       setTimeout(() => {
         inThrottle = false;
-      }, ms);
-    } else {
-      clearTimeout(lastFunc);
-      lastFunc = setTimeout(() => {
-        if (Date.now() - lastRan >= ms) {
-          fn.apply(this, args);
-          lastRan = Date.now();
-        }
-      }, ms - (Date.now() - lastRan));
+      }, limit);
     }
   };
-};
+}
 
 /**
- * Checks if the device has low memory or CPU capabilities
- * @returns boolean indicating if device should use reduced animations/effects
+ * Debounce a function call to delay execution until after a period of inactivity
+ * @param func The function to debounce
+ * @param wait The wait time in milliseconds
+ * @param immediate Whether to execute immediately
+ * @returns A debounced version of the function
  */
-export const shouldReduceEffects = (): boolean => {
-  // Check if device is low-end or has data saving enabled
-  const connection = (navigator as any).connection;
-  const saveData = connection?.saveData;
-  const lowMemory = (navigator as any).deviceMemory < 4;
-  const userPreference = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+export function debounce<T extends (...args: any[]) => any>(
+  func: T, 
+  wait: number, 
+  immediate = false
+): (...args: Parameters<T>) => void {
+  let timeout: number | undefined;
   
-  return saveData || lowMemory || userPreference;
-};
+  return function(this: any, ...args: Parameters<T>): void {
+    const later = () => {
+      timeout = undefined;
+      if (!immediate) func.apply(this, args);
+    };
+    
+    const callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = window.setTimeout(later, wait);
+    
+    if (callNow) func.apply(this, args);
+  };
+}
 
 /**
- * Measures component render time for performance analysis
- * @param componentName Name of the component to measure
- * @param callback Function to run after measurement
+ * Measure the performance of a function
+ * @param fn The function to measure
+ * @param name A name for the performance measurement
+ * @returns The original function wrapped with performance measurement
  */
-export const measureRenderTime = (
-  componentName: string,
-  callback?: (duration: number) => void
-) => {
-  return () => {
-    const startTime = performance.now();
+export function measurePerformance<T extends (...args: any[]) => any>(
+  fn: T, 
+  name: string
+): (...args: Parameters<T>) => ReturnType<T> {
+  return function(this: any, ...args: Parameters<T>): ReturnType<T> {
+    const start = performance.now();
+    const result = fn.apply(this, args);
+    const end = performance.now();
     
-    return () => {
-      const endTime = performance.now();
-      const duration = endTime - startTime;
-      
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`[Performance] ${componentName} rendered in ${duration.toFixed(2)}ms`);
-      }
-      
-      if (callback) {
-        callback(duration);
-      }
-    };
+    console.log(`${name} took ${end - start}ms to execute`);
+    
+    return result;
+  };
+}
+
+/**
+ * A function to batch DOM reads and writes to prevent layout thrashing
+ */
+interface DOMBatch {
+  read: (callback: () => void) => void;
+  write: (callback: () => void) => void;
+  flush: () => void;
+}
+
+export const domBatch = (): DOMBatch => {
+  const reads: Array<() => void> = [];
+  const writes: Array<() => void> = [];
+  let scheduled = false;
+  
+  const flush = () => {
+    // Process all reads
+    reads.forEach(read => read());
+    reads.length = 0;
+    
+    // Process all writes
+    writes.forEach(write => write());
+    writes.length = 0;
+    
+    scheduled = false;
+  };
+  
+  const schedule = () => {
+    if (!scheduled) {
+      scheduled = true;
+      requestAnimationFrame(flush);
+    }
+  };
+  
+  return {
+    read: (callback: () => void) => {
+      reads.push(callback);
+      schedule();
+    },
+    write: (callback: () => void) => {
+      writes.push(callback);
+      schedule();
+    },
+    flush
   };
 };
-
-/**
- * Updates the utils/index.ts file to export the performance utilities
- */

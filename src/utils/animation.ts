@@ -1,82 +1,136 @@
 
-import { EffectSpeed, EffectDensity } from '@/types';
+import React from 'react';
 
-/**
- * Converts effect speed to duration in milliseconds
- * @param speed Effect speed
- * @returns Duration in milliseconds
- */
-export const getAnimationDuration = (speed: EffectSpeed): number => {
-  switch (speed) {
-    case 'slow': 
-      return 1000;
-    case 'medium': 
-      return 600;
-    case 'fast': 
-      return 300;
-    default: 
-      return 600;
+// Simple motion system for shared layout animations
+export const motion = {
+  span: ({ 
+    className, 
+    layoutId, 
+    transition, 
+    children 
+  }: { 
+    className: string, 
+    layoutId: string,
+    transition: any,
+    children?: React.ReactNode
+  }) => {
+    // Instead of returning JSX, we'll return a React.createElement call
+    return React.createElement(
+      'span',
+      {
+        className: className,
+        'data-layout-id': layoutId,
+        style: {
+          transition: `all ${transition.duration || 0.3}s ${transition.type === 'spring' ? 'cubic-bezier(0.34, 1.56, 0.64, 1)' : 'ease'}`
+        }
+      },
+      children
+    );
   }
 };
 
-/**
- * Converts effect density to a numeric density value
- * @param density Effect density
- * @returns Numeric density value
- */
-export const getParticleDensity = (density: EffectDensity): number => {
-  switch (density) {
-    case 'low':
-      return 20;
-    case 'medium':
-      return 50;
-    case 'high':
-      return 100;
-    default:
-      return 50;
-  }
-};
-
-/**
- * Easing functions for animations
- */
-export const easings = {
-  easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
-  easeOut: 'cubic-bezier(0, 0, 0.2, 1)',
-  easeIn: 'cubic-bezier(0.4, 0, 1, 1)',
-  linear: 'linear',
-  // Spring-like physics
-  spring: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-};
-
-/**
- * Apply animation with delay for staggered animations
- * @param element Element to animate
- * @param animationClass Animation class to apply
- * @param delay Delay in milliseconds
- */
-export const animateWithDelay = (
+// Animation utility functions
+export function animateElement(
   element: HTMLElement, 
-  animationClass: string, 
-  delay: number = 0
-): void => {
-  setTimeout(() => {
-    element.classList.add(animationClass);
-  }, delay);
-};
+  keyframes: Keyframe[] | PropertyIndexedKeyframes, 
+  options: KeyframeAnimationOptions
+) {
+  return element.animate(keyframes, options);
+}
 
-/**
- * Remove animation class after animation completes
- * @param element Element with animation
- * @param animationClass Animation class to remove
- * @param duration Animation duration in milliseconds
- */
-export const cleanupAnimation = (
-  element: HTMLElement,
-  animationClass: string,
-  duration: number = 1000
-): void => {
-  setTimeout(() => {
-    element.classList.remove(animationClass);
-  }, duration);
+// Common animations
+export const animations = {
+  fadeIn: (element: HTMLElement, duration = 300) => {
+    return animateElement(
+      element,
+      [
+        { opacity: 0, transform: 'translateY(10px)' },
+        { opacity: 1, transform: 'translateY(0)' }
+      ],
+      { duration, easing: 'ease-out', fill: 'forwards' }
+    );
+  },
+  
+  fadeOut: (element: HTMLElement, duration = 300) => {
+    return animateElement(
+      element,
+      [
+        { opacity: 1, transform: 'translateY(0)' },
+        { opacity: 0, transform: 'translateY(10px)' }
+      ],
+      { duration, easing: 'ease-in', fill: 'forwards' }
+    );
+  },
+  
+  scaleIn: (element: HTMLElement, duration = 200) => {
+    return animateElement(
+      element,
+      [
+        { opacity: 0, transform: 'scale(0.95)' },
+        { opacity: 1, transform: 'scale(1)' }
+      ],
+      { duration, easing: 'ease-out', fill: 'forwards' }
+    );
+  },
+  
+  // Add more fluid animations
+  slideIn: (element: HTMLElement, direction = 'left', duration = 300) => {
+    const startX = direction === 'left' ? '-20px' : direction === 'right' ? '20px' : '0';
+    const startY = direction === 'top' ? '-20px' : direction === 'bottom' ? '20px' : '0';
+    
+    return animateElement(
+      element,
+      [
+        { opacity: 0, transform: `translate(${startX}, ${startY})` },
+        { opacity: 1, transform: 'translate(0, 0)' }
+      ],
+      { duration, easing: 'cubic-bezier(0.25, 1, 0.5, 1)', fill: 'forwards' }
+    );
+  },
+  
+  // Enhanced pulse animation
+  pulse: (element: HTMLElement, intensity = 1.05, duration = 1000) => {
+    return animateElement(
+      element,
+      [
+        { transform: 'scale(1)', opacity: 0.9 },
+        { transform: `scale(${intensity})`, opacity: 1 },
+        { transform: 'scale(1)', opacity: 0.9 }
+      ],
+      { duration, easing: 'ease-in-out', iterations: Infinity }
+    );
+  },
+  
+  // Add smooth entrance animation
+  smoothEntrance: (element: HTMLElement, delay = 0, duration = 500) => {
+    return animateElement(
+      element,
+      [
+        { opacity: 0, transform: 'translateY(20px)' },
+        { opacity: 1, transform: 'translateY(0)' }
+      ],
+      { 
+        duration, 
+        delay, 
+        easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)', 
+        fill: 'forwards' 
+      }
+    );
+  },
+  
+  // Reveal animation (for tooltips, popovers)
+  reveal: (element: HTMLElement, duration = 200) => {
+    return animateElement(
+      element,
+      [
+        { opacity: 0, transform: 'scale(0.95)' },
+        { opacity: 1, transform: 'scale(1)' }
+      ],
+      { 
+        duration, 
+        easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)', 
+        fill: 'forwards' 
+      }
+    );
+  }
 };

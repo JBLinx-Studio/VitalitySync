@@ -3,8 +3,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 
 type Theme = 'light' | 'dark';
 type MeasurementSystem = 'metric' | 'imperial';
-type ColorTheme = 'teal-purple' | 'blue-pink' | 'green-yellow' | 'sunset' | 'ocean' | 'cosmic-nebula';
-type GlassEffect = 'standard' | 'frosted' | 'neo' | 'ultra' | 'iridescent' | 'cosmic';
+type ColorTheme = 'teal-purple' | 'blue-pink' | 'green-yellow' | 'sunset' | 'ocean';
+type GlassEffect = 'standard' | 'frosted' | 'neo' | 'ultra' | 'iridescent';
 type AnimationLevel = 'minimal' | 'moderate' | 'full';
 
 interface ThemeContextType {
@@ -35,7 +35,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Theme state
   const [theme, setTheme] = useState<Theme>(() => {
     const savedTheme = localStorage.getItem('vitality-theme');
-    return (savedTheme as Theme) || 'dark';
+    return (savedTheme as Theme) || 'light';
   });
   
   // Measurement system state
@@ -47,7 +47,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Color theme state
   const [colorTheme, setColorTheme] = useState<ColorTheme>(() => {
     const savedColorTheme = localStorage.getItem('vitality-color-theme');
-    return (savedColorTheme as ColorTheme) || 'cosmic-nebula';
+    return (savedColorTheme as ColorTheme) || 'teal-purple';
   });
 
   // Reduced motion state
@@ -59,7 +59,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Glass effect state
   const [glassEffect, setGlassEffect] = useState<GlassEffect>(() => {
     const savedEffect = localStorage.getItem('vitality-glass-effect');
-    return (savedEffect as GlassEffect) || 'cosmic';
+    return (savedEffect as GlassEffect) || 'neo';
   });
 
   // Animation level state
@@ -83,7 +83,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Card style state
   const [cardStyle, setCardStyle] = useState(() => {
     const savedCardStyle = localStorage.getItem('vitality-card-style');
-    return savedCardStyle || 'cosmic'; // Default to cosmic
+    return savedCardStyle || 'standard'; // Default to standard
   });
 
   // Apply theme with enhanced transition
@@ -134,12 +134,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         secondaryColor = '#10B981'; // green-500
         document.documentElement.style.setProperty('--primary', '199 89% 48%');
         document.documentElement.style.setProperty('--secondary', '158 64% 40%');
-        break;
-      case 'cosmic-nebula':
-        primaryColor = '#7C3AED'; // cosmic-nebula
-        secondaryColor = '#06B6D4'; // cosmic-highlight
-        document.documentElement.style.setProperty('--primary', '265 84% 58%');
-        document.documentElement.style.setProperty('--secondary', '187 85% 43%');
         break;
       default: // teal-purple
         primaryColor = '#4FD1C5'; // health-primary
@@ -232,20 +226,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       case 'iridescent':
         blurAmount = '16px';
         break;
-      case 'cosmic':
-        blurAmount = '14px';
-        break;
       default:
         blurAmount = '12px';
     }
     
     // Update backdrop blur for all glass elements if blur is enabled
     if (enableBlur) {
-      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass, .cosmic-glass').forEach((el: Element) => {
+      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass').forEach((el: Element) => {
         (el as HTMLElement).style.backdropFilter = `blur(${blurAmount})`;
       });
     } else {
-      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass, .cosmic-glass').forEach((el: Element) => {
+      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass').forEach((el: Element) => {
         (el as HTMLElement).style.backdropFilter = 'none';
       });
     }
@@ -287,7 +278,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('vitality-enable-blur', String(enableBlur));
     
     if (!enableBlur) {
-      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass, .cosmic-glass').forEach((el: Element) => {
+      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass').forEach((el: Element) => {
         (el as HTMLElement).style.backdropFilter = 'none';
       });
     } else {
@@ -307,14 +298,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         case 'iridescent':
           blurAmount = '16px';
           break;
-        case 'cosmic':
-          blurAmount = '14px';
-          break;
         default:
           blurAmount = '12px';
       }
       
-      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass, .cosmic-glass').forEach((el: Element) => {
+      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass').forEach((el: Element) => {
         (el as HTMLElement).style.backdropFilter = `blur(${blurAmount})`;
       });
     }

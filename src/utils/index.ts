@@ -1,6 +1,5 @@
 
-// Export all utility functions for easier imports
-export * from './animation';
+// Export all utilities for easier imports
 export * from './theme';
-export * from './performance';
-
+export * from './animation';
+export * from '@/lib/utils';

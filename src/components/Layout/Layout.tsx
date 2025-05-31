@@ -1,128 +1,91 @@
 
-import React, { useEffect, useRef, useState, lazy, Suspense } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import { useHealth } from '@/contexts/HealthContext';
-import { useTheme } from '@/contexts/ThemeContext';
 import { Toaster } from '@/components/ui/toaster';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Info } from 'lucide-react';
-import PremiumEffects from '../ui/PremiumEffects';
-import { UltraCard } from '../ui/card';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { getUnreadNotificationsCount } = useHealth();
-  const { 
-    theme, 
-    colorTheme, 
-    isReducedMotion, 
-    glassEffect, 
-    animationLevel,
-    enableParticles
-  } = useTheme();
   
-  const location = useLocation();
-  const appRef = useRef<HTMLDivElement>(null);
-  const mainContentRef = useRef<HTMLDivElement>(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const isHomePage = location.pathname === "/" || location.pathname === "/Health-and-Fitness-Webapp/";
-  
-  // Handle page transitions with enhanced animation
+  // Apply smooth page transition effects
   useEffect(() => {
-    if (mainContentRef.current && !isReducedMotion) {
-      setIsTransitioning(true);
+    const mainContent = document.querySelector('main');
+    if (mainContent) {
+      mainContent.classList.add('animate-fade-in');
+    }
+    
+    // Add atmospheric particles in background
+    const createParticle = () => {
+      const particle = document.createElement('div');
+      particle.classList.add('bg-particle');
       
-      // Apply entrance animation
-      const entranceAnimation = () => {
-        if (mainContentRef.current) {
-          mainContentRef.current.classList.add('animate-fade-in');
-          mainContentRef.current.classList.remove('opacity-0');
+      // Add randomized properties for more natural feel
+      particle.style.left = `${Math.random() * 100}%`;
+      particle.style.animationDuration = `${Math.random() * 20 + 10}s`;
+      particle.style.width = `${Math.random() * 6 + 2}px`;
+      particle.style.height = particle.style.width;
+      particle.style.opacity = `${Math.random() * 0.2 + 0.1}`;
+      
+      document.querySelector('.app-background')?.appendChild(particle);
+      
+      setTimeout(() => {
+        if (particle && particle.parentNode) {
+          particle.parentNode.removeChild(particle);
         }
-        setIsTransitioning(false);
-      };
-      
-      // Brief timeout to ensure state updates and animations work properly
-      setTimeout(entranceAnimation, 50);
-    }
-  }, [location.pathname, isReducedMotion]);
-
-  // Choose background effect based on route
-  const getBackgroundEffect = () => {
-    if (isHomePage) {
-      return 'cosmic';
-    }
+      }, 30000);
+    };
     
-    if (location.pathname.includes('/exercise')) {
-      return 'particles';
+    const particleInterval = setInterval(() => {
+      if (document.querySelector('.app-background')) {
+        createParticle();
+      }
+    }, 2000);
+    
+    // Initial particles
+    for (let i = 0; i < 8; i++) {
+      setTimeout(() => createParticle(), i * 200);
     }
     
-    if (location.pathname.includes('/food')) {
-      return 'gradient';
-    }
-    
-    if (location.pathname.includes('/sleep')) {
-      return 'aurora';
-    }
-    
-    if (location.pathname.includes('/mental')) {
-      return 'atmosphere';
-    }
-    
-    return 'particles';
-  };
-
-  // Get the appropriate glass effect class
-  const getContentContainerClass = () => {
-    const baseClasses = "relative z-20 transition-all duration-500 flex-grow container mx-auto px-4 py-6";
-    
-    if (isHomePage) {
-      return `${baseClasses}`;
-    }
-    
-    return `${baseClasses} py-8 mb-6`;
-  };
+    return () => {
+      if (mainContent) {
+        mainContent.classList.remove('animate-fade-in');
+      }
+      clearInterval(particleInterval);
+    };
+  }, []);
 
   return (
-    <div className="flex flex-col min-h-screen relative overflow-hidden" ref={appRef}>
-      {/* Dynamic background */}
-      <div className="fixed inset-0 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 transition-colors duration-500">
-        {/* Background effects */}
-        {enableParticles && !isReducedMotion && (
-          <PremiumEffects 
-            type={getBackgroundEffect()} 
-            density={animationLevel === 'full' ? 'high' : animationLevel === 'moderate' ? 'medium' : 'low'}
-            speed={animationLevel === 'full' ? 'medium' : 'slow'}
-            interactive={animationLevel !== 'minimal'}
-          />
-        )}
-        
-        {/* Bottom gradient overlay for better text contrast */}
-        <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t from-gray-100/90 to-transparent dark:from-gray-950/90"></div>
+    <div className="flex flex-col min-h-screen relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-health-primary/5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 animate-float-slower"></div>
+        <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-health-secondary/5 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2 animate-float-slow"></div>
+        <div className="absolute top-1/3 left-1/4 w-24 h-24 bg-health-primary/3 rounded-full blur-2xl animate-pulse-soft"></div>
+        <div className="absolute bottom-1/4 right-1/5 w-32 h-32 bg-health-secondary/3 rounded-full blur-2xl animate-float-slow"></div>
       </div>
-
+      
       <Header />
-      
-      <main 
-        ref={mainContentRef}
-        className={`${getContentContainerClass()} ${isTransitioning ? 'opacity-0' : ''}`}
-      >
-        {/* Conditional wrapper for non-home pages */}
-        {!isHomePage ? (
-          <UltraCard className="p-4 md:p-6 lg:p-8 shadow-xl relative overflow-hidden">
-            <div className="relative z-10">
-              {children}
-            </div>
-          </UltraCard>
-        ) : (
-          <div className="relative z-10">
-            {children}
-          </div>
-        )}
+      <main className="flex-grow container mx-auto px-4 py-8 mb-6 transition-all duration-500 ease-in-out z-10">
+        <div className="rounded-2xl glass-card shadow-soft p-6 transform hover:shadow-hover transition-all duration-300 tilt-card">
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <div className="absolute top-4 right-4 text-gray-400 hover:text-health-primary cursor-help transition-colors">
+                <Info size={16} className="hover-lift" />
+              </div>
+            </HoverCardTrigger>
+            <HoverCardContent className="glass-effect">
+              <div className="flex flex-col space-y-2">
+                <h4 className="font-medium text-sm">VitalitySync</h4>
+                <p className="text-xs text-muted-foreground">Track your health journey with our comprehensive wellness tools.</p>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+          {children}
+        </div>
       </main>
-      
-      {/* Show footer only on home page */}
-      {isHomePage && <Footer />}
+      <Footer />
       <Toaster />
     </div>
   );

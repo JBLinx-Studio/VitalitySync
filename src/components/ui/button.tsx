@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -5,25 +6,37 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-md hover:shadow-lg",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border-2 border-input bg-transparent hover:bg-accent hover:text-accent-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm hover:shadow-md",
+        ghost: "hover:bg-accent/50 hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        
+        // Cosmic Theme Variants
+        cosmic: "bg-gradient-to-r from-cosmic-nebula to-cosmic-highlight text-white shadow-cosmic hover:shadow-cosmic-glow hover:scale-105 transition-all duration-300 border border-white/10 backdrop-blur-sm",
+        nebula: "bg-gradient-to-r from-cosmic-nebula to-cosmic-accent text-white shadow-cosmic hover:shadow-cosmic-glow hover:scale-105 transition-all duration-300 border border-white/10 backdrop-blur-sm",
+        stellar: "bg-gradient-to-r from-cosmic-highlight to-cosmic-star text-cosmic-deep shadow-cosmic hover:shadow-cosmic-glow hover:scale-105 transition-all duration-300 border border-white/10 backdrop-blur-sm",
+        aurora: "bg-gradient-to-r from-green-400 to-cosmic-highlight text-white shadow-cosmic hover:shadow-cosmic-glow hover:scale-105 transition-all duration-300 border border-white/10 backdrop-blur-sm",
+        galaxy: "bg-gradient-to-r from-cosmic-deep to-cosmic-nebula text-white border border-cosmic-nebula/30 shadow-cosmic hover:shadow-cosmic-glow hover:scale-105 transition-all duration-300 backdrop-blur-sm",
+        stardust: "bg-gradient-to-br from-cosmic-deep/50 via-cosmic-nebula/30 to-cosmic-highlight/40 backdrop-blur-md text-white border border-white/10 shadow-cosmic hover:shadow-cosmic-glow hover:scale-105 transition-all duration-300",
+        eclipse: "bg-gradient-to-br from-black/70 to-cosmic-deep/70 text-white border border-cosmic-nebula/20 shadow-cosmic hover:shadow-cosmic-glow hover:scale-105 transition-all duration-300 backdrop-blur-md",
+        pulsar: "bg-gradient-to-r from-cosmic-highlight to-cosmic-nebula text-white shadow-cosmic hover:shadow-cosmic-glow hover:scale-105 transition-all duration-300 border-2 border-white/20 animate-pulse-soft backdrop-blur-sm",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        default: "h-10 px-5 py-2",
+        sm: "h-9 rounded-md px-3 text-xs",
+        lg: "h-12 rounded-lg px-8 text-base",
+        xl: "h-14 rounded-xl px-10 text-lg",
+        icon: "h-10 w-10 rounded-full",
+        pill: "h-10 rounded-full px-6",
       },
     },
     defaultVariants: {

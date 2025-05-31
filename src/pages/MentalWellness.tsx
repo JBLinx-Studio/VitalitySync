@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useHealth } from '@/contexts/HealthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { format } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
+import { useThemeEffects } from '@/hooks';
 
 const moodEmojis = {
   great: '😁',
@@ -42,6 +43,9 @@ const MentalWellness: React.FC = () => {
   const [notes, setNotes] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+
+  const cardRef = useRef<HTMLDivElement>(null);
+  useThemeEffects(cardRef, { glassMorphism: true, intensity: 'low' });
 
   const moodSummary = getMoodSummary();
   
@@ -106,12 +110,12 @@ const MentalWellness: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-800">Mental Wellness</h1>
+    <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Mental Wellness</h1>
         <Button 
           onClick={() => setShowAddForm(!showAddForm)}
-          className="flex items-center gap-2 bg-health-secondary hover:bg-health-secondary/90"
+          className="flex items-center gap-2 bg-health-secondary hover:bg-health-secondary/90 shadow-md"
         >
           <Plus className="h-4 w-4" />
           Log Mood
@@ -119,7 +123,7 @@ const MentalWellness: React.FC = () => {
       </div>
       
       {showAddForm && (
-        <Card>
+        <Card ref={cardRef} className="border border-gray-200 dark:border-gray-700 shadow-lg">
           <CardHeader>
             <CardTitle>Track Your Mood</CardTitle>
             <CardDescription>Record how you're feeling today</CardDescription>
@@ -133,6 +137,7 @@ const MentalWellness: React.FC = () => {
                   type="date" 
                   value={date} 
                   onChange={(e) => setDate(e.target.value)} 
+                  className="shadow-sm"
                 />
               </div>
               
@@ -141,7 +146,7 @@ const MentalWellness: React.FC = () => {
                 <RadioGroup 
                   value={mood} 
                   onValueChange={(value) => setMood(value as typeof mood)}
-                  className="flex justify-between mt-2"
+                  className="flex flex-wrap justify-between mt-2 gap-2"
                 >
                   <div className="flex flex-col items-center">
                     <div className="text-2xl mb-2">😁</div>
@@ -152,7 +157,7 @@ const MentalWellness: React.FC = () => {
                     />
                     <Label 
                       htmlFor="great" 
-                      className={`text-xs px-2 py-1 rounded cursor-pointer ${mood === 'great' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}
+                      className={`text-xs px-3 py-1.5 rounded-full cursor-pointer transition-colors ${mood === 'great' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
                     >
                       Great
                     </Label>
@@ -166,7 +171,7 @@ const MentalWellness: React.FC = () => {
                     />
                     <Label 
                       htmlFor="good" 
-                      className={`text-xs px-2 py-1 rounded cursor-pointer ${mood === 'good' ? 'bg-lime-100 text-lime-800' : 'bg-gray-100 text-gray-800'}`}
+                      className={`text-xs px-3 py-1.5 rounded-full cursor-pointer transition-colors ${mood === 'good' ? 'bg-lime-100 text-lime-800' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
                     >
                       Good
                     </Label>
@@ -180,7 +185,7 @@ const MentalWellness: React.FC = () => {
                     />
                     <Label 
                       htmlFor="neutral" 
-                      className={`text-xs px-2 py-1 rounded cursor-pointer ${mood === 'neutral' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-800'}`}
+                      className={`text-xs px-3 py-1.5 rounded-full cursor-pointer transition-colors ${mood === 'neutral' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
                     >
                       Okay
                     </Label>
@@ -194,7 +199,7 @@ const MentalWellness: React.FC = () => {
                     />
                     <Label 
                       htmlFor="bad" 
-                      className={`text-xs px-2 py-1 rounded cursor-pointer ${mood === 'bad' ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-800'}`}
+                      className={`text-xs px-3 py-1.5 rounded-full cursor-pointer transition-colors ${mood === 'bad' ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
                     >
                       Bad
                     </Label>
@@ -208,7 +213,7 @@ const MentalWellness: React.FC = () => {
                     />
                     <Label 
                       htmlFor="awful" 
-                      className={`text-xs px-2 py-1 rounded cursor-pointer ${mood === 'awful' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'}`}
+                      className={`text-xs px-3 py-1.5 rounded-full cursor-pointer transition-colors ${mood === 'awful' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
                     >
                       Awful
                     </Label>
@@ -219,7 +224,7 @@ const MentalWellness: React.FC = () => {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <Label htmlFor="stress">Stress Level</Label>
-                  <span className="text-sm font-medium">{stressLevel}/10</span>
+                  <span className="text-sm font-medium bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">{stressLevel}/10</span>
                 </div>
                 <Slider
                   id="stress"
@@ -234,15 +239,15 @@ const MentalWellness: React.FC = () => {
               
               <div>
                 <Label className="mb-2 block">Wellness Activities (select all that apply)</Label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {wellnessActivities.map((activity) => (
-                    <div key={activity.id} className="flex items-center space-x-2">
+                    <div key={activity.id} className="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                       <Checkbox 
                         id={activity.id}
                         checked={selectedActivities.includes(activity.id)}
                         onCheckedChange={() => handleActivityChange(activity.id)}
                       />
-                      <Label htmlFor={activity.id} className="text-sm">{activity.label}</Label>
+                      <Label htmlFor={activity.id} className="text-sm cursor-pointer">{activity.label}</Label>
                     </div>
                   ))}
                 </div>
@@ -255,13 +260,14 @@ const MentalWellness: React.FC = () => {
                   placeholder="How are you feeling? Any particular triggers?" 
                   value={notes} 
                   onChange={(e) => setNotes(e.target.value)} 
+                  className="shadow-sm resize-none"
                 />
               </div>
               
               <Button 
                 type="button" 
                 onClick={handleAddMoodRecord}
-                className="w-full bg-health-secondary hover:bg-health-secondary/90"
+                className="w-full bg-health-secondary hover:bg-health-secondary/90 shadow-md"
               >
                 Save Mood Entry
               </Button>
@@ -270,8 +276,8 @@ const MentalWellness: React.FC = () => {
         </Card>
       )}
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card className="border border-gray-200 dark:border-gray-700 shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center">
               <Brain className="mr-2 h-5 w-5 text-health-secondary" />
@@ -281,7 +287,7 @@ const MentalWellness: React.FC = () => {
           <CardContent>
             {moodRecords.length > 0 ? (
               <>
-                <div className="text-4xl mb-2">
+                <div className="text-4xl mb-2 animate-bounce">
                   {moodEmojis[moodRecords[moodRecords.length - 1].mood as keyof typeof moodEmojis]}
                 </div>
                 <div className="text-lg font-medium capitalize">
@@ -299,7 +305,7 @@ const MentalWellness: React.FC = () => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="border border-gray-200 dark:border-gray-700 shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center">
               <TrendingUp className="mr-2 h-5 w-5 text-health-secondary" />
@@ -319,7 +325,7 @@ const MentalWellness: React.FC = () => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="border border-gray-200 dark:border-gray-700 shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center">
               <BarChart className="mr-2 h-5 w-5 text-health-secondary" />
@@ -345,8 +351,8 @@ const MentalWellness: React.FC = () => {
         </Card>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="border border-gray-200 dark:border-gray-700 shadow-md">
           <CardHeader>
             <CardTitle>Mood Distribution</CardTitle>
             <CardDescription>Your emotional patterns over time</CardDescription>
@@ -389,7 +395,7 @@ const MentalWellness: React.FC = () => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="border border-gray-200 dark:border-gray-700 shadow-md">
           <CardHeader>
             <CardTitle>Stress Level Trends</CardTitle>
             <CardDescription>Your stress levels over the past week</CardDescription>
@@ -400,12 +406,12 @@ const MentalWellness: React.FC = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
                     data={weeklyStressData}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
                     <XAxis dataKey="date" />
                     <YAxis domain={[0, 10]} />
-                    <Tooltip />
+                    <Tooltip contentStyle={{ borderRadius: '8px' }} />
                     <Legend />
                     <Line 
                       type="monotone" 
@@ -413,6 +419,7 @@ const MentalWellness: React.FC = () => {
                       name="Stress Level"
                       stroke="#9b87f5" 
                       activeDot={{ r: 8 }} 
+                      strokeWidth={2}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -430,7 +437,7 @@ const MentalWellness: React.FC = () => {
         </Card>
       </div>
       
-      <Card>
+      <Card className="border border-gray-200 dark:border-gray-700 shadow-md">
         <CardHeader>
           <CardTitle>Wellness Activities Impact</CardTitle>
           <CardDescription>See which activities correlate with improved mood</CardDescription>
@@ -460,16 +467,18 @@ const MentalWellness: React.FC = () => {
                 const goodMoodPercentage = Math.round((goodMoodCount / recordsWithActivity.length) * 100);
                 
                 return (
-                  <div key={activity.id} className="flex items-center justify-between">
+                  <div key={activity.id} className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors">
                     <div className="flex items-center">
-                      <div className="w-10 h-10 rounded-full bg-health-secondary/10 flex items-center justify-center mr-3">
+                      <div className="w-10 h-10 rounded-full bg-health-secondary/10 flex items-center justify-center mr-3 shadow-sm">
                         <CheckCircle2 className="h-5 w-5 text-health-secondary" />
                       </div>
                       <span>{activity.label}</span>
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-medium">
-                        {goodMoodPercentage}% positive mood
+                        <span className={goodMoodPercentage > 50 ? 'text-green-600' : goodMoodPercentage > 30 ? 'text-amber-600' : 'text-red-600'}>
+                          {goodMoodPercentage}% positive mood
+                        </span>
                       </div>
                       <div className="text-xs text-gray-500">
                         Avg stress: {avgStress.toFixed(1)}/10

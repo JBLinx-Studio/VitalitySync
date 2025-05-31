@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 
 interface BaseEffectProps {
@@ -20,7 +20,27 @@ const BaseEffect: React.FC<BaseEffectProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>(0);
+  const lastResizeRef = useRef<{ width: number; height: number }>({ width: 0, height: 0 });
   const { isReducedMotion } = useTheme();
+
+  const resizeCanvas = useCallback(() => {
+    if (!containerRef.current || !canvasRef.current) return;
+    
+    const { width, height } = containerRef.current.getBoundingClientRect();
+    const canvas = canvasRef.current;
+    
+    // Only update if size actually changed to prevent infinite loops
+    if (lastResizeRef.current.width !== width || lastResizeRef.current.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+      
+      lastResizeRef.current = { width, height };
+      
+      if (onResize) {
+        onResize({ width, height });
+      }
+    }
+  }, [onResize]);
 
   useEffect(() => {
     if (isReducedMotion) return;
@@ -28,72 +48,69 @@ const BaseEffect: React.FC<BaseEffectProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
     
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
     
-    // Resize canvas to match container
-    const resizeCanvas = () => {
-      if (!containerRef.current || !canvas) return;
-      
-      const { width, height } = containerRef.current.getBoundingClientRect();
-      
-      // Only update if size changed
-      if (canvas.width !== width || canvas.height !== height) {
-        canvas.width = width;
-        canvas.height = height;
-        
-        if (onResize) {
-          onResize({ width, height });
-        }
-      }
-    };
-    
+    // Initial resize
     resizeCanvas();
     
-    // Animation loop
+    // Animation loop with performance optimizations
     let lastTimestamp = 0;
     const animate = (timestamp: number) => {
       if (!ctx || !canvas) return;
       
-      // Optional throttling for better performance
-      if (timestamp - lastTimestamp > 16) { // ~60fps
+      // Throttle to 60fps for better performance
+      if (timestamp - lastTimestamp > 16.67) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        draw(ctx, { width: canvas.width, height: canvas.height }, timestamp);
+        
+        try {
+          draw(ctx, { width: canvas.width, height: canvas.height }, timestamp);
+        } catch (error) {
+          console.error('Error in animation draw function:', error);
+        }
+        
         lastTimestamp = timestamp;
       }
       
       animationRef.current = requestAnimationFrame(animate);
     };
     
-    animate(0);
+    animationRef.current = requestAnimationFrame(animate);
     
-    // Handle resize events
-    const debouncedResize = () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-      
-      resizeCanvas();
-      animationRef.current = requestAnimationFrame(animate);
+    // Debounced resize handler
+    let resizeTimeout: number;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = window.setTimeout(() => {
+        resizeCanvas();
+      }, 100);
     };
     
-    window.addEventListener('resize', debouncedResize);
+    window.addEventListener('resize', handleResize);
     
     return () => {
       cancelAnimationFrame(animationRef.current);
-      window.removeEventListener('resize', debouncedResize);
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimeout);
     };
-  }, [draw, isReducedMotion, onResize]);
+  }, [draw, isReducedMotion, resizeCanvas]);
+
+  if (isReducedMotion) {
+    return null;
+  }
 
   return (
     <div 
       ref={containerRef} 
-      className={`w-full h-full absolute top-0 left-0 overflow-hidden ${className}`}
-      style={{ pointerEvents: 'none' }}
+      className={`w-full h-full absolute top-0 left-0 overflow-hidden pointer-events-none ${className}`}
     >
       <canvas 
         ref={canvasRef}
         className="absolute top-0 left-0 w-full h-full"
+        style={{ 
+          imageRendering: 'auto',
+          filter: 'blur(0.5px)', // Subtle blur for smoother appearance
+        }}
       />
     </div>
   );

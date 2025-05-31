@@ -21,7 +21,7 @@ import { UserAvatar } from '@/components/common';
 import { useIsMobile } from '@/hooks';
 import { cn } from '@/lib/utils';
 import OptionsMenu from '@/components/common/OptionsMenu';
-import ModernNavigation from './modern-navigation';
+import ModernNavigation from '@/components/ui/modern-navigation';
 import GlassCard from '@/components/ui/glass-card';
 
 const EnhancedHeader: React.FC = () => {

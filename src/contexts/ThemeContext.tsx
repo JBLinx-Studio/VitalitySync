@@ -1,93 +1,53 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useToast } from "@/hooks/use-toast";
 
-type Theme = 'light' | 'dark';
-type MeasurementSystem = 'metric' | 'imperial';
-type ColorTheme = 'teal-purple' | 'blue-pink' | 'green-yellow';
+type Theme = 'light' | 'dark' | 'system';
 
 interface ThemeContextType {
   theme: Theme;
-  toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
-  measurementSystem: MeasurementSystem;
-  setMeasurementSystem: (system: MeasurementSystem) => void;
-  colorTheme: ColorTheme;
-  setColorTheme: (theme: ColorTheme) => void;
-  isReducedMotion: boolean;
-  setIsReducedMotion: (reduced: boolean) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    const savedTheme = localStorage.getItem('vitality-theme');
-    return (savedTheme as Theme) || 'light';
+  const [theme, setThemeState] = useState<Theme>(() => {
+    // Get from localStorage or default to system
+    const savedTheme = localStorage.getItem('health-theme') as Theme;
+    return savedTheme || 'system';
   });
-  
-  const [measurementSystem, setMeasurementSystem] = useState<MeasurementSystem>(() => {
-    const savedSystem = localStorage.getItem('vitality-measurement');
-    return (savedSystem as MeasurementSystem) || 'metric';
-  });
-
-  const [colorTheme, setColorTheme] = useState<ColorTheme>(() => {
-    const savedColorTheme = localStorage.getItem('vitality-color-theme');
-    return (savedColorTheme as ColorTheme) || 'teal-purple';
-  });
-
-  const [isReducedMotion, setIsReducedMotion] = useState(() => {
-    const savedMotion = localStorage.getItem('vitality-reduced-motion');
-    return savedMotion === 'true';
-  });
+  const { toast } = useToast();
 
   useEffect(() => {
-    localStorage.setItem('vitality-theme', theme);
-    document.documentElement.classList.remove('light', 'dark');
-    document.documentElement.classList.add(theme);
-
-    // Apply smooth transition effect when switching themes
-    document.documentElement.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+    const root = window.document.documentElement;
+    
+    // Remove old theme class
+    root.classList.remove('light', 'dark');
+    
+    // Determine theme to apply
+    let themeToApply: 'light' | 'dark' = theme === 'system' 
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      : theme as 'light' | 'dark';
+      
+    // Apply theme class
+    root.classList.add(themeToApply);
+    
+    // Save to localStorage
+    localStorage.setItem('health-theme', theme);
   }, [theme]);
 
-  useEffect(() => {
-    localStorage.setItem('vitality-measurement', measurementSystem);
-  }, [measurementSystem]);
-
-  useEffect(() => {
-    localStorage.setItem('vitality-color-theme', colorTheme);
-    
-    // Here we could add logic to change CSS variables based on color theme
-    document.documentElement.setAttribute('data-color-theme', colorTheme);
-  }, [colorTheme]);
-
-  useEffect(() => {
-    localStorage.setItem('vitality-reduced-motion', String(isReducedMotion));
-    
-    if (isReducedMotion) {
-      document.documentElement.classList.add('reduced-motion');
-    } else {
-      document.documentElement.classList.remove('reduced-motion');
-    }
-  }, [isReducedMotion]);
-
-  const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
+  const setTheme = (newTheme: Theme) => {
+    setThemeState(newTheme);
+    toast({
+      title: "Theme Updated",
+      description: `Theme set to ${newTheme.charAt(0).toUpperCase() + newTheme.slice(1)}`,
+      duration: 2000,
+    });
   };
 
   return (
-    <ThemeContext.Provider 
-      value={{ 
-        theme, 
-        toggleTheme, 
-        setTheme, 
-        measurementSystem, 
-        setMeasurementSystem,
-        colorTheme,
-        setColorTheme,
-        isReducedMotion,
-        setIsReducedMotion
-      }}
-    >
+    <ThemeContext.Provider value={{ theme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );
@@ -95,7 +55,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
 export function useTheme() {
   const context = useContext(ThemeContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider');
   }
   return context;

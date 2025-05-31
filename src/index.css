@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
 
@@ -93,7 +92,7 @@
   }
 
   body {
-    @apply bg-background text-foreground transition-colors duration-300;
+    @apply bg-background text-foreground;
     font-family: 'Poppins', system-ui, sans-serif;
   }
   
@@ -116,16 +115,11 @@
   button {
     @apply transition-all duration-200;
   }
-
-  /* Fix for dark mode switches */
-  .dark .switch-thumb {
-    background-color: white;
-  }
 }
 
 @layer utilities {
   .nutrition-card {
-    @apply rounded-xl p-4 mb-4 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow;
+    @apply rounded-xl p-4 mb-4 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow;
   }
 
   .nutrition-bar {
@@ -133,41 +127,32 @@
   }
   
   .glass-effect {
-    @apply backdrop-blur-md border border-opacity-20 shadow-soft;
-    background-color: rgba(255, 255, 255, 0.7);
+    @apply backdrop-blur-md bg-white/70 dark:bg-slate-900/70 border border-white/20 dark:border-white/5 shadow-soft dark:shadow-glow-dark;
   }
   
   .glass-card {
-    @apply backdrop-blur-md border shadow-soft rounded-xl;
-    background-color: rgba(255, 255, 255, 0.8);
-  }
-  
-  .dark .glass-effect {
-    background-color: rgba(30, 30, 35, 0.7);
-    border-color: rgba(75, 75, 90, 0.3);
-  }
-  
-  .dark .glass-card {
-    background-color: rgba(30, 30, 35, 0.8);
-    border-color: rgba(75, 75, 90, 0.3);
+    @apply backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border border-gray-100 dark:border-gray-800 shadow-soft dark:shadow-glow-dark rounded-xl;
   }
   
   .frosted-glass {
-    @apply backdrop-blur-lg border border-opacity-30 shadow-soft;
-    background-color: rgba(255, 255, 255, 0.6);
+    @apply backdrop-blur-lg bg-white/60 dark:bg-slate-900/60 border border-white/30 dark:border-white/10 shadow-soft dark:shadow-glow-dark;
   }
   
-  .dark .frosted-glass {
-    background-color: rgba(30, 30, 35, 0.6);
-    border-color: rgba(75, 75, 90, 0.3);
-  }
-  
+  /* Enhanced animations */
   .animate-float-slow {
     animation: float 6s ease-in-out infinite;
   }
   
   .animate-float-slower {
     animation: float 8s ease-in-out infinite;
+  }
+  
+  .animate-float-delay-1 {
+    animation: float 6s ease-in-out 0.5s infinite;
+  }
+  
+  .animate-float-delay-2 {
+    animation: float 7s ease-in-out 1s infinite;
   }
   
   .scrollbar-thin {
@@ -193,7 +178,11 @@
   }
   
   .card-hover {
-    @apply transition-all duration-200 hover:-translate-y-1 hover:shadow-md;
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:hover:shadow-glow-dark;
+  }
+  
+  .card-hover-enhanced {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:hover:shadow-glow-dark hover:bg-white/90 dark:hover:bg-slate-900/90;
   }
   
   .animate-fade-in {
@@ -201,91 +190,39 @@
   }
   
   .shadow-soft {
-    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
-  }
-  
-  .dark .shadow-soft {
-    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.2);
+    @apply shadow-[0_4px_12px_-2px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_12px_-2px_rgba(0,0,0,0.2)];
   }
   
   .shadow-glow {
-    box-shadow: 0 0 15px rgba(79, 209, 197, 0.2);
+    @apply shadow-[0_0_15px_rgba(79,209,197,0.2)];
   }
   
-  .dark .shadow-glow {
-    box-shadow: 0 0 15px rgba(79, 209, 197, 0.3);
+  .shadow-glow-dark {
+    @apply shadow-[0_0_15px_rgba(79,209,197,0.1)];
+  }
+  
+  .hover-shadow-glow {
+    @apply transition-shadow duration-300 hover:shadow-[0_0_20px_rgba(79,209,197,0.3)] dark:hover:shadow-[0_0_20px_rgba(79,209,197,0.2)];
   }
   
   .animate-pulse-soft {
     animation: pulseSoft 2s ease-in-out infinite;
   }
-
-  .interactive-card {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-md;
+  
+  /* 3D card effect */
+  .card-3d {
+    @apply transition-all duration-300 transform-gpu;
+    transform-style: preserve-3d;
+    perspective: 1000px;
   }
   
-  /* New enhanced UI effects */
-  .hover-lift {
-    @apply transition-all duration-300;
-    transform: translateY(0);
+  .card-3d:hover {
+    transform: rotateX(2deg) rotateY(2deg);
   }
   
-  .hover-lift:hover {
-    transform: translateY(-6px);
-  }
-  
-  .hover-glow {
-    @apply transition-all duration-300;
-    box-shadow: 0 0 0 rgba(79, 209, 197, 0);
-  }
-  
-  .hover-glow:hover {
-    box-shadow: 0 0 20px rgba(79, 209, 197, 0.3);
-  }
-  
-  .dark .hover-glow:hover {
-    box-shadow: 0 0 20px rgba(79, 209, 197, 0.4);
-  }
-  
-  .text-shadow-sm {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-  
-  .dark .text-shadow-sm {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-  }
-  
-  .btn-shine {
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .btn-shine:after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -100%;
-    width: 70%;
-    height: 200%;
-    background: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.3) 100%
-    );
-    transform: rotate(25deg);
-    transition: transform 0.6s;
-  }
-  
-  .btn-shine:hover:after {
-    transform: rotate(25deg) translateX(200%);
-  }
-  
-  .dark .btn-shine:after {
-    background: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.15) 100%
-    );
+  /* Theme transition */
+  .theme-transition {
+    @apply transition-colors duration-300;
   }
 }
 
@@ -327,27 +264,52 @@
     background-position: -100% 0;
   }
   100% {
-    background-position: 100% 0;
+    background-position: 200% 0;
   }
 }
 
-.shimmer-effect {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.2) 50%,
-    transparent 100%
-  );
+.shimmer {
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0) 0%, 
+    rgba(255,255,255,0.2) 25%, 
+    rgba(255,255,255,0.2) 50%, 
+    rgba(255,255,255,0) 100%);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
 
-.dark .shimmer-effect {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    transparent 100%
-  );
+/* Dark mode shimmer effect */
+.dark .shimmer {
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0) 0%, 
+    rgba(255,255,255,0.05) 25%, 
+    rgba(255,255,255,0.05) 50%, 
+    rgba(255,255,255,0) 100%);
   background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Enhanced page transitions */
+.page-transition-fade {
+  animation: pageFade 0.4s ease-in-out;
+}
+
+@keyframes pageFade {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced button interactions */
+.button-press {
+  @apply transition-all duration-200;
+}
+
+.button-press:active {
+  transform: scale(0.95);
 }

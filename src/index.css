@@ -7,7 +7,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 220 33% 98%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -48,7 +48,7 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 225 25% 9%;
     --foreground: 210 40% 98%;
 
     --card: 222.2 84% 4.9%;
@@ -224,7 +224,7 @@
     );
   }
   
-  /* New iridescent glass effect */
+  /* Iridescent glass effect */
   .iridescent-glass {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
     backdrop-filter: blur(16px);
@@ -260,15 +260,110 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
   
-  @keyframes iridescent {
-    0% {
-      transform: rotate(25deg) translateY(0%);
-    }
-    100% {
-      transform: rotate(25deg) translateY(50%);
-    }
+  /* New cosmic glass effect */
+  .cosmic-glass {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.6));
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(124, 58, 237, 0.3);
+    box-shadow: 0 8px 32px rgba(15, 23, 42, 0.3);
+    position: relative;
+    overflow: hidden;
   }
   
+  .cosmic-stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(
+      circle at center,
+      rgba(251, 191, 36, 0.7) 0%,
+      rgba(251, 191, 36, 0) 0.5%
+    ), radial-gradient(
+      circle at 20% 30%,
+      rgba(251, 191, 36, 0.7) 0%,
+      rgba(251, 191, 36, 0) 0.5%
+    ), radial-gradient(
+      circle at 70% 10%,
+      rgba(251, 191, 36, 0.7) 0%,
+      rgba(251, 191, 36, 0) 0.5%
+    ), radial-gradient(
+      circle at 90% 50%,
+      rgba(251, 191, 36, 0.7) 0%,
+      rgba(251, 191, 36, 0) 0.5%
+    ), radial-gradient(
+      circle at 30% 80%,
+      rgba(251, 191, 36, 0.7) 0%,
+      rgba(251, 191, 36, 0) 0.5%
+    ), radial-gradient(
+      circle at 60% 60%,
+      rgba(251, 191, 36, 0.7) 0%,
+      rgba(251, 191, 36, 0) 0.5%
+    );
+    animation: star-twinkle 3s ease-in-out infinite alternate;
+    opacity: 0.8;
+  }
+  
+  .cosmic-nebula {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(124, 58, 237, 0.3) 0%,
+      rgba(124, 58, 237, 0.1) 40%,
+      rgba(6, 182, 212, 0.1) 60%,
+      rgba(6, 182, 212, 0) 100%
+    );
+    animation: nebula-drift 30s linear infinite;
+    opacity: 0.6;
+  }
+  
+  .dark .cosmic-glass {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.7));
+    border: 1px solid rgba(124, 58, 237, 0.4);
+    box-shadow: 0 8px 32px rgba(15, 23, 42, 0.5), 0 4px 16px rgba(124, 58, 237, 0.3);
+  }
+
+  /* New prismatic glass effect */
+  .prismatic-glass {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .prismatic-effect {
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 300%;
+    height: 300%;
+    background: linear-gradient(
+      135deg,
+      rgba(236, 72, 153, 0.3),
+      rgba(6, 182, 212, 0.3),
+      rgba(16, 185, 129, 0.3),
+      rgba(124, 58, 237, 0.3),
+      rgba(236, 72, 153, 0.3)
+    );
+    background-size: 200% 200%;
+    mix-blend-mode: overlay;
+    animation: prismatic-shift 6s linear infinite;
+    opacity: 0.7;
+  }
+  
+  .dark .prismatic-glass {
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
   /* New floating card */
   .float-card {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.2));
@@ -681,3 +776,152 @@
 .light-card:hover .light-overlay {
   transform: translate(10%, 10%);
 }
+
+/* New iridescent glass effect */
+.iridescent-glass {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .iridescent-shimmer {
+    position: absolute;
+    top: -400%;
+    left: -150%;
+    width: 400%;
+    height: 400%;
+    background: linear-gradient(
+      80deg,
+      transparent 20%, 
+      rgba(79, 209, 197, 0.3) 30%,
+      rgba(155, 135, 245, 0.3) 40%,
+      rgba(236, 72, 153, 0.3) 50%,
+      rgba(251, 191, 36, 0.3) 60%,
+      rgba(16, 185, 129, 0.3) 70%, 
+      transparent 80%
+    );
+    transform: rotate(25deg);
+    animation: iridescent 9s linear infinite;
+  }
+  
+  .dark .iridescent-glass {
+    background: linear-gradient(135deg, rgba(50, 50, 75, 0.35), rgba(30, 30, 60, 0.1));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+  
+  @keyframes iridescent {
+    0% {
+      transform: rotate(25deg) translateY(0%);
+    }
+    100% {
+      transform: rotate(25deg) translateY(50%);
+    }
+  }
+  
+  /* New cosmic glass effect */
+  .cosmic-glass {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.6));
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(124, 58, 237, 0.3);
+    box-shadow: 0 8px 32px rgba(15, 23, 42, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .cosmic-stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(
+      circle at center,
+      rgba(251, 191, 36, 0.7) 0%,
+      rgba(251, 191, 36, 0) 0.5%
+    ), radial-gradient(
+      circle at 20% 30%,
+      rgba(251, 191, 36, 0.7) 0%,
+      rgba(251, 191, 36, 0) 0.5%
+    ), radial-gradient(
+      circle at 70% 10%,
+      rgba(251, 191, 36, 0.7) 0%,
+      rgba(251, 191, 36, 0) 0.5%
+    ), radial-gradient(
+      circle at 90% 50%,
+      rgba(251, 191, 36, 0.7) 0%,
+      rgba(251, 191, 36, 0) 0.5%
+    ), radial-gradient(
+      circle at 30% 80%,
+      rgba(251, 191, 36, 0.7) 0%,
+      rgba(251, 191, 36, 0) 0.5%
+    ), radial-gradient(
+      circle at 60% 60%,
+      rgba(251, 191, 36, 0.7) 0%,
+      rgba(251, 191, 36, 0) 0.5%
+    );
+    animation: star-twinkle 3s ease-in-out infinite alternate;
+    opacity: 0.8;
+  }
+  
+  .cosmic-nebula {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(124, 58, 237, 0.3) 0%,
+      rgba(124, 58, 237, 0.1) 40%,
+      rgba(6, 182, 212, 0.1) 60%,
+      rgba(6, 182, 212, 0) 100%
+    );
+    animation: nebula-drift 30s linear infinite;
+    opacity: 0.6;
+  }
+  
+  .dark .cosmic-glass {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.7));
+    border: 1px solid rgba(124, 58, 237, 0.4);
+    box-shadow: 0 8px 32px rgba(15, 23, 42, 0.5), 0 4px 16px rgba(124, 58, 237, 0.3);
+  }
+
+  /* New prismatic glass effect */
+  .prismatic-glass {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .prismatic-effect {
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 300%;
+    height: 300%;
+    background: linear-gradient(
+      135deg,
+      rgba(236, 72, 153, 0.3),
+      rgba(6, 182, 212, 0.3),
+      rgba(16, 185, 129, 0.3),
+      rgba(124, 58, 237, 0.3),
+      rgba(236, 72, 153, 0.3)
+    );
+    background-size: 200% 200%;
+    mix-blend-mode: overlay;
+    animation: prismatic-shift 6s linear infinite;
+    opacity: 0.7;
+  }
+  
+  .dark .prismatic-glass {
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }

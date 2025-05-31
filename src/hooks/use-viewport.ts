@@ -1,8 +1,7 @@
 
 import { useState, useEffect } from 'react';
-import { throttle } from '@/utils/performance';
 
-interface ViewportState {
+interface ViewportDimensions {
   width: number;
   height: number;
   isMobile: boolean;
@@ -10,49 +9,48 @@ interface ViewportState {
   isDesktop: boolean;
 }
 
-// Breakpoints
-const MOBILE_BREAKPOINT = 640;  // sm
-const TABLET_BREAKPOINT = 1024; // lg
-
-const useViewport = (): ViewportState => {
-  const [viewport, setViewport] = useState<ViewportState>({
-    width: typeof window !== 'undefined' ? window.innerWidth : 1024,
-    height: typeof window !== 'undefined' ? window.innerHeight : 768,
-    isMobile: false,
-    isTablet: false,
-    isDesktop: true,
+export function useViewport(): ViewportDimensions {
+  const [dimensions, setDimensions] = useState<ViewportDimensions>({
+    width: window.innerWidth,
+    height: window.innerHeight,
+    isMobile: window.innerWidth < 768,
+    isTablet: window.innerWidth >= 768 && window.innerWidth < 1024,
+    isDesktop: window.innerWidth >= 1024
   });
 
   useEffect(() => {
-    // Initialize on mount
-    const updateViewport = () => {
+    const handleResize = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
       
-      setViewport({
+      setDimensions({
         width,
         height,
-        isMobile: width < MOBILE_BREAKPOINT,
-        isTablet: width >= MOBILE_BREAKPOINT && width < TABLET_BREAKPOINT,
-        isDesktop: width >= TABLET_BREAKPOINT,
+        isMobile: width < 768,
+        isTablet: width >= 768 && width < 1024,
+        isDesktop: width >= 1024
       });
     };
-    
-    // Initial call
-    updateViewport();
-    
-    // Throttled event handler to prevent too many updates
-    const throttledUpdateViewport = throttle(updateViewport, 100);
-    
-    // Add resize listener
-    window.addEventListener('resize', throttledUpdateViewport);
+
+    // Throttle resize events for better performance
+    let timeoutId: number | null = null;
+    const throttledResize = () => {
+      if (timeoutId === null) {
+        timeoutId = window.setTimeout(() => {
+          timeoutId = null;
+          handleResize();
+        }, 100);
+      }
+    };
+
+    window.addEventListener('resize', throttledResize);
+    handleResize(); // Initialize on mount
     
     return () => {
-      window.removeEventListener('resize', throttledUpdateViewport);
+      window.removeEventListener('resize', throttledResize);
+      if (timeoutId) window.clearTimeout(timeoutId);
     };
   }, []);
 
-  return viewport;
-};
-
-export default useViewport;
+  return dimensions;
+}

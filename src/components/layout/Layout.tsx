@@ -6,7 +6,6 @@ import { useHealth } from '@/contexts/HealthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Toaster } from '@/components/ui/toaster';
 import { PremiumEffects } from '@/components/common';
-import { UltraCard } from '@/components/ui/card';
 import { VisualEffectType } from '@/types';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -27,17 +26,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
 
-  // Determine if we're on the home page, considering GitHub Pages base path
   const isHomePage = location.pathname === "/" || 
                      location.pathname === "/Health-and-Fitness-Webapp/" || 
                      location.pathname === "/Health-and-Fitness-Webapp";
   
-  // Handle page transitions with enhanced animation
   useEffect(() => {
     if (mainContentRef.current && !isReducedMotion) {
       setIsTransitioning(true);
-      
-      // Apply entrance animation
       const entranceAnimation = () => {
         if (mainContentRef.current) {
           mainContentRef.current.classList.add('animate-fade-in');
@@ -45,26 +40,22 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
         setIsTransitioning(false);
       };
-      
-      // Brief timeout to ensure state updates and animations work properly
       setTimeout(entranceAnimation, 50);
     }
   }, [location.pathname, isReducedMotion]);
 
-  // Update viewport dimensions on resize with throttling
   useEffect(() => {
     let resizeTimeout: number;
-    
     const handleResize = () => {
       clearTimeout(resizeTimeout);
       resizeTimeout = window.setTimeout(() => {
         setViewportHeight(window.innerHeight);
         setViewportWidth(window.innerWidth);
-      }, 100); // Throttle resize events
+      }, 100);
     };
     
     window.addEventListener('resize', handleResize);
-    handleResize(); // Initialize on mount
+    handleResize();
     
     return () => {
       window.removeEventListener('resize', handleResize);
@@ -72,92 +63,47 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     };
   }, []);
 
-  // Choose background effect based on route
   const getBackgroundEffect = (): VisualEffectType => {
     const pathWithoutBase = location.pathname.replace('/Health-and-Fitness-Webapp', '');
     
-    if (isHomePage) {
-      return 'cosmic';
-    }
-    
-    if (pathWithoutBase.includes('/exercise')) {
-      return 'particles';
-    }
-    
-    if (pathWithoutBase.includes('/food')) {
-      return 'aurora';
-    }
-    
-    if (pathWithoutBase.includes('/sleep')) {
-      return 'aurora';
-    }
-    
-    if (pathWithoutBase.includes('/mental')) {
-      return 'cosmic';
-    }
-    
+    if (isHomePage) return 'cosmic';
+    if (pathWithoutBase.includes('/exercise')) return 'particles';
+    if (pathWithoutBase.includes('/food')) return 'aurora';
+    if (pathWithoutBase.includes('/sleep')) return 'aurora';
+    if (pathWithoutBase.includes('/mental')) return 'cosmic';
     return 'particles';
   };
 
-  // Get the appropriate glass effect class
   const getContentContainerClass = () => {
     const baseClasses = "relative z-20 transition-all duration-500 flex-grow container mx-auto px-4 py-6";
     
-    if (isHomePage) {
-      return `${baseClasses}`;
-    }
+    if (isHomePage) return baseClasses;
     
-    // Adjust padding for different screen sizes
-    if (viewportWidth < 640) { // Mobile
+    if (viewportWidth < 640) {
       return `${baseClasses} py-4 mb-4`;
-    } else if (viewportWidth < 1024) { // Tablet
+    } else if (viewportWidth < 1024) {
       return `${baseClasses} py-6 mb-6`;
-    } else { // Desktop
+    } else {
       return `${baseClasses} py-8 mb-6`;
     }
   };
 
-  // Get the appropriate card class based on the glass effect
-  const getCardClass = () => {
-    switch (glassEffect) {
-      case 'frosted':
-        return "frosted-glass";
-      case 'neo':
-        return "neo-glass";
-      case 'ultra':
-        return "ultra-glass";
-      case 'iridescent':
-        return "iridescent-glass";
-      case 'cosmic':
-        return "cosmic-glass";
-      default:
-        return "glass-card";
-    }
-  };
-
-  // Adjust padding based on viewport size
-  const getCardPadding = () => {
-    if (viewportWidth < 640) { // Mobile
-      return "p-3 md:p-4";
-    } else if (viewportWidth < 1024) { // Tablet
-      return "p-4 md:p-5";
-    } else { // Desktop
-      return "p-4 md:p-6 lg:p-8";
-    }
-  };
-  
-  // Determine main content max width for better readability on large screens
   const getMainContentMaxWidth = () => {
-    if (viewportWidth < 640) return '100%'; // Mobile: full width
-    if (viewportWidth < 1024) return '100%'; // Tablet: full width
-    return '1400px'; // Desktop: max width
+    if (viewportWidth < 640) return '100%';
+    if (viewportWidth < 1024) return '100%';
+    return '1400px';
   };
 
   return (
-    <div className="flex flex-col min-h-screen relative overflow-hidden bg-cosmic-deep" ref={appRef}>
-      {/* Enhanced dynamic background with cosmic theme */}
-      <div className="fixed inset-0 bg-gradient-to-br from-cosmic-deep via-cosmic-space to-cosmic-deep transition-colors duration-500">
-        {/* Background effects */}
+    <div className="flex flex-col min-h-screen relative overflow-hidden" ref={appRef}>
+      {/* Modern gradient background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-950 transition-colors duration-700">
+        {/* Animated background elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-500/20 rounded-full blur-3xl animate-pulse-soft"></div>
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-pink-400/20 to-blue-500/20 rounded-full blur-3xl animate-pulse-soft delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-full blur-3xl animate-pulse-soft delay-500"></div>
+        
+        {/* Premium effects layer */}
         {enableParticles && !isReducedMotion && (
           <PremiumEffects 
             type={getBackgroundEffect()} 
@@ -167,26 +113,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           />
         )}
         
-        {/* Animated background orbs for visual interest */}
-        <div className="absolute top-20 right-20 w-64 h-64 bg-cosmic-nebula/10 rounded-full blur-3xl animate-cosmic-pulse"></div>
-        <div className="absolute bottom-40 left-10 w-80 h-80 bg-cosmic-highlight/10 rounded-full blur-3xl animate-nebula-drift"></div>
-        <div className="absolute top-1/3 left-1/4 w-72 h-72 bg-cosmic-star/5 rounded-full blur-3xl animate-cosmic-pulse opacity-70"></div>
-        
-        {/* Nebula gas effect */}
-        <div className="absolute inset-0 bg-gradient-to-t from-cosmic-deep/30 via-transparent to-cosmic-deep/10 opacity-60"></div>
-        
-        {/* Subtle star field effect */}
-        <div className="absolute inset-0 opacity-30">
-          <div className="stars-small"></div>
-          <div className="stars-medium"></div>
-          <div className="stars-large"></div>
-        </div>
-        
-        {/* Bottom gradient overlay for better text contrast */}
-        <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-cosmic-deep/90 to-transparent"></div>
+        {/* Subtle overlay for better content readability */}
+        <div className="absolute inset-0 bg-white/30 dark:bg-slate-900/50"></div>
       </div>
 
-      {/* Fixed header with improved styling */}
       <Header />
       
       <main 
@@ -194,17 +124,16 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         style={{ maxWidth: getMainContentMaxWidth(), margin: '0 auto', width: '100%' }}
         className={`${getContentContainerClass()} ${isTransitioning ? 'opacity-0' : ''}`}
       >
-        {/* Conditional wrapper for non-home pages */}
         {!isHomePage ? (
-          <UltraCard className={`${getCardPadding()} shadow-cosmic relative overflow-hidden ${getCardClass()} border-cosmic-nebula/20`}>
-            <div className="absolute inset-0 premium-nebula opacity-10"></div>
-            <div className="absolute top-0 right-0 w-40 h-40 bg-cosmic-highlight/10 rounded-full blur-xl animate-pulse-soft"></div>
-            <div className="absolute bottom-0 left-0 w-60 h-60 bg-cosmic-nebula/10 rounded-full blur-xl animate-pulse-soft"></div>
+          <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-6 md:p-8 lg:p-12 relative overflow-hidden">
+            {/* Modern card decorative elements */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-2xl"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-pink-500/10 to-blue-500/10 rounded-full blur-2xl"></div>
             
             <div className="relative z-10">
               {children}
             </div>
-          </UltraCard>
+          </div>
         ) : (
           <div className="relative z-10">
             {children}
@@ -212,10 +141,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         )}
       </main>
       
-      {/* Show footer only on home page with enhanced appearance */}
       {isHomePage && (
         <div className="relative z-10 mt-auto">
-          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-cosmic-deep/60 to-transparent"></div>
           <Footer />
         </div>
       )}

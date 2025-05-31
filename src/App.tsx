@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HealthProvider } from "@/contexts/HealthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Layout } from "@/components/layout";
@@ -77,32 +77,34 @@ const App = () => {
   }, []);
   
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <HealthProvider>
+            <Toaster />
+            <Sonner theme="dark" />
             <HashRouter>
-              <Toaster />
-              <Sonner theme="dark" />
-              <Routes>
-                <Route path="/" element={<Layout><Index /></Layout>} />
-                <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
-                <Route path="/food" element={<Layout><FoodTracker /></Layout>} />
-                <Route path="/exercise" element={<Layout><ExerciseTracker /></Layout>} />
-                <Route path="/sleep" element={<Layout><SleepTracker /></Layout>} />
-                <Route path="/mental" element={<Layout><MentalWellness /></Layout>} />
-                <Route path="/body" element={<Layout><BodyMeasurements /></Layout>} />
-                <Route path="/addiction" element={<Layout><AddictionTracker /></Layout>} />
-                <Route path="/achievements" element={<Layout><Achievements /></Layout>} />
-                <Route path="/profile" element={<Layout><UserProfile /></Layout>} />
-                <Route path="/settings" element={<Layout><Settings /></Layout>} />
-                <Route path="*" element={<Layout><NotFound /></Layout>} />
-              </Routes>
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/food" element={<FoodTracker />} />
+                  <Route path="/exercise" element={<ExerciseTracker />} />
+                  <Route path="/sleep" element={<SleepTracker />} />
+                  <Route path="/mental" element={<MentalWellness />} />
+                  <Route path="/body" element={<BodyMeasurements />} />
+                  <Route path="/addiction" element={<AddictionTracker />} />
+                  <Route path="/achievements" element={<Achievements />} />
+                  <Route path="/profile" element={<UserProfile />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Layout>
             </HashRouter>
           </HealthProvider>
         </TooltipProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 };
 

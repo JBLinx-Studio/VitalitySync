@@ -11,9 +11,7 @@ import {
   Ruler, 
   Menu, 
   X,
-  Award,
-  ChevronLeft,
-  ChevronRight
+  Award
 } from 'lucide-react';
 import { useHealth } from '@/contexts/HealthContext';
 import { Button } from '@/components/ui/button';
@@ -30,8 +28,6 @@ const Header: React.FC = () => {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const isMobile = useIsMobile();
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const navRef = React.useRef<HTMLDivElement>(null);
 
   const handleScroll = useCallback(() => {
     if (window.scrollY > 10) {
@@ -71,23 +67,6 @@ const Header: React.FC = () => {
       "text-gray-600 hover:text-health-primary dark:text-gray-300 dark:hover:text-health-primary";
   };
 
-  // Handle scroll navigation for categories navbar
-  const scrollNav = (direction: 'left' | 'right') => {
-    if (!navRef.current) return;
-    
-    const scrollAmount = 200; // Adjust this value as needed
-    const newPosition = direction === 'left' 
-      ? Math.max(0, scrollPosition - scrollAmount)
-      : scrollPosition + scrollAmount;
-      
-    navRef.current.scrollTo({
-      left: newPosition,
-      behavior: 'smooth'
-    });
-    
-    setScrollPosition(newPosition);
-  };
-
   return (
     <header 
       className={`sticky top-0 z-50 transition-all duration-300 ${
@@ -111,46 +90,19 @@ const Header: React.FC = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation with scroll buttons */}
-          <div className="hidden md:flex items-center justify-center space-x-1 flex-grow mx-4 relative">
-            {/* Left scroll button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute left-0 z-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full shadow-md"
-              onClick={() => scrollNav('left')}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            
-            {/* Scrollable navigation */}
-            <nav 
-              ref={navRef}
-              className="flex items-center space-x-1 overflow-x-auto scrollbar-none px-8 max-w-[calc(100%-5rem)]"
-              style={{ scrollBehavior: 'smooth' }}
-            >
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center space-x-1 px-3 py-2 rounded-full transition-all duration-200 hover:bg-health-primary/10 whitespace-nowrap ${isActive(item.path)}`}
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-            </nav>
-            
-            {/* Right scroll button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-0 z-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full shadow-md"
-              onClick={() => scrollNav('right')}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-1 overflow-x-auto scrollbar-none flex-grow justify-center mx-4">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center space-x-1 px-3 py-2 rounded-full transition-all duration-200 hover:bg-health-primary/10 whitespace-nowrap ${isActive(item.path)}`}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </Link>
+            ))}
+          </nav>
 
           {/* Right side - Actions */}
           <div className="flex items-center space-x-2 flex-shrink-0">
@@ -196,29 +148,6 @@ const Header: React.FC = () => {
               )}
             </Button>
           </div>
-        </div>
-        
-        {/* Mobile Tabs Navigation - Always visible on mobile */}
-        <div className="md:hidden mt-2 relative">
-          <div className="flex overflow-x-auto scrollbar-none py-1 px-1 gap-1 snap-x">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center space-x-1 px-3 py-2 rounded-full transition-all duration-200 flex-shrink-0 snap-start whitespace-nowrap
-                  ${location.pathname.replace('/Health-and-Fitness-Webapp', '') === item.path 
-                    ? 'bg-gradient-to-r from-health-primary/20 to-health-secondary/20 text-health-primary font-medium' 
-                    : 'bg-white/10 dark:bg-gray-800/30 hover:bg-health-primary/10'
-                  }`}
-              >
-                {item.icon}
-                <span className="text-sm">{item.label}</span>
-              </Link>
-            ))}
-          </div>
-          {/* Fade gradient at ends to indicate scrollable content */}
-          <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-white dark:from-gray-900 to-transparent pointer-events-none"></div>
-          <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-white dark:from-gray-900 to-transparent pointer-events-none"></div>
         </div>
       </div>
 

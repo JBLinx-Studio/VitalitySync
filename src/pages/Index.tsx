@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Heart, Brain, Moon, Activity, Shield, Ruler, Award, Zap, Utensils, Sparkles, Target, TrendingUp } from 'lucide-react';
+import { ArrowRight, Heart, Brain, Moon, Activity, Shield, Ruler, Award, Zap, Utensils, Sparkles, Target, TrendingUp, User } from 'lucide-react';
 import { useHealth } from '@/contexts/HealthContext';
 import { Card, CardContent } from "@/components/ui/card";
 import { useTheme } from '@/contexts/ThemeContext';

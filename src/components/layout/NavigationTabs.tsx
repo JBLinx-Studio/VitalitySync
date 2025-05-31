@@ -25,7 +25,6 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
   const [showRightArrow, setShowRightArrow] = useState(false);
   const { isMobile, isTablet } = useViewport();
   
-  // Determine if scroll arrows should be shown
   const checkForArrows = () => {
     const container = scrollContainerRef.current;
     if (!container) return;
@@ -34,7 +33,6 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
     setShowRightArrow(container.scrollLeft < container.scrollWidth - container.clientWidth - 20);
   };
   
-  // Scroll active tab into view
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
@@ -44,17 +42,14 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
       const tabRect = activeTab.getBoundingClientRect();
       const containerRect = container.getBoundingClientRect();
       
-      // Check if the active tab is not fully visible
       if (tabRect.left < containerRect.left || tabRect.right > containerRect.right) {
         activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       }
     }
     
-    // Check arrows after scroll
     setTimeout(checkForArrows, 300);
   }, [location.pathname]);
   
-  // Monitor scroll to show/hide scroll arrows
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
@@ -66,7 +61,6 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
     container.addEventListener('scroll', handleScroll);
     window.addEventListener('resize', handleScroll);
     
-    // Initial check
     checkForArrows();
     
     return () => {
@@ -90,53 +84,67 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
   };
 
   return (
-    <div className={cn("flex items-center", className)}>
-      {showLeftArrow && !isMobile && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="flex-shrink-0 bg-background/50 backdrop-blur-sm rounded-full p-2"
-          onClick={scrollLeft}
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </Button>
-      )}
-      
-      <div
-        ref={scrollContainerRef}
-        className="flex overflow-x-auto scrollbar-none scroll-smooth gap-1 px-1 py-2"
-        style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
-      >
-        {tabs.map(tab => (
-          <NavLink
-            key={tab.path}
-            to={tab.path}
-            className={({ isActive }) => 
-              cn(
-                "flex items-center gap-2 whitespace-nowrap px-3 py-1.5 rounded-full transition-colors text-sm font-medium",
-                isActive 
-                  ? "bg-health-primary text-white shadow-glow active-tab"
-                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-white/10",
-                isMobile ? "flex-grow justify-center" : ""
-              )
-            }
+    <div className={cn("relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 p-2", className)}>
+      <div className="flex items-center relative">
+        {showLeftArrow && !isMobile && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute left-1 z-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border border-gray-200/50 dark:border-gray-700/50"
+            onClick={scrollLeft}
+            aria-label="Scroll tabs left"
           >
-            {tab.icon}
-            <span>{tab.name}</span>
-          </NavLink>
-        ))}
-      </div>
-      
-      {showRightArrow && !isMobile && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="flex-shrink-0 bg-background/50 backdrop-blur-sm rounded-full p-2"
-          onClick={scrollRight}
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+        )}
+        
+        <div
+          ref={scrollContainerRef}
+          className="flex overflow-x-auto scrollbar-none scroll-smooth gap-2 px-10 py-2"
+          style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
         >
-          <ChevronRight className="h-5 w-5" />
-        </Button>
-      )}
+          {tabs.map(tab => (
+            <NavLink
+              key={tab.path}
+              to={tab.path}
+              className={({ isActive }) => 
+                cn(
+                  "flex items-center gap-3 whitespace-nowrap px-5 py-3 rounded-xl transition-all duration-300 text-sm font-medium group relative overflow-hidden",
+                  "hover:scale-[1.02] active:scale-[0.98]",
+                  "focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2",
+                  isActive 
+                    ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/25 active-tab transform scale-[1.02]"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-50 dark:hover:from-slate-800 dark:hover:to-slate-700 hover:shadow-md",
+                  isMobile ? "flex-grow justify-center min-w-[120px]" : "min-w-fit"
+                )
+              }
+              role="tab"
+              aria-selected={location.pathname === tab.path}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <span className="relative z-10 transition-transform duration-300 group-hover:scale-110">
+                {tab.icon}
+              </span>
+              <span className="relative z-10 font-semibold">{tab.name}</span>
+              {location.pathname === tab.path && (
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-white rounded-full opacity-80"></div>
+              )}
+            </NavLink>
+          ))}
+        </div>
+        
+        {showRightArrow && !isMobile && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-1 z-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border border-gray-200/50 dark:border-gray-700/50"
+            onClick={scrollRight}
+            aria-label="Scroll tabs right"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

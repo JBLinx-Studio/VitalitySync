@@ -51,7 +51,6 @@ const EnhancedHeader: React.FC = () => {
     { path: "/sleep", icon: <Moon className="w-5 h-5" />, name: "Sleep" },
     { path: "/mental", icon: <Brain className="w-5 h-5" />, name: "Mental" },
     { path: "/body", icon: <Ruler className="w-5 h-5" />, name: "Body" },
-    { path: "/community", icon: <Users className="w-5 h-5" />, name: "Community" },
     { path: "/achievements", icon: <Award className="w-5 h-5" />, name: "Achievements" },
   ];
 

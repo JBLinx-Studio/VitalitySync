@@ -39,7 +39,7 @@ const SleepTracker: React.FC = () => {
     const newRecord = {
       date: new Date().toISOString().split('T')[0],
       bedtime,
-      wakeup_time: wakeTime,
+      wakeTime,
       duration,
       quality,
       notes
@@ -251,7 +251,7 @@ const SleepTracker: React.FC = () => {
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                         <div>
-                          Bedtime: {record.bedtime} → Wake: {record.wakeup_time}
+                          Bedtime: {record.bedtime} → Wake: {record.wakeTime}
                         </div>
                         <div className="flex items-center gap-2">
                           <Badge 

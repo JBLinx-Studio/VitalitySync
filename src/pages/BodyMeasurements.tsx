@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Metric, User2, GripVertical, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Scale, User2, GripVertical, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 const BodyMeasurements: React.FC = () => {
   const { userProfile, bodyMeasurements, addBodyMeasurement, getLatestMeasurement, calculateBMI } = useHealth();
@@ -42,7 +42,7 @@ const BodyMeasurements: React.FC = () => {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center gap-4">
-        <Metric className="h-8 w-8 text-gray-700 dark:text-gray-300" />
+        <Scale className="h-8 w-8 text-gray-700 dark:text-gray-300" />
         <div>
           <h1 className="text-2xl font-bold">Body Measurements</h1>
           <p className="text-gray-500 dark:text-gray-400">Track your body composition over time</p>

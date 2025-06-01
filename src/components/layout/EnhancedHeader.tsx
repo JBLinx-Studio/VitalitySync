@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -12,7 +11,8 @@ import {
   Menu, 
   X,
   Award,
-  Sparkles
+  Sparkles,
+  Users
 } from 'lucide-react';
 import { useHealth } from '@/contexts/HealthContext';
 import { Button } from '@/components/ui/button';

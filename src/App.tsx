@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -22,6 +21,7 @@ import AddictionTracker from "@/pages/AddictionTracker";
 import Achievements from "@/pages/Achievements";
 import NotFound from "./pages/NotFound";
 import Settings from "./pages/Settings";
+import Community from "@/pages/Community";
 
 // Create a client with enhanced options
 const queryClient = new QueryClient({
@@ -94,6 +94,7 @@ const App = () => {
                 <Route path="/body" element={<Layout><BodyMeasurements /></Layout>} />
                 <Route path="/addiction" element={<Layout><AddictionTracker /></Layout>} />
                 <Route path="/achievements" element={<Layout><Achievements /></Layout>} />
+                <Route path="/community" element={<Layout><Community /></Layout>} />
                 <Route path="/profile" element={<Layout><UserProfile /></Layout>} />
                 <Route path="/settings" element={<Layout><Settings /></Layout>} />
                 <Route path="*" element={<Layout><NotFound /></Layout>} />

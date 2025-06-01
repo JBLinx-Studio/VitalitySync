@@ -1,516 +1,255 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHealth } from '@/contexts/HealthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Activity, Weight, Heart, Utensils, CigaretteOff, Brain, Award, Moon } from 'lucide-react';
-import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Bar, BarChart } from 'recharts';
-import NotificationsMenu from '@/components/Notifications/NotificationsMenu';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { useNavigate } from 'react-router-dom';
-
-const Star = ({ className }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-  </svg>
-);
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Activity, 
+  Target, 
+  TrendingUp, 
+  Calendar, 
+  Award,
+  Heart,
+  Zap,
+  Users,
+  Camera,
+  Plus,
+  BarChart3,
+  Clock,
+  Flame
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import GlassCard from '@/components/ui/glass-card';
 
 const Dashboard: React.FC = () => {
-  const { 
-    userProfile, 
-    dailyGoals,
-    calculateBMI,
-    getNutritionSummary,
-    getExerciseSummary,
-    getTodaysWaterIntake,
-    getSleepSummary,
-    getMoodSummary,
-    addictionRecords,
-    getAddictionSummary
-  } = useHealth();
+  const { userProfile, dailyGoals, todayData } = useHealth();
+  const [streak, setStreak] = useState(7);
+  const [weeklyProgress, setWeeklyProgress] = useState(68);
 
-  const navigate = useNavigate();
-  const nutritionSummary = getNutritionSummary();
-  const exerciseSummary = getExerciseSummary();
-  const waterIntake = getTodaysWaterIntake();
-  const sleepSummary = getSleepSummary();
-  const moodSummary = getMoodSummary();
-  const bmi = calculateBMI();
-
-  const remainingCalories = dailyGoals.calories - nutritionSummary.totalCalories + exerciseSummary.totalCaloriesBurned;
-
-  // Calculate macro percentages for pie chart
-  const totalMacroGrams = nutritionSummary.totalProtein + nutritionSummary.totalCarbs + nutritionSummary.totalFat;
-  const macroData = [
-    { name: 'Protein', value: nutritionSummary.totalProtein, color: '#3182CE' },
-    { name: 'Carbs', value: nutritionSummary.totalCarbs, color: '#ED8936' },
-    { name: 'Fat', value: nutritionSummary.totalFat, color: '#ECC94B' },
+  const quickActions = [
+    { icon: Camera, label: 'Scan Food', color: 'from-blue-500 to-cyan-500', action: () => {} },
+    { icon: Plus, label: 'Log Meal', color: 'from-green-500 to-emerald-500', action: () => {} },
+    { icon: Activity, label: 'Add Exercise', color: 'from-purple-500 to-pink-500', action: () => {} },
+    { icon: Users, label: 'Community', color: 'from-orange-500 to-red-500', action: () => {} }
   ];
 
-  const COLORS = ['#3182CE', '#ED8936', '#ECC94B'];
+  const healthMetrics = [
+    { 
+      title: 'Calories', 
+      current: todayData?.calories || 0, 
+      goal: dailyGoals.calories, 
+      unit: 'kcal',
+      icon: Flame,
+      color: 'text-orange-500'
+    },
+    { 
+      title: 'Steps', 
+      current: 8420, 
+      goal: 10000, 
+      unit: 'steps',
+      icon: Activity,
+      color: 'text-blue-500'
+    },
+    { 
+      title: 'Water', 
+      current: todayData?.water || 0, 
+      goal: dailyGoals.water, 
+      unit: 'ml',
+      icon: Heart,
+      color: 'text-cyan-500'
+    },
+    { 
+      title: 'Sleep', 
+      current: 7.5, 
+      goal: 8, 
+      unit: 'hrs',
+      icon: Clock,
+      color: 'text-purple-500'
+    }
+  ];
 
-  // Get addiction data if available
-  const hasAddictionData = addictionRecords.length > 0;
-  const smokingSummary = hasAddictionData ? getAddictionSummary('smoking') : null;
-  
-  // Prepare weekly metrics data
-  const getWeeklyData = () => {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const today = new Date().getDay();
-    const sortedDays = [...days.slice(today + 1), ...days.slice(0, today + 1)];
-    
-    return sortedDays.map(day => ({
-      name: day,
-      calories: Math.floor(Math.random() * 500) + 1500,
-      exercise: Math.floor(Math.random() * 60) + 20,
-      sleep: Math.floor(Math.random() * 2) + 6,
-      mood: Math.floor(Math.random() * 3) + 3,
-    }));
-  };
-  
-  const weeklyData = getWeeklyData();
+  const achievements = [
+    { title: '7-Day Streak', description: 'Logged meals consistently', earned: true },
+    { title: 'Hydration Hero', description: 'Met water goals 5 times', earned: true },
+    { title: 'Early Bird', description: 'Logged breakfast before 9 AM', earned: false },
+    { title: 'Goal Crusher', description: 'Hit all daily targets', earned: false }
+  ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-800">Health Dashboard</h1>
-        <div className="flex items-center gap-3">
-          <NotificationsMenu />
+    <div className="space-y-8 p-6">
+      {/* Welcome Section */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        <div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Welcome back, {userProfile?.name || 'Champion'}! 🌟
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-2 text-lg">
+            You're on a {streak}-day streak! Keep up the amazing work.
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <Badge variant="secondary" className="px-4 py-2 text-sm">
+            <TrendingUp className="w-4 h-4 mr-2" />
+            {weeklyProgress}% Weekly Goal
+          </Badge>
+          <Button variant="glass-primary" size="lg" className="gap-2">
+            <Award className="w-5 h-5" />
+            View Achievements
+          </Button>
         </div>
       </div>
 
-      {!userProfile ? (
-        <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-          <p className="text-yellow-700">
-            Welcome! To get started, please set up your profile to customize your health tracking experience.
-          </p>
-          <Button 
-            variant="link" 
-            className="text-health-primary font-medium hover:underline mt-2 p-0"
-            onClick={() => navigate('/profile')}
-          >
-            Set up profile →
-          </Button>
+      {/* Quick Actions */}
+      <GlassCard variant="premium" className="p-6">
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <Zap className="w-5 h-5 text-yellow-500" />
+          Quick Actions
+        </h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {quickActions.map((action, index) => (
+            <button
+              key={index}
+              onClick={action.action}
+              className={cn(
+                "group relative p-6 rounded-2xl border border-white/20 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-xl",
+                "bg-gradient-to-br", action.color, "text-white"
+              )}
+            >
+              <action.icon className="w-8 h-8 mb-3 group-hover:scale-110 transition-transform" />
+              <p className="font-semibold text-sm">{action.label}</p>
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity" />
+            </button>
+          ))}
         </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center">
-                  <Utensils className="mr-2 h-5 w-5 text-health-primary" />
-                  Daily Calories
-                </CardTitle>
-                <CardDescription>Calories consumed vs. goal</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">
-                      {nutritionSummary.totalCalories} / {dailyGoals.calories} kcal
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {remainingCalories > 0 ? `${remainingCalories} kcal remaining` : 'Goal exceeded'}
-                    </span>
+      </GlassCard>
+
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="nutrition">Nutrition</TabsTrigger>
+          <TabsTrigger value="fitness">Fitness</TabsTrigger>
+          <TabsTrigger value="insights">Insights</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6">
+          {/* Health Metrics Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {healthMetrics.map((metric, index) => {
+              const percentage = Math.min((metric.current / metric.goal) * 100, 100);
+              return (
+                <GlassCard key={index} variant="premium" className="p-6 hover:scale-105 transition-transform">
+                  <div className="flex items-center justify-between mb-4">
+                    <metric.icon className={cn("w-6 h-6", metric.color)} />
+                    <Badge variant="outline" className="text-xs">
+                      {percentage.toFixed(0)}%
+                    </Badge>
                   </div>
-                  <Progress 
-                    value={(nutritionSummary.totalCalories / dailyGoals.calories) * 100} 
-                    className="h-2" 
-                  />
-                  <div className="text-xs text-gray-500 mt-2">
-                    Burned: {exerciseSummary.totalCaloriesBurned} kcal
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full mt-2"
-                    onClick={() => navigate('/food')}
-                  >
-                    Track Food
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center">
-                  <Activity className="mr-2 h-5 w-5 text-health-primary" />
-                  Exercise
-                </CardTitle>
-                <CardDescription>Today's activity summary</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-sm">Duration</span>
-                    <span className="font-medium">{exerciseSummary.totalDuration} min</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Calories Burned</span>
-                    <span className="font-medium">{exerciseSummary.totalCaloriesBurned} kcal</span>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full mt-3"
-                    onClick={() => navigate('/exercise')}
-                  >
-                    Track Exercise
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center">
-                  <Weight className="mr-2 h-5 w-5 text-health-primary" />
-                  Body Metrics
-                </CardTitle>
-                <CardDescription>Your health indicators</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-sm">Weight</span>
-                    <span className="font-medium">{userProfile?.weight} kg</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">BMI</span>
-                    <span className="font-medium">{bmi ? bmi.toFixed(1) : 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Water</span>
-                    <span className="font-medium">{waterIntake} / {dailyGoals.water} ml</span>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full mt-3"
-                    onClick={() => navigate('/body')}
-                  >
-                    Body Measurements
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className={hasAddictionData ? "" : "bg-gray-50"}>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center">
-                  <CigaretteOff className="mr-2 h-5 w-5 text-health-primary" />
-                  Addiction Recovery
-                </CardTitle>
-                <CardDescription>Track your progress</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {hasAddictionData && smokingSummary ? (
-                  <div className="space-y-1">
-                    <div className="flex justify-between">
-                      <span className="text-sm">Today's usage</span>
-                      <span className="font-medium">{smokingSummary.totalToday} items</span>
+                  <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                    {metric.title}
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-bold">{metric.current}</span>
+                      <span className="text-sm text-gray-500">/ {metric.goal} {metric.unit}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm">Avg. daily</span>
-                      <span className="font-medium">{smokingSummary.averageDaily.toFixed(1)} items</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm">Streak</span>
-                      <span className="font-medium">{smokingSummary.streakDays} days</span>
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full mt-3"
-                      onClick={() => navigate('/addiction')}
-                    >
-                      Manage Addictions
-                    </Button>
+                    <Progress value={percentage} className="h-2" />
                   </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-[100px]">
-                    <p className="text-sm text-gray-500 text-center mb-3">
-                      Start tracking addictions to see your progress
-                    </p>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => navigate('/addiction')}
-                    >
-                      Start Tracking
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                </GlassCard>
+              );
+            })}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="col-span-1">
-              <CardHeader>
-                <CardTitle className="text-lg">Nutrition Breakdown</CardTitle>
-                <CardDescription>Today's macronutrient distribution</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-2">
-                {totalMacroGrams > 0 ? (
-                  <div className="flex flex-col md:flex-row items-center">
-                    <div className="w-48 h-48">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={macroData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={40}
-                            outerRadius={80}
-                            paddingAngle={2}
-                            dataKey="value"
-                          >
-                            {macroData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <Tooltip />
-                        </PieChart>
-                      </ResponsiveContainer>
+          {/* Weekly Overview */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <GlassCard variant="premium" className="p-6">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-blue-500" />
+                Weekly Progress
+              </h3>
+              <div className="space-y-4">
+                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => {
+                  const completed = index < 5;
+                  return (
+                    <div key={day} className="flex items-center gap-4">
+                      <span className="w-8 text-sm font-medium">{day}</span>
+                      <div className="flex-1 flex gap-2">
+                        {['Nutrition', 'Exercise', 'Sleep'].map((category) => (
+                          <div 
+                            key={category}
+                            className={cn(
+                              "h-3 rounded-full flex-1",
+                              completed 
+                                ? "bg-gradient-to-r from-green-400 to-emerald-500" 
+                                : "bg-gray-200 dark:bg-gray-700"
+                            )}
+                          />
+                        ))}
+                      </div>
                     </div>
-                    <div className="space-y-2 mt-4 md:mt-0 md:ml-6">
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 rounded-full bg-health-protein mr-2"></div>
-                        <span className="text-sm">Protein: {nutritionSummary.totalProtein}g</span>
-                        <span className="text-xs text-gray-500 ml-2">
-                          ({totalMacroGrams ? Math.round((nutritionSummary.totalProtein / totalMacroGrams) * 100) : 0}%)
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 rounded-full bg-health-carbs mr-2"></div>
-                        <span className="text-sm">Carbs: {nutritionSummary.totalCarbs}g</span>
-                        <span className="text-xs text-gray-500 ml-2">
-                          ({totalMacroGrams ? Math.round((nutritionSummary.totalCarbs / totalMacroGrams) * 100) : 0}%)
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 rounded-full bg-health-fat mr-2"></div>
-                        <span className="text-sm">Fat: {nutritionSummary.totalFat}g</span>
-                        <span className="text-xs text-gray-500 ml-2">
-                          ({totalMacroGrams ? Math.round((nutritionSummary.totalFat / totalMacroGrams) * 100) : 0}%)
-                        </span>
-                      </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="mt-3"
-                        onClick={() => navigate('/food')}
-                      >
-                        Nutrition Details
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    <p>No nutrition data for today</p>
-                    <Button 
-                      variant="link" 
-                      className="text-health-primary hover:underline mt-2"
-                      onClick={() => navigate('/food')}
-                    >
-                      Add food entry
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                  );
+                })}
+              </div>
+            </GlassCard>
 
-            <Card className="col-span-1">
-              <CardHeader>
-                <CardTitle className="text-lg">Weekly Health Overview</CardTitle>
-                <CardDescription>Track your progress across metrics</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[250px]">
-                  <ChartContainer
-                    config={{
-                      calories: { label: "Calories", color: "#EC4899" },
-                      exercise: { label: "Exercise (min)", color: "#3B82F6" },
-                      sleep: { label: "Sleep (hrs)", color: "#8B5CF6" },
-                      mood: { label: "Mood", color: "#10B981" }
-                    }}
+            <GlassCard variant="premium" className="p-6">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Award className="w-5 h-5 text-purple-500" />
+                Recent Achievements
+              </h3>
+              <div className="space-y-3">
+                {achievements.map((achievement, index) => (
+                  <div 
+                    key={index}
+                    className={cn(
+                      "flex items-center gap-3 p-3 rounded-xl border transition-all",
+                      achievement.earned 
+                        ? "bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200 dark:border-yellow-700" 
+                        : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                    )}
                   >
-                    <LineChart data={weeklyData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                      <XAxis
-                        dataKey="name"
-                        stroke="#888888"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                      />
-                      <YAxis
-                        stroke="#888888"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                        tickFormatter={(value) => `${value}`}
-                      />
-                      <Tooltip content={<ChartTooltipContent />} />
-                      <Line
-                        type="monotone"
-                        dataKey="calories"
-                        strokeWidth={2}
-                        activeDot={{ r: 6, strokeWidth: 0 }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="exercise"
-                        strokeWidth={2}
-                        activeDot={{ r: 6, strokeWidth: 0 }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="sleep"
-                        strokeWidth={2}
-                        activeDot={{ r: 6, strokeWidth: 0 }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="mood"
-                        strokeWidth={2}
-                        activeDot={{ r: 6, strokeWidth: 0 }}
-                      />
-                    </LineChart>
-                  </ChartContainer>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg">
-                  <Moon className="mr-2 h-5 w-5 text-health-primary" />
-                  Sleep Quality
-                </CardTitle>
-                <CardDescription>Your sleep patterns</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Average Duration</span>
-                    <span className="font-medium">{sleepSummary.averageDuration.toFixed(1)} hrs</span>
-                  </div>
-                  <Progress 
-                    value={(sleepSummary.averageDuration / dailyGoals.sleep) * 100} 
-                    className="h-2" 
-                  />
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Quality Rating</span>
-                    <div className="flex">
-                      {Array(5).fill(0).map((_, i) => (
-                        <Star 
-                          key={i} 
-                          className={`h-4 w-4 ${i < Math.round(sleepSummary.averageQuality/2) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                        />
-                      ))}
+                    <div className={cn(
+                      "w-10 h-10 rounded-full flex items-center justify-center",
+                      achievement.earned 
+                        ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-white" 
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-400"
+                    )}>
+                      <Award className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm">{achievement.title}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">{achievement.description}</p>
                     </div>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full mt-2"
-                    onClick={() => navigate('/sleep')}
-                  >
-                    Sleep Details
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg">
-                  <Brain className="mr-2 h-5 w-5 text-health-primary" />
-                  Mental Wellness
-                </CardTitle>
-                <CardDescription>Your emotional health</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Predominant Mood</span>
-                    <span className="font-medium capitalize">{moodSummary.predominantMood}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Average Stress Level</span>
-                    <div className="bg-gray-100 rounded-full h-2 w-24">
-                      <div 
-                        className="bg-orange-400 rounded-full h-2" 
-                        style={{ width: `${(moodSummary.averageStressLevel / 10) * 100}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-sm font-medium">{moodSummary.averageStressLevel.toFixed(1)}/10</span>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full mt-3"
-                    onClick={() => navigate('/mental')}
-                  >
-                    Mental Wellness Details
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg">
-                  <Award className="mr-2 h-5 w-5 text-yellow-500" />
-                  Achievements
-                </CardTitle>
-                <CardDescription>Your health milestones</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm">Streak Days</span>
-                    <span className="font-medium">{smokingSummary?.streakDays || 0} days</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Exercise Sessions</span>
-                    <span className="font-medium">{exerciseSummary.totalDuration > 0 ? '1' : '0'} today</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Water Goal</span>
-                    <span className="font-medium">
-                      {waterIntake >= dailyGoals.water ? 'Achieved' : `${Math.round((waterIntake / dailyGoals.water) * 100)}%`}
-                    </span>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full mt-3"
-                    onClick={() => navigate('/achievements')}
-                  >
-                    View All Achievements
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                ))}
+              </div>
+            </GlassCard>
           </div>
-        </>
-      )}
+        </TabsContent>
+
+        <TabsContent value="nutrition">
+          <GlassCard variant="premium" className="p-6">
+            <h3 className="text-xl font-semibold mb-4">Nutrition Overview</h3>
+            <p className="text-gray-600 dark:text-gray-400">Advanced nutrition tracking coming soon...</p>
+          </GlassCard>
+        </TabsContent>
+
+        <TabsContent value="fitness">
+          <GlassCard variant="premium" className="p-6">
+            <h3 className="text-xl font-semibold mb-4">Fitness Tracking</h3>
+            <p className="text-gray-600 dark:text-gray-400">Comprehensive fitness analytics coming soon...</p>
+          </GlassCard>
+        </TabsContent>
+
+        <TabsContent value="insights">
+          <GlassCard variant="premium" className="p-6">
+            <h3 className="text-xl font-semibold mb-4">Health Insights</h3>
+            <p className="text-gray-600 dark:text-gray-400">AI-powered health insights coming soon...</p>
+          </GlassCard>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

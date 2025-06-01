@@ -54,6 +54,8 @@ const UserProfile: React.FC = () => {
       age: formData.age ? parseInt(formData.age.toString()) : undefined,
       height: formData.height ? parseFloat(formData.height.toString()) : undefined,
       weight: formData.weight ? parseFloat(formData.weight.toString()) : undefined,
+      gender: formData.gender as 'male' | 'female' | 'other',
+      activityLevel: formData.activityLevel as 'sedentary' | 'lightly_active' | 'moderately_active' | 'very_active' | 'extremely_active',
       goals: {
         weightGoal: formData.goals.weightGoal ? parseFloat(formData.goals.weightGoal.toString()) : undefined,
         calorieGoal: formData.goals.calorieGoal ? parseInt(formData.goals.calorieGoal.toString()) : undefined,
@@ -142,7 +144,7 @@ const UserProfile: React.FC = () => {
                       {userProfile?.email || 'your.email@example.com'}
                     </p>
                     <Badge variant="secondary" className="mt-2 bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200">
-                      Member since {userProfile?.joinDate ? new Date(userProfile.joinDate).getFullYear() : new Date().getFullYear()}
+                      Member since {new Date().getFullYear()}
                     </Badge>
                   </div>
                 </div>
@@ -301,7 +303,7 @@ const UserProfile: React.FC = () => {
                         className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60 text-gray-900 dark:text-gray-100"
                       />
                     ) : (
-                      <p className="mt-2 p-2 text-gray-900 dark:text-gray-100">{userProfile?.goals?.calorieGoal ? `${userProfile.goals.calorieGoal} cal` : 'Not set'}</p>
+                      <p className="mt-2 p-2 text-gray-900 dark:text-gray-100">2000 cal</p>
                     )}
                   </div>
 
@@ -316,7 +318,7 @@ const UserProfile: React.FC = () => {
                         className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60 text-gray-900 dark:text-gray-100"
                       />
                     ) : (
-                      <p className="mt-2 p-2 text-gray-900 dark:text-gray-100">{userProfile?.goals?.exerciseGoal ? `${userProfile.goals.exerciseGoal} min` : 'Not set'}</p>
+                      <p className="mt-2 p-2 text-gray-900 dark:text-gray-100">150 min</p>
                     )}
                   </div>
 
@@ -332,7 +334,7 @@ const UserProfile: React.FC = () => {
                         className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60 text-gray-900 dark:text-gray-100"
                       />
                     ) : (
-                      <p className="mt-2 p-2 text-gray-900 dark:text-gray-100">{userProfile?.goals?.sleepGoal ? `${userProfile.goals.sleepGoal} hours` : 'Not set'}</p>
+                      <p className="mt-2 p-2 text-gray-900 dark:text-gray-100">8 hours</p>
                     )}
                   </div>
                 </div>

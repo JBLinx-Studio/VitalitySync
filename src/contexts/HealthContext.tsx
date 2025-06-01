@@ -1,172 +1,21 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import type { 
+  UserProfile,
+  DailyGoals,
+  TodayData,
+  ExerciseItem,
+  FoodItem,
+  SleepRecord,
+  MoodRecord,
+  AddictionRecord,
+  Achievement,
+  Notification,
+  HealthContextType,
+  WaterIntake,
+  BodyMeasurement
+} from '@/types/health';
 
-export interface UserProfile {
-  id?: string;
-  name: string;
-  email: string;
-  age: number;
-  height: number; // in cm
-  weight: number; // in kg
-  gender: 'male' | 'female' | 'other';
-  activityLevel: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
-  goals: {
-    weightGoal: number;
-    targetDate?: string;
-    primaryGoal: 'lose_weight' | 'gain_weight' | 'maintain_weight' | 'build_muscle' | 'improve_fitness';
-  };
-  preferences: {
-    units: 'metric' | 'imperial';
-    notifications: boolean;
-    privacy: 'public' | 'friends' | 'private';
-  };
-  createdAt?: string;
-  avatar?: string;
-}
-
-export interface DailyGoals {
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  water: number; // in ml
-  steps: number;
-  exercise: number; // in minutes
-  sleep: number; // in hours
-}
-
-export interface TodayData {
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  water: number;
-  steps: number;
-  exercise: number;
-  sleep: number;
-  lastUpdated: string;
-}
-
-export interface ExerciseItem {
-  id: string;
-  name: string;
-  duration: number;
-  caloriesBurned: number;
-  date: string;
-}
-
-export interface FoodItem {
-  id: string;
-  name: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  date: string;
-}
-
-export interface SleepRecord {
-  id: string;
-  date: string;
-  bedtime: string;
-  wakeTime: string;
-  quality: number;
-  duration: number;
-}
-
-export interface MoodRecord {
-  id: string;
-  date: string;
-  mood: number;
-  energy: number;
-  stress: number;
-  notes?: string;
-}
-
-export interface AddictionRecord {
-  id: string;
-  type: string;
-  amount: number;
-  craving: number;
-  date: string;
-  notes?: string;
-}
-
-export interface Achievement {
-  id: string;
-  name: string;
-  description: string;
-  type: string;
-  date: string;
-}
-
-export interface Notification {
-  id: string;
-  message: string;
-  type: string;
-  date: string;
-  read: boolean;
-}
-
-export interface AddictionGoal {
-  daily: number;
-  target: number;
-  timeframe: number;
-}
-
-export interface HealthContextType {
-  userProfile: UserProfile | null;
-  setUserProfile: (profile: UserProfile | null) => void;
-  updateUserProfile: (updates: Partial<UserProfile>) => void;
-  dailyGoals: DailyGoals;
-  setDailyGoals: (goals: DailyGoals) => void;
-  todayData: TodayData;
-  setTodayData: (data: TodayData) => void;
-  updateTodayData: (updates: Partial<TodayData>) => void;
-  isLoading: boolean;
-  error: string | null;
-  
-  // Exercise related
-  exerciseItems: ExerciseItem[];
-  addExerciseItem: (item: ExerciseItem) => void;
-  getTodaysExerciseItems: () => ExerciseItem[];
-  getExerciseSummary: () => { totalDuration: number; totalCaloriesBurned: number };
-  
-  // Food related
-  foodItems: FoodItem[];
-  addFoodItem: (item: FoodItem) => void;
-  
-  // Sleep related
-  sleepRecords: SleepRecord[];
-  addSleepRecord: (record: SleepRecord) => void;
-  getSleepSummary: () => { averageDuration: number; averageQuality: number };
-  
-  // Mood related
-  moodRecords: MoodRecord[];
-  addMoodRecord: (record: MoodRecord) => void;
-  getMoodSummary: () => { averageMood: number; averageEnergy: number; averageStress: number };
-  
-  // Addiction related
-  addictionRecords: AddictionRecord[];
-  addAddictionRecord: (record: AddictionRecord) => void;
-  getUserAddictionGoals: () => { [key: string]: AddictionGoal };
-  updateAddictionGoal: (type: string, goal: AddictionGoal) => void;
-  
-  // Achievements
-  achievements: Achievement[];
-  addAchievement: (achievement: Achievement) => void;
-  
-  // Notifications
-  notifications: Notification[];
-  addNotification: (notification: Notification) => void;
-  markNotificationAsRead: (id: string) => void;
-  getUnreadNotificationsCount: () => number;
-  
-  // Calculations
-  calculateBMI: () => number | null;
-  calculateCalorieNeeds: () => number | null;
-}
-
+// Default goals and data
 const defaultDailyGoals: DailyGoals = {
   calories: 2000,
   protein: 150,
@@ -211,7 +60,7 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // New state for additional features
+  // State for additional features
   const [exerciseItems, setExerciseItems] = useState<ExerciseItem[]>([]);
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
   const [sleepRecords, setSleepRecords] = useState<SleepRecord[]>([]);
@@ -219,7 +68,8 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
   const [addictionRecords, setAddictionRecords] = useState<AddictionRecord[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [addictionGoals, setAddictionGoals] = useState<{ [key: string]: AddictionGoal }>({});
+  const [waterIntakes, setWaterIntakes] = useState<WaterIntake[]>([]);
+  const [bodyMeasurements, setBodyMeasurements] = useState<BodyMeasurement[]>([]);
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -234,7 +84,6 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
       const savedAddictionRecords = localStorage.getItem('addictionRecords');
       const savedAchievements = localStorage.getItem('achievements');
       const savedNotifications = localStorage.getItem('notifications');
-      const savedAddictionGoals = localStorage.getItem('addictionGoals');
 
       if (savedProfile) setUserProfile(JSON.parse(savedProfile));
       if (savedGoals) setDailyGoals(JSON.parse(savedGoals));
@@ -245,7 +94,6 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
       if (savedAddictionRecords) setAddictionRecords(JSON.parse(savedAddictionRecords));
       if (savedAchievements) setAchievements(JSON.parse(savedAchievements));
       if (savedNotifications) setNotifications(JSON.parse(savedNotifications));
-      if (savedAddictionGoals) setAddictionGoals(JSON.parse(savedAddictionGoals));
 
       if (savedTodayData) {
         const parsedData = JSON.parse(savedTodayData);
@@ -308,10 +156,6 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
     localStorage.setItem('notifications', JSON.stringify(notifications));
   }, [notifications]);
 
-  useEffect(() => {
-    localStorage.setItem('addictionGoals', JSON.stringify(addictionGoals));
-  }, [addictionGoals]);
-
   const updateUserProfile = (updates: Partial<UserProfile>) => {
     if (userProfile) {
       setUserProfile({ ...userProfile, ...updates });
@@ -326,9 +170,60 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
     }));
   };
 
+  // Food & Nutrition methods
+  const addFoodItem = (item: Omit<FoodItem, 'id'>) => {
+    const newItem = { ...item, id: Date.now().toString() };
+    setFoodItems(prev => [...prev, newItem]);
+  };
+
+  const deleteFoodItem = (id: string) => {
+    setFoodItems(prev => prev.filter(item => item.id !== id));
+  };
+
+  const getTodaysFoodItems = () => {
+    const today = new Date().toISOString().split('T')[0];
+    return foodItems.filter(item => item.date === today);
+  };
+
+  const getNutritionSummary = (date?: string) => {
+    const targetDate = date || new Date().toISOString().split('T')[0];
+    const dayFoodItems = foodItems.filter(item => item.date === targetDate);
+    
+    return dayFoodItems.reduce((summary, item) => ({
+      calories: summary.calories + (item.calories * item.quantity),
+      protein: summary.protein + (item.protein * item.quantity),
+      carbs: summary.carbs + (item.carbs * item.quantity),
+      fat: summary.fat + (item.fat * item.quantity),
+      fiber: summary.fiber + ((item.fiber || 0) * item.quantity)
+    }), { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 });
+  };
+
+  // Water Intake methods
+  const addWaterIntake = (amount: number) => {
+    const newIntake = {
+      id: Date.now().toString(),
+      amount,
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toISOString()
+    };
+    setWaterIntakes(prev => [...prev, newIntake]);
+  };
+
+  const getTodaysWaterIntake = () => {
+    const today = new Date().toISOString().split('T')[0];
+    return waterIntakes
+      .filter(intake => intake.date === today)
+      .reduce((total, intake) => total + intake.amount, 0);
+  };
+
   // Exercise methods
-  const addExerciseItem = (item: ExerciseItem) => {
-    setExerciseItems(prev => [...prev, item]);
+  const addExerciseItem = (item: Omit<ExerciseItem, 'id'>) => {
+    const newItem = { ...item, id: Date.now().toString() };
+    setExerciseItems(prev => [...prev, newItem]);
+  };
+
+  const deleteExerciseItem = (id: string) => {
+    setExerciseItems(prev => prev.filter(item => item.id !== id));
   };
 
   const getTodaysExerciseItems = () => {
@@ -336,76 +231,131 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
     return exerciseItems.filter(item => item.date === today);
   };
 
-  const getExerciseSummary = () => {
-    const todaysItems = getTodaysExerciseItems();
+  const getExerciseSummary = (date?: string) => {
+    const targetDate = date || new Date().toISOString().split('T')[0];
+    const dayExercises = exerciseItems.filter(item => item.date === targetDate);
+    
     return {
-      totalDuration: todaysItems.reduce((total, item) => total + item.duration, 0),
-      totalCaloriesBurned: todaysItems.reduce((total, item) => total + item.caloriesBurned, 0)
+      totalDuration: dayExercises.reduce((total, item) => total + item.duration, 0),
+      totalCalories: dayExercises.reduce((total, item) => total + item.calories_burned, 0),
+      exerciseCount: dayExercises.length
     };
   };
 
-  // Food methods
-  const addFoodItem = (item: FoodItem) => {
-    setFoodItems(prev => [...prev, item]);
-  };
-
   // Sleep methods
-  const addSleepRecord = (record: SleepRecord) => {
-    setSleepRecords(prev => [...prev, record]);
+  const addSleepRecord = (record: Omit<SleepRecord, 'id'>) => {
+    const newRecord = { ...record, id: Date.now().toString() };
+    setSleepRecords(prev => [...prev, newRecord]);
   };
 
-  const getSleepSummary = () => {
-    if (sleepRecords.length === 0) {
-      return { averageDuration: 0, averageQuality: 0 };
+  const deleteSleepRecord = (id: string) => {
+    setSleepRecords(prev => prev.filter(record => record.id !== id));
+  };
+
+  const getSleepSummary = (days: number = 7) => {
+    const recentRecords = sleepRecords.slice(-days);
+    if (recentRecords.length === 0) {
+      return { averageDuration: 0, averageQuality: 'poor', totalSleep: 0 };
     }
-    const totalDuration = sleepRecords.reduce((total, record) => total + record.duration, 0);
-    const totalQuality = sleepRecords.reduce((total, record) => total + record.quality, 0);
+    
+    const totalDuration = recentRecords.reduce((total, record) => total + record.duration, 0);
+    const avgDuration = totalDuration / recentRecords.length;
+    
+    const qualityScores = { poor: 1, fair: 2, good: 3, excellent: 4 };
+    const totalQuality = recentRecords.reduce((total, record) => total + qualityScores[record.quality], 0);
+    const avgQualityScore = totalQuality / recentRecords.length;
+    
+    let averageQuality = 'poor';
+    if (avgQualityScore >= 3.5) averageQuality = 'excellent';
+    else if (avgQualityScore >= 2.5) averageQuality = 'good';
+    else if (avgQualityScore >= 1.5) averageQuality = 'fair';
+    
     return {
-      averageDuration: totalDuration / sleepRecords.length,
-      averageQuality: totalQuality / sleepRecords.length
+      averageDuration: avgDuration,
+      averageQuality,
+      totalSleep: totalDuration
     };
   };
 
   // Mood methods
-  const addMoodRecord = (record: MoodRecord) => {
-    setMoodRecords(prev => [...prev, record]);
+  const addMoodRecord = (record: Omit<MoodRecord, 'id'>) => {
+    const newRecord = { ...record, id: Date.now().toString() };
+    setMoodRecords(prev => [...prev, newRecord]);
   };
 
-  const getMoodSummary = () => {
-    if (moodRecords.length === 0) {
+  const deleteMoodRecord = (id: string) => {
+    setMoodRecords(prev => prev.filter(record => record.id !== id));
+  };
+
+  const getMoodSummary = (days: number = 7) => {
+    const recentRecords = moodRecords.slice(-days);
+    if (recentRecords.length === 0) {
       return { averageMood: 0, averageEnergy: 0, averageStress: 0 };
     }
-    const totalMood = moodRecords.reduce((total, record) => total + record.mood, 0);
-    const totalEnergy = moodRecords.reduce((total, record) => total + record.energy, 0);
-    const totalStress = moodRecords.reduce((total, record) => total + record.stress, 0);
+    
+    const moodScores = { awful: 1, bad: 2, neutral: 3, good: 4, great: 5 };
+    const totalMood = recentRecords.reduce((total, record) => total + moodScores[record.mood], 0);
+    const totalEnergy = recentRecords.reduce((total, record) => total + record.energy, 0);
+    const totalStress = recentRecords.reduce((total, record) => total + record.stress, 0);
+    
     return {
-      averageMood: totalMood / moodRecords.length,
-      averageEnergy: totalEnergy / moodRecords.length,
-      averageStress: totalStress / moodRecords.length
+      averageMood: totalMood / recentRecords.length,
+      averageEnergy: totalEnergy / recentRecords.length,
+      averageStress: totalStress / recentRecords.length
     };
   };
 
   // Addiction methods
-  const addAddictionRecord = (record: AddictionRecord) => {
-    setAddictionRecords(prev => [...prev, record]);
+  const addAddictionRecord = (record: Omit<AddictionRecord, 'id'>) => {
+    const newRecord = { ...record, id: Date.now().toString() };
+    setAddictionRecords(prev => [...prev, newRecord]);
   };
 
-  const getUserAddictionGoals = () => {
-    return addictionGoals;
+  const deleteAddictionRecord = (id: string) => {
+    setAddictionRecords(prev => prev.filter(record => record.id !== id));
   };
 
-  const updateAddictionGoal = (type: string, goal: AddictionGoal) => {
-    setAddictionGoals(prev => ({ ...prev, [type]: goal }));
+  const getUserAddictionGoals = (): AddictionRecord[] => {
+    const uniqueTypes = [...new Set(addictionRecords.map(r => r.type))];
+    
+    return uniqueTypes.map(type => {
+      const typeRecords = addictionRecords.filter(r => r.type === type);
+      const latestRecord = typeRecords[typeRecords.length - 1];
+      return latestRecord;
+    }).filter(record => record && record.goal);
+  };
+
+  const updateAddictionGoal = (type: string, goal: number, unit: string) => {
+    // Update existing records or create a placeholder
+    const existingRecords = addictionRecords.filter(r => r.type === type);
+    if (existingRecords.length > 0) {
+      const updatedRecords = addictionRecords.map(record => 
+        record.type === type ? { ...record, goal, goalUnit: unit } : record
+      );
+      setAddictionRecords(updatedRecords);
+    }
+  };
+
+  // Body Measurements methods
+  const addBodyMeasurement = (measurement: any) => {
+    const newMeasurement = { ...measurement, id: Date.now().toString() };
+    setBodyMeasurements(prev => [...prev, newMeasurement]);
+  };
+
+  const getLatestMeasurement = () => {
+    return bodyMeasurements.length > 0 ? bodyMeasurements[bodyMeasurements.length - 1] : null;
   };
 
   // Achievement methods
-  const addAchievement = (achievement: Achievement) => {
-    setAchievements(prev => [...prev, achievement]);
+  const addAchievement = (achievement: Omit<Achievement, 'id'>) => {
+    const newAchievement = { ...achievement, id: Date.now().toString() };
+    setAchievements(prev => [...prev, newAchievement]);
   };
 
   // Notification methods
-  const addNotification = (notification: Notification) => {
-    setNotifications(prev => [...prev, notification]);
+  const addNotification = (notification: Omit<Notification, 'id'>) => {
+    const newNotification = { ...notification, id: Date.now().toString() };
+    setNotifications(prev => [...prev, newNotification]);
   };
 
   const markNotificationAsRead = (id: string) => {
@@ -419,90 +369,74 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
   };
 
   // Calculation methods
-  const calculateBMI = () => {
-    if (!userProfile) return null;
-    const heightInM = userProfile.height / 100;
-    return userProfile.weight / (heightInM * heightInM);
+  const calculateBMI = (weight: number, height: number) => {
+    const heightInM = height / 100;
+    return weight / (heightInM * heightInM);
   };
 
-  const calculateCalorieNeeds = () => {
-    if (!userProfile) return null;
-    
+  const calculateCalorieNeeds = (profile: UserProfile) => {
     let bmr: number;
-    if (userProfile.gender === 'male') {
-      bmr = 10 * userProfile.weight + 6.25 * userProfile.height - 5 * userProfile.age + 5;
+    if (profile.gender === 'male') {
+      bmr = 10 * (profile.weight || 70) + 6.25 * (profile.height || 175) - 5 * (profile.age || 30) + 5;
     } else {
-      bmr = 10 * userProfile.weight + 6.25 * userProfile.height - 5 * userProfile.age - 161;
+      bmr = 10 * (profile.weight || 60) + 6.25 * (profile.height || 165) - 5 * (profile.age || 30) - 161;
     }
 
     const activityMultipliers = {
       sedentary: 1.2,
-      light: 1.375,
-      moderate: 1.55,
-      active: 1.725,
-      very_active: 1.9
+      lightly_active: 1.375,
+      moderately_active: 1.55,
+      very_active: 1.725,
+      extremely_active: 1.9
     };
 
-    return bmr * activityMultipliers[userProfile.activityLevel];
+    return bmr * (activityMultipliers[profile.activityLevel || 'moderately_active'] || 1.55);
   };
 
-  // Calculate daily goals based on user profile
-  useEffect(() => {
-    if (userProfile) {
-      const calories = calculateCalorieNeeds();
-      if (calories) {
-        let adjustedCalories = calories;
-        if (userProfile.goals.primaryGoal === 'lose_weight') {
-          adjustedCalories = calories - 500;
-        } else if (userProfile.goals.primaryGoal === 'gain_weight' || userProfile.goals.primaryGoal === 'build_muscle') {
-          adjustedCalories = calories + 300;
-        }
+  // Goals checking
+  const checkAndUpdateGoals = () => {
+    // Implementation for checking goals
+  };
 
-        const protein = Math.round((adjustedCalories * 0.30) / 4);
-        const carbs = Math.round((adjustedCalories * 0.40) / 4);
-        const fat = Math.round((adjustedCalories * 0.30) / 9);
-
-        setDailyGoals({
-          calories: Math.round(adjustedCalories),
-          protein,
-          carbs,
-          fat,
-          water: userProfile.weight * 35,
-          steps: 10000,
-          exercise: 60,
-          sleep: 8
-        });
-      }
-    }
-  }, [userProfile]);
+  const getGoalProgress = (type: string) => {
+    // Implementation for goal progress
+    return 0;
+  };
 
   const value: HealthContextType = {
     userProfile,
-    setUserProfile,
     updateUserProfile,
     dailyGoals,
-    setDailyGoals,
     todayData,
-    setTodayData,
-    updateTodayData,
-    isLoading,
-    error,
-    exerciseItems,
-    addExerciseItem,
-    getTodaysExerciseItems,
-    getExerciseSummary,
     foodItems,
     addFoodItem,
+    deleteFoodItem,
+    getTodaysFoodItems,
+    getNutritionSummary,
+    waterIntakes,
+    addWaterIntake,
+    getTodaysWaterIntake,
+    exerciseItems,
+    addExerciseItem,
+    deleteExerciseItem,
+    getTodaysExerciseItems,
+    getExerciseSummary,
     sleepRecords,
     addSleepRecord,
+    deleteSleepRecord,
     getSleepSummary,
     moodRecords,
     addMoodRecord,
+    deleteMoodRecord,
     getMoodSummary,
     addictionRecords,
     addAddictionRecord,
+    deleteAddictionRecord,
     getUserAddictionGoals,
     updateAddictionGoal,
+    bodyMeasurements,
+    addBodyMeasurement,
+    getLatestMeasurement,
     achievements,
     addAchievement,
     notifications,
@@ -510,7 +444,9 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
     markNotificationAsRead,
     getUnreadNotificationsCount,
     calculateBMI,
-    calculateCalorieNeeds
+    calculateCalorieNeeds,
+    checkAndUpdateGoals,
+    getGoalProgress
   };
 
   return <HealthContext.Provider value={value}>{children}</HealthContext.Provider>;

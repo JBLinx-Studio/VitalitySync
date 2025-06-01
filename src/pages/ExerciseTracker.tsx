@@ -1,312 +1,267 @@
-
 import React, { useState } from 'react';
-import { useHealth } from '@/contexts/HealthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  exercises, 
-  calculateCaloriesBurned,
-  searchExercises,
-  getExerciseById
-} from '@/services/exerciseService';
-import { Activity, Search, Plus, Clock } from 'lucide-react';
+import { Calendar, Dumbbell, Flame, ListChecks, NotebookPen, Plus, Stopwatch } from 'lucide-react';
+import { useHealth } from '@/contexts/HealthContext';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { cn } from '@/lib/utils';
+import GlassCard from '@/components/ui/glass-card';
 
 const ExerciseTracker: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState(exercises);
-  const [selectedExerciseId, setSelectedExerciseId] = useState<number | null>(null);
-  const [duration, setDuration] = useState('30');
+  const { exerciseItems, addExerciseItem, getExerciseSummary } = useHealth();
   
-  const { 
-    userProfile,
-    addExerciseItem, 
-    getTodaysExerciseItems,
-    getExerciseSummary
-  } = useHealth();
-  
-  const todaysExerciseItems = getTodaysExerciseItems();
-  const exerciseSummary = getExerciseSummary();
+  const [exerciseName, setExerciseName] = useState('');
+  const [exerciseType, setExerciseType] = useState('cardio');
+  const [duration, setDuration] = useState('');
+  const [caloriesBurned, setCaloriesBurned] = useState('');
+  const [notes, setNotes] = useState('');
 
-  const handleSearch = () => {
-    const results = searchExercises(searchQuery);
-    setSearchResults(results);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
-  const handleSelectExercise = (id: number) => {
-    setSelectedExerciseId(id);
-    setDuration('30');
-  };
-
-  const handleAddExercise = () => {
-    if (!selectedExerciseId || !userProfile) return;
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     
-    const today = new Date().toISOString().split('T')[0];
-    const exercise = getExerciseById(selectedExerciseId);
-    
-    if (!exercise) return;
-    
-    const durationNum = parseInt(duration);
-    
-    if (isNaN(durationNum) || durationNum <= 0) {
-      alert('Please enter a valid duration');
-      return;
-    }
-    
-    const caloriesBurned = Math.round(
-      calculateCaloriesBurned(exercise.met, userProfile.weight, durationNum)
-    );
-    
-    const exerciseItem = {
-      id: crypto.randomUUID(),
-      name: exercise.name,
-      duration: durationNum,
-      caloriesBurned,
-      date: today
+    const newExercise = {
+      name: exerciseName,
+      type: exerciseType as 'cardio' | 'strength' | 'flexibility' | 'sports',
+      duration: parseInt(duration),
+      calories_burned: parseInt(caloriesBurned),
+      date: new Date().toISOString().split('T')[0],
+      notes
     };
     
-    addExerciseItem(exerciseItem);
-    setSelectedExerciseId(null);
-    setDuration('30');
+    addExerciseItem(newExercise);
+    
+    // Reset form
+    setExerciseName('');
+    setDuration('');
+    setCaloriesBurned('');
+    setNotes('');
   };
 
+  const summary = getExerciseSummary();
+
+  const exerciseTypes = [
+    { value: 'cardio', label: 'Cardio', icon: Stopwatch },
+    { value: 'strength', label: 'Strength Training', icon: Dumbbell },
+    { value: 'flexibility', label: 'Flexibility', icon: ListChecks },
+    { value: 'sports', label: 'Sports', icon: NotebookPen }
+  ];
+
+  const recentExercises = exerciseItems.slice(-5).reverse();
+
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-gray-800">Exercise Tracker</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Activity className="mr-2 h-5 w-5 text-health-primary" />
-              Exercise Log
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {!userProfile ? (
-              <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                <p className="text-yellow-700">
-                  To track exercises and calculate calories burned accurately, please set up your profile first.
-                </p>
-                <a href="/profile" className="text-health-primary font-medium hover:underline mt-2 inline-block">
-                  Set up profile →
-                </a>
-              </div>
-            ) : (
-              <>
-                <div className="space-y-4">
-                  <div className="flex">
-                    <Input
-                      placeholder="Search for exercises..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      className="flex-1 mr-2"
-                    />
-                    <Button onClick={handleSearch}>
-                      <Search className="h-4 w-4 mr-2" />
-                      Search
-                    </Button>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-lime-50 dark:from-slate-900 dark:via-zinc-900 dark:to-slate-900">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-600 via-yellow-600 to-lime-600 bg-clip-text text-transparent mb-2">
+            Exercise Tracker 🏋️‍♀️
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300 text-lg">
+            Log your workouts and track your progress
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Summary Cards */}
+          <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <GlassCard variant="premium">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Total Duration</p>
+                    <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">
+                      {summary.totalDuration} min
+                    </p>
                   </div>
-                  
+                  <div className="p-3 bg-orange-100 dark:bg-orange-900/40 rounded-2xl">
+                    <Stopwatch className="h-8 w-8 text-orange-600 dark:text-orange-400" />
+                  </div>
+                </div>
+              </CardContent>
+            </GlassCard>
+
+            <GlassCard variant="premium">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Total Calories</p>
+                    <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">
+                      {summary.totalCalories}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-yellow-100 dark:bg-yellow-900/40 rounded-2xl">
+                    <Flame className="h-8 w-8 text-yellow-600 dark:text-yellow-400" />
+                  </div>
+                </div>
+              </CardContent>
+            </GlassCard>
+
+            <GlassCard variant="premium">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Workouts Logged</p>
+                    <p className="text-3xl font-bold text-lime-600 dark:text-lime-400">
+                      {summary.exerciseCount}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-lime-100 dark:bg-lime-900/40 rounded-2xl">
+                    <Dumbbell className="h-8 w-8 text-lime-600 dark:text-lime-400" />
+                  </div>
+                </div>
+              </CardContent>
+            </GlassCard>
+          </div>
+
+          {/* Exercise Entry Form */}
+          <div className="lg:col-span-2 space-y-6">
+            <GlassCard variant="premium">
+              <CardHeader>
+                <CardTitle className="flex items-center text-gray-900 dark:text-gray-100">
+                  <Dumbbell className="mr-2 h-6 w-6 text-orange-500" />
+                  Log Your Exercise
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <Label htmlFor="exerciseName" className="text-gray-700 dark:text-gray-300 font-medium">
+                      Exercise Name
+                    </Label>
+                    <Input
+                      id="exerciseName"
+                      type="text"
+                      value={exerciseName}
+                      onChange={(e) => setExerciseName(e.target.value)}
+                      className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60"
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-gray-700 dark:text-gray-300 font-medium">Exercise Type</Label>
+                    <Select value={exerciseType} onValueChange={(value) => setExerciseType(value)}>
+                      <SelectTrigger className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border-gray-200/60 dark:border-gray-700/60">
+                        {exerciseTypes.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <h3 className="font-medium mb-2">Activities</h3>
-                      <div className="max-h-96 overflow-y-auto space-y-2">
-                        {searchResults.map((exercise) => (
-                          <div
-                            key={exercise.id}
-                            onClick={() => handleSelectExercise(exercise.id)}
-                            className={`p-3 border rounded-lg cursor-pointer ${
-                              selectedExerciseId === exercise.id
-                                ? 'border-health-primary bg-health-primary bg-opacity-5'
-                                : 'hover:bg-gray-50'
-                            }`}
-                          >
-                            <div className="font-medium">{exercise.name}</div>
-                            <div className="text-sm text-gray-500">
-                              MET: {exercise.met} (intensity level)
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                      <Label htmlFor="duration" className="text-gray-700 dark:text-gray-300 font-medium">
+                        Duration (minutes)
+                      </Label>
+                      <Input
+                        id="duration"
+                        type="number"
+                        value={duration}
+                        onChange={(e) => setDuration(e.target.value)}
+                        className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60"
+                      />
                     </div>
-                    
+
                     <div>
-                      {selectedExerciseId ? (
-                        <div className="border p-4 rounded-lg">
-                          <h3 className="font-medium text-lg mb-3">
-                            {getExerciseById(selectedExerciseId)?.name}
-                          </h3>
-                          
-                          <div className="space-y-4">
-                            <div>
-                              <Label htmlFor="duration">Duration (minutes)</Label>
-                              <div className="flex items-center mt-1">
-                                <Input
-                                  id="duration"
-                                  type="number"
-                                  min="1"
-                                  step="1"
-                                  value={duration}
-                                  onChange={(e) => setDuration(e.target.value)}
-                                  className="flex-1"
-                                />
-                                <div className="flex space-x-1 ml-2">
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={() => setDuration('15')}
-                                  >
-                                    15
-                                  </Button>
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={() => setDuration('30')}
-                                  >
-                                    30
-                                  </Button>
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={() => setDuration('60')}
-                                  >
-                                    60
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                            
-                            <div className="pt-2">
-                              <h4 className="text-sm font-medium mb-2">Estimated calories burned</h4>
-                              <div className="bg-gray-100 p-3 rounded-lg text-center">
-                                <div className="text-2xl font-bold">
-                                  {Math.round(
-                                    calculateCaloriesBurned(
-                                      getExerciseById(selectedExerciseId)?.met || 0,
-                                      userProfile.weight,
-                                      parseInt(duration) || 0
-                                    )
-                                  )}
-                                </div>
-                                <div className="text-sm text-gray-500">calories</div>
-                              </div>
-                              <div className="text-xs text-gray-500 mt-2">
-                                Based on your weight of {userProfile.weight} kg
-                              </div>
-                            </div>
-                            
-                            <div className="flex justify-end space-x-2 pt-2">
-                              <Button variant="outline" onClick={() => setSelectedExerciseId(null)}>
-                                Cancel
-                              </Button>
-                              <Button onClick={handleAddExercise}>
-                                <Plus className="h-4 w-4 mr-2" />
-                                Add to Log
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="h-full flex items-center justify-center border border-dashed rounded-lg p-6">
-                          <div className="text-center text-gray-500">
-                            <Activity className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-                            <p>Select an activity from the list to add it to your exercise log</p>
-                          </div>
-                        </div>
-                      )}
+                      <Label htmlFor="caloriesBurned" className="text-gray-700 dark:text-gray-300 font-medium">
+                        Calories Burned
+                      </Label>
+                      <Input
+                        id="caloriesBurned"
+                        type="number"
+                        value={caloriesBurned}
+                        onChange={(e) => setCaloriesBurned(e.target.value)}
+                        className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60"
+                      />
                     </div>
                   </div>
-                </div>
-                
-                <div className="mt-8">
-                  <h3 className="font-medium text-lg mb-3">Today's Exercise Log</h3>
-                  {todaysExerciseItems.length > 0 ? (
-                    <div className="space-y-3">
-                      {todaysExerciseItems.map(item => (
-                        <div key={item.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                          <div className="flex items-center">
-                            <Activity className="h-5 w-5 mr-3 text-health-primary" />
-                            <div>
-                              <div className="font-medium">{item.name}</div>
-                              <div className="text-sm text-gray-500 flex items-center">
-                                <Clock className="h-3 w-3 mr-1" />
-                                {item.duration} minutes
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="font-medium">{item.caloriesBurned} kcal</div>
-                          </div>
+
+                  <div>
+                    <Label htmlFor="notes" className="text-gray-700 dark:text-gray-300 font-medium">
+                      Exercise Notes (Optional)
+                    </Label>
+                    <Textarea
+                      id="notes"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="How did the exercise feel? Any challenges or achievements..."
+                      className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60"
+                      rows={3}
+                    />
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-lime-500 hover:shadow-xl transition-all duration-300 text-white border-0 hover:scale-[1.02]"
+                  >
+                    Log Exercise
+                  </Button>
+                </form>
+              </CardContent>
+            </GlassCard>
+          </div>
+
+          {/* Recent Exercise Records */}
+          <div className="space-y-6">
+            <GlassCard variant="premium">
+              <CardHeader>
+                <CardTitle className="flex items-center text-gray-900 dark:text-gray-100">
+                  <Clock className="mr-2 h-5 w-5 text-blue-500" />
+                  Recent Exercises
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {recentExercises.map((exercise) => (
+                    <div 
+                      key={exercise.id}
+                      className="p-4 rounded-xl bg-gray-50 dark:bg-slate-700/50 border border-gray-200/50 dark:border-gray-600/50"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-medium text-gray-900 dark:text-gray-100">
+                          {exercise.name}
+                        </span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {new Date(exercise.date).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                        <div>
+                          Type: {exercise.type}
                         </div>
-                      ))}
+                        <div>
+                          Duration: {exercise.duration} minutes
+                        </div>
+                        <div>
+                          Calories Burned: <p className="font-semibold">{exercise.calories_burned} cal</p>
+                        </div>
+                        {exercise.notes && (
+                          <p className="text-sm mt-2 text-gray-700 dark:text-gray-300 italic">
+                            "{exercise.notes}"
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  ) : (
-                    <div className="text-center text-gray-500 p-6 border border-dashed rounded-lg">
-                      <p>No exercises logged today</p>
-                    </div>
+                  ))}
+                  {exerciseItems.length === 0 && (
+                    <p className="text-center text-gray-500 dark:text-gray-400 py-8">
+                      No exercise records yet. Start logging your workouts!
+                    </p>
                   )}
                 </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Exercise Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              <div className="bg-gray-100 p-4 rounded-lg text-center">
-                <div className="text-sm text-gray-600 mb-1">Calories Burned Today</div>
-                <div className="text-3xl font-bold text-health-primary">
-                  {exerciseSummary.totalCaloriesBurned}
-                </div>
-                <div className="text-sm text-gray-500">kcal</div>
-              </div>
-              
-              <div className="bg-gray-100 p-4 rounded-lg text-center">
-                <div className="text-sm text-gray-600 mb-1">Active Time</div>
-                <div className="text-3xl font-bold text-health-primary">
-                  {exerciseSummary.totalDuration}
-                </div>
-                <div className="text-sm text-gray-500">minutes</div>
-              </div>
-              
-              <div className="pt-4">
-                <h4 className="font-medium text-sm mb-2">Activity Benefits</h4>
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-start">
-                    <div className="bg-green-500 rounded-full h-2 w-2 mt-2 mr-2"></div>
-                    <span>Regular exercise improves cardiovascular health</span>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="bg-green-500 rounded-full h-2 w-2 mt-2 mr-2"></div>
-                    <span>Helps maintain a healthy weight</span>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="bg-green-500 rounded-full h-2 w-2 mt-2 mr-2"></div>
-                    <span>Reduces risk of chronic diseases</span>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="bg-green-500 rounded-full h-2 w-2 mt-2 mr-2"></div>
-                    <span>Improves mental health and mood</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </GlassCard>
+          </div>
+        </div>
       </div>
     </div>
   );

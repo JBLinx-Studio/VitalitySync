@@ -1,330 +1,320 @@
 
 import React, { useState } from 'react';
-import { useHealth } from '@/contexts/HealthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Moon, TrendingUp, Calendar, Plus, Clock, Star } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
 import { Textarea } from '@/components/ui/textarea';
-import { Moon, Sun, Plus, Clock } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { format } from 'date-fns';
-import { toast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
+import { useHealth } from '@/contexts/HealthContext';
+import { format, differenceInHours, differenceInMinutes } from 'date-fns';
 
 const SleepTracker: React.FC = () => {
-  const { sleepRecords, addSleepRecord, getSleepSummary } = useHealth();
-  
-  const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-  const [duration, setDuration] = useState(8);
-  const [quality, setQuality] = useState(7);
-  const [bedtime, setBedtime] = useState('22:00');
-  const [wakeTime, setWakeTime] = useState('06:00');
+  const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [bedtime, setBedtime] = useState('');
+  const [wakeupTime, setWakeupTime] = useState('');
+  const [quality, setQuality] = useState<'poor' | 'fair' | 'good' | 'excellent'>('good');
   const [notes, setNotes] = useState('');
-  const [showAddForm, setShowAddForm] = useState(false);
 
-  const sleepSummary = getSleepSummary();
-  
-  // Get the last 7 days of sleep records for the chart
-  const weeklySleepData = sleepRecords
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .slice(-7)
-    .map(record => ({
-      date: format(new Date(record.date), 'MM/dd'),
-      duration: record.duration,
-      quality: record.quality,
-    }));
+  const { sleepRecords, addSleepRecord, getSleepSummary } = useHealth();
 
-  const handleAddSleepRecord = () => {
-    addSleepRecord({
-      id: '',
-      date,
-      duration,
-      quality,
-      bedtime,
-      wakeTime,
-      notes
-    });
-    
-    toast({
-      title: "Sleep record added",
-      description: `You slept for ${duration} hours with a quality of ${quality}/10`,
-    });
-    
-    // Reset form
-    setDate(format(new Date(), 'yyyy-MM-dd'));
-    setDuration(8);
-    setQuality(7);
-    setBedtime('22:00');
-    setWakeTime('06:00');
-    setNotes('');
-    setShowAddForm(false);
+  const qualityColors = {
+    poor: 'bg-red-100 text-red-800 border-red-200',
+    fair: 'bg-orange-100 text-orange-800 border-orange-200',
+    good: 'bg-green-100 text-green-800 border-green-200',
+    excellent: 'bg-emerald-100 text-emerald-800 border-emerald-200'
   };
 
+  const qualityEmojis = {
+    poor: '😴',
+    fair: '😐',
+    good: '😊',
+    excellent: '😄'
+  };
+
+  const calculateDuration = () => {
+    if (!bedtime || !wakeupTime) return 0;
+    
+    const bedDateTime = new Date(`${selectedDate}T${bedtime}`);
+    let wakeDateTime = new Date(`${selectedDate}T${wakeupTime}`);
+    
+    // If wake time is earlier than bedtime, assume it's the next day
+    if (wakeDateTime <= bedDateTime) {
+      wakeDateTime.setDate(wakeDateTime.getDate() + 1);
+    }
+    
+    const totalMinutes = differenceInMinutes(wakeDateTime, bedDateTime);
+    return totalMinutes / 60; // Convert to hours
+  };
+
+  const handleSubmit = () => {
+    if (!bedtime || !wakeupTime) return;
+    
+    const duration = calculateDuration();
+    
+    const sleepRecord = {
+      date: selectedDate,
+      bedtime,
+      wakeup_time: wakeupTime,
+      duration,
+      quality,
+      notes: notes.trim() || undefined
+    };
+
+    addSleepRecord(sleepRecord);
+    
+    // Reset form
+    setBedtime('');
+    setWakeupTime('');
+    setQuality('good');
+    setNotes('');
+  };
+
+  const weekSummary = getSleepSummary(7);
+  const recentRecords = sleepRecords
+    .slice()
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 7);
+
+  const duration = calculateDuration();
+
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-800">Sleep Tracker</h1>
-        <Button 
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700"
-        >
-          <Plus className="h-4 w-4" />
-          Log Sleep
-        </Button>
-      </div>
-      
-      {showAddForm && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Add Sleep Record</CardTitle>
-            <CardDescription>Log your sleep to track your patterns</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form className="space-y-4">
-              <div>
-                <Label htmlFor="date">Date</Label>
-                <Input 
-                  id="date" 
-                  type="date" 
-                  value={date} 
-                  onChange={(e) => setDate(e.target.value)} 
-                />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
+            Sleep Tracker
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300 text-lg">
+            Monitor your sleep patterns and improve your rest quality
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Sleep Entry Form */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border-gray-200/50 dark:border-gray-700/50">
+              <CardHeader>
+                <CardTitle className="flex items-center text-gray-900 dark:text-gray-100">
+                  <Moon className="mr-2 h-6 w-6 text-indigo-500" />
+                  Log Sleep
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
                 <div>
-                  <Label htmlFor="bedtime">Bedtime</Label>
-                  <div className="flex items-center">
-                    <Moon className="mr-2 h-4 w-4 text-indigo-500" />
-                    <Input 
-                      id="bedtime" 
-                      type="time" 
-                      value={bedtime} 
-                      onChange={(e) => setBedtime(e.target.value)} 
+                  <Label htmlFor="date" className="text-gray-700 dark:text-gray-300 font-medium">Sleep Date</Label>
+                  <Input
+                    id="date"
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="bedtime" className="text-gray-700 dark:text-gray-300 font-medium">Bedtime</Label>
+                    <Input
+                      id="bedtime"
+                      type="time"
+                      value={bedtime}
+                      onChange={(e) => setBedtime(e.target.value)}
+                      className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60 text-gray-900 dark:text-gray-100"
                     />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="wakeup" className="text-gray-700 dark:text-gray-300 font-medium">Wake Up Time</Label>
+                    <Input
+                      id="wakeup"
+                      type="time"
+                      value={wakeupTime}
+                      onChange={(e) => setWakeupTime(e.target.value)}
+                      className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60 text-gray-900 dark:text-gray-100"
+                    />
+                  </div>
+                </div>
+
+                {duration > 0 && (
+                  <div className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl border border-indigo-200/50 dark:border-indigo-700/50">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-5 w-5 text-indigo-500" />
+                      <span className="font-medium text-gray-900 dark:text-gray-100">
+                        Duration: {Math.floor(duration)}h {Math.round((duration % 1) * 60)}m
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Sleep Quality */}
+                <div>
+                  <Label className="text-gray-700 dark:text-gray-300 font-medium">Sleep Quality</Label>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    {Object.entries(qualityEmojis).map(([qualityValue, emoji]) => (
+                      <button
+                        key={qualityValue}
+                        onClick={() => setQuality(qualityValue as any)}
+                        className={`flex flex-col items-center p-4 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${
+                          quality === qualityValue
+                            ? qualityColors[qualityValue as keyof typeof qualityColors] + ' scale-105 shadow-lg'
+                            : 'bg-white dark:bg-slate-700 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        <span className="text-2xl mb-2">{emoji}</span>
+                        <span className="text-sm font-medium capitalize">{qualityValue}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Notes */}
+                <div>
+                  <Label htmlFor="notes" className="text-gray-700 dark:text-gray-300 font-medium">Notes (Optional)</Label>
+                  <Textarea
+                    id="notes"
+                    placeholder="How did you sleep? Any factors that affected your sleep..."
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60 text-gray-900 dark:text-gray-100"
+                    rows={3}
+                  />
+                </div>
+
+                <Button
+                  onClick={handleSubmit}
+                  className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-semibold py-3"
+                  disabled={!bedtime || !wakeupTime}
+                >
+                  Save Sleep Record
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Recent Sleep Records */}
+            <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border-gray-200/50 dark:border-gray-700/50">
+              <CardHeader>
+                <CardTitle className="flex items-center text-gray-900 dark:text-gray-100">
+                  <Calendar className="mr-2 h-5 w-5 text-blue-500" />
+                  Recent Sleep Records
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {recentRecords.length > 0 ? (
+                  <div className="space-y-4">
+                    {recentRecords.map((record) => (
+                      <div key={record.id} className="p-4 bg-gray-50 dark:bg-slate-700/50 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl">{qualityEmojis[record.quality]}</span>
+                            <div>
+                              <p className="font-medium text-gray-900 dark:text-gray-100">{format(new Date(record.date), 'MMM dd, yyyy')}</p>
+                              <p className={`text-sm ${qualityColors[record.quality]} px-2 py-1 rounded-full border inline-block`}>
+                                {record.quality}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
+                              {Math.floor(record.duration)}h {Math.round((record.duration % 1) * 60)}m
+                            </p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {record.bedtime} - {record.wakeup_time}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        {record.notes && (
+                          <p className="text-sm text-gray-600 dark:text-gray-400 italic border-l-2 border-gray-300 dark:border-gray-600 pl-3">
+                            "{record.notes}"
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+                    No sleep records yet. Start tracking your sleep to see patterns and insights!
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Summary Stats */}
+          <div className="space-y-6">
+            <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border-gray-200/50 dark:border-gray-700/50">
+              <CardHeader>
+                <CardTitle className="flex items-center text-gray-900 dark:text-gray-100">
+                  <TrendingUp className="mr-2 h-5 w-5 text-green-500" />
+                  Week Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200/50 dark:border-blue-700/50">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Average Sleep</span>
+                    <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                      {Math.floor(weekSummary.averageDuration)}h {Math.round((weekSummary.averageDuration % 1) * 60)}m
+                    </span>
                   </div>
                 </div>
                 
-                <div>
-                  <Label htmlFor="wakeTime">Wake Time</Label>
-                  <div className="flex items-center">
-                    <Sun className="mr-2 h-4 w-4 text-amber-500" />
-                    <Input 
-                      id="wakeTime" 
-                      type="time" 
-                      value={wakeTime} 
-                      onChange={(e) => setWakeTime(e.target.value)} 
-                    />
+                <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200/50 dark:border-green-700/50">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Sleep Quality</span>
+                    <span className="text-lg font-bold text-green-600 dark:text-green-400 capitalize">
+                      {weekSummary.averageQuality}
+                    </span>
                   </div>
                 </div>
-              </div>
-              
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label htmlFor="duration">Duration (hours)</Label>
-                  <span className="text-sm font-medium">{duration} hours</span>
+                
+                <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border border-purple-200/50 dark:border-purple-700/50">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Total Sleep</span>
+                    <span className="text-lg font-bold text-purple-600 dark:text-purple-400">
+                      {Math.floor(weekSummary.totalSleep)}h {Math.round((weekSummary.totalSleep % 1) * 60)}m
+                    </span>
+                  </div>
                 </div>
-                <Slider
-                  id="duration"
-                  min={0}
-                  max={12}
-                  step={0.5}
-                  value={[duration]}
-                  onValueChange={(value) => setDuration(value[0])}
-                  className="w-full"
-                />
-              </div>
-              
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label htmlFor="quality">Sleep Quality</Label>
-                  <span className="text-sm font-medium">{quality}/10</span>
+              </CardContent>
+            </Card>
+
+            {/* Sleep Tips */}
+            <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border-gray-200/50 dark:border-gray-700/50">
+              <CardHeader>
+                <CardTitle className="flex items-center text-gray-900 dark:text-gray-100">
+                  <Star className="mr-2 h-5 w-5 text-yellow-500" />
+                  Sleep Tips
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="p-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-xl border border-yellow-200/50 dark:border-yellow-700/50">
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Consistent Schedule</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Try to go to bed and wake up at the same time every day, even on weekends.
+                  </p>
                 </div>
-                <Slider
-                  id="quality"
-                  min={1}
-                  max={10}
-                  step={1}
-                  value={[quality]}
-                  onValueChange={(value) => setQuality(value[0])}
-                  className="w-full"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="notes">Notes</Label>
-                <Textarea 
-                  id="notes" 
-                  placeholder="Any factors that affected your sleep..." 
-                  value={notes} 
-                  onChange={(e) => setNotes(e.target.value)} 
-                />
-              </div>
-              
-              <Button 
-                type="button" 
-                onClick={handleAddSleepRecord}
-                className="w-full bg-indigo-600 hover:bg-indigo-700"
-              >
-                Save Sleep Record
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      )}
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center">
-              <Clock className="mr-2 h-5 w-5 text-indigo-500" />
-              Average Sleep Duration
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-indigo-600">
-              {sleepSummary.averageDuration.toFixed(1)}
-              <span className="text-sm font-normal text-gray-500 ml-1">hours</span>
-            </div>
-            <p className="text-sm text-gray-500 mt-1">
-              {sleepSummary.averageDuration >= 7 
-                ? "Great job maintaining healthy sleep!" 
-                : "Try to get 7-9 hours of sleep for optimal health"}
-            </p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center">
-              <Moon className="mr-2 h-5 w-5 text-indigo-500" />
-              Sleep Quality
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-indigo-600">
-              {sleepSummary.averageQuality.toFixed(1)}
-              <span className="text-sm font-normal text-gray-500 ml-1">/ 10</span>
-            </div>
-            <p className="text-sm text-gray-500 mt-1">
-              {sleepSummary.averageQuality >= 7 
-                ? "Your sleep quality is good" 
-                : "Consider factors that might improve your sleep quality"}
-            </p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center">
-              <Sun className="mr-2 h-5 w-5 text-amber-500" />
-              Sleep Consistency
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-indigo-600">
-              {sleepRecords.length >= 3 ? "70%" : "N/A"}
-            </div>
-            <p className="text-sm text-gray-500 mt-1">
-              {sleepRecords.length < 3 
-                ? "Log at least 3 days to see consistency score" 
-                : "Try to maintain consistent sleep/wake times"}
-            </p>
-          </CardContent>
-        </Card>
+                
+                <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200/50 dark:border-blue-700/50">
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Screen Time</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Avoid screens 1-2 hours before bedtime to improve sleep quality.
+                  </p>
+                </div>
+                
+                <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200/50 dark:border-green-700/50">
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Environment</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Keep your bedroom cool, dark, and quiet for optimal sleep.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>Sleep Trends</CardTitle>
-          <CardDescription>Your sleep patterns over the past week</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {weeklySleepData.length > 0 ? (
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={weeklySleepData}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis yAxisId="left" />
-                  <YAxis yAxisId="right" orientation="right" />
-                  <Tooltip />
-                  <Legend />
-                  <Line 
-                    yAxisId="left"
-                    type="monotone" 
-                    dataKey="duration" 
-                    name="Sleep Hours"
-                    stroke="#6366f1" 
-                    activeDot={{ r: 8 }} 
-                  />
-                  <Line 
-                    yAxisId="right"
-                    type="monotone" 
-                    dataKey="quality" 
-                    name="Sleep Quality"
-                    stroke="#f97316" 
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          ) : (
-            <div className="text-center py-12 text-gray-500">
-              <Moon className="mx-auto h-12 w-12 opacity-20 mb-4" />
-              <h3 className="text-lg font-medium mb-2">No sleep data recorded yet</h3>
-              <p className="max-w-sm mx-auto">
-                Start logging your sleep to see your trends and get personalized insights
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Sleep Logs</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {sleepRecords.length > 0 ? (
-            <div className="space-y-4 max-h-96 overflow-auto">
-              {sleepRecords
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                .map((record) => (
-                  <div key={record.id} className="flex border-b border-gray-100 pb-4">
-                    <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
-                      <Moon className="h-8 w-8 text-indigo-600" />
-                    </div>
-                    <div>
-                      <div className="flex items-center">
-                        <h4 className="font-medium">{format(new Date(record.date), 'MMM dd, yyyy')}</h4>
-                        <span className="ml-2 px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded-full">
-                          {record.duration} hrs
-                        </span>
-                        <span className="ml-2 px-2 py-1 bg-amber-100 text-amber-800 text-xs rounded-full">
-                          Quality: {record.quality}/10
-                        </span>
-                      </div>
-                      <div className="text-sm text-gray-500 mt-1">
-                        {record.bedtime} - {record.wakeTime}
-                      </div>
-                      {record.notes && (
-                        <p className="text-sm mt-1">{record.notes}</p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              No sleep records found
-            </div>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 };

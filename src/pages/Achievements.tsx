@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useHealth } from '@/contexts/HealthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +10,7 @@ const Achievements: React.FC = () => {
 
   // Calculate user stats
   const totalExerciseDuration = exerciseItems.reduce((total, item) => total + item.duration, 0);
-  const totalCaloriesBurned = exerciseItems.reduce((total, item) => total + item.calories_burned, 0);
+  const totalCaloriesBurned = exerciseItems.reduce((total, item) => total + item.caloriesBurned, 0);
   const totalMealsLogged = foodItems.length;
   const totalSleepRecords = sleepRecords.length;
   

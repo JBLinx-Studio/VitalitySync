@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { UserProfile } from '@/types/health';
@@ -23,7 +22,6 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 }) => {
   const [imageError, setImageError] = useState(false);
   
-  // Get user's initials for the fallback
   const getInitials = () => {
     if (!userProfile || !userProfile.name) return "U";
     
@@ -35,16 +33,11 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     return nameParts[0][0] || "U";
   };
 
-  // Use a safe property access for the avatar/profileImage
   const getAvatarSrc = () => {
     if (imageError) return "";
-    
-    // Check for various possible profile image properties
-    const imageSrc = userProfile?.avatar || userProfile?.profileImage || userProfile?.photoUrl || userProfile?.image;
-    return imageSrc || "/placeholder.svg";
+    return userProfile?.avatar || "/placeholder.svg";
   };
 
-  // Size classes
   const sizeClasses = {
     xs: "w-6 h-6 text-xs",
     sm: "w-8 h-8 text-sm",
@@ -53,7 +46,6 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     xl: "w-20 h-20 text-xl"
   };
   
-  // Status color classes
   const statusColorClasses = {
     green: "bg-green-500",
     yellow: "bg-yellow-500",
@@ -63,7 +55,6 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     purple: "bg-cosmic-nebula"
   };
 
-  // Different avatar borders based on size for more cosmic aesthetics
   const getBorderClass = (size: string) => {
     switch(size) {
       case 'xl':
@@ -111,10 +102,8 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
         />
       )}
 
-      {/* Add cosmic glow effect on hover */}
       <span className="absolute inset-0 rounded-full bg-cosmic-nebula/0 group-hover:bg-cosmic-nebula/10 transition-all duration-300 -z-10 blur-md group-hover:blur-lg"></span>
       
-      {/* Add extra orbital effect for larger avatars */}
       {(size === 'lg' || size === 'xl') && (
         <div className="absolute inset-0 -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
           <div className="absolute w-full h-full rounded-full border border-cosmic-nebula/20 animate-spin-slow"></div>

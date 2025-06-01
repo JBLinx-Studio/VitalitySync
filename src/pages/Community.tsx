@@ -1,36 +1,32 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Users, 
-  Heart, 
   MessageCircle, 
+  Heart, 
   Share2, 
   Trophy, 
-  Flame,
-  Star,
+  Target, 
+  Calendar,
   TrendingUp,
-  Camera,
+  Star,
+  Medal,
+  Crown,
+  Activity,
+  Utensils,
+  Moon,
+  Brain,
   Plus,
   Search,
   Filter,
-  MoreHorizontal,
-  Target,
-  Award,
-  Zap,
-  Calendar,
-  MapPin,
-  BookOpen,
-  Chef,
-  Dumbbell
+  MoreHorizontal
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import GlassCard from '@/components/ui/glass-card';
 
 const Community: React.FC = () => {
   const [activeTab, setActiveTab] = useState('feed');
@@ -195,8 +191,8 @@ const Community: React.FC = () => {
   const filterOptions = [
     { value: 'all', label: 'All Posts', icon: <TrendingUp className="w-4 h-4" /> },
     { value: 'transformation', label: 'Transformations', icon: <Trophy className="w-4 h-4" /> },
-    { value: 'nutrition', label: 'Nutrition', icon: <Chef className="w-4 h-4" /> },
-    { value: 'fitness', label: 'Fitness', icon: <Dumbbell className="w-4 h-4" /> },
+    { value: 'nutrition', label: 'Nutrition', icon: <Utensils className="w-4 h-4" /> },
+    { value: 'fitness', label: 'Fitness', icon: <Activity className="w-4 h-4" /> },
     { value: 'mental', label: 'Mental Health', icon: <Heart className="w-4 h-4" /> }
   ];
 

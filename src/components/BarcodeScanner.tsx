@@ -2,7 +2,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Camera, X, Zap, Search, AlertCircle } from 'lucide-react';
+import { Camera, X, Zap, Search, AlertCircle, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import GlassCard from '@/components/ui/glass-card';
 

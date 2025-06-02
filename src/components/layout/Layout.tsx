@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import EnhancedHeader from './EnhancedHeader';
@@ -8,6 +9,8 @@ import { Toaster } from '@/components/ui/toaster';
 import { PremiumEffects } from '@/components/common';
 import ResponsiveContainer from './ResponsiveContainer';
 import GlassCard from '@/components/ui/glass-card';
+import { useViewport } from '@/hooks/use-viewport';
+import { cn } from '@/lib/utils';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { getUnreadNotificationsCount } = useHealth();
@@ -20,33 +23,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   
   const location = useLocation();
   const layoutRef = useRef<HTMLDivElement>(null);
-  const [viewportDimensions, setViewportDimensions] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight
-  });
+  const { isMobile, isTablet, width, height } = useViewport();
 
   const isHomePage = location.pathname === "/" || 
                      location.pathname === "/Health-and-Fitness-Webapp/" || 
                      location.pathname === "/Health-and-Fitness-Webapp";
-
-  useEffect(() => {
-    let resizeTimeout: number;
-    const handleResize = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = window.setTimeout(() => {
-        setViewportDimensions({
-          width: window.innerWidth,
-          height: window.innerHeight
-        });
-      }, 100);
-    };
-    
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      clearTimeout(resizeTimeout);
-    };
-  }, []);
 
   const getBackgroundEffect = () => {
     const pathWithoutBase = location.pathname.replace('/Health-and-Fitness-Webapp', '');
@@ -59,7 +40,14 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return 'particles';
   };
 
-  const isDynamicSize = viewportDimensions.width < 768;
+  // Responsive container settings
+  const getContainerSettings = () => {
+    if (isMobile) return { maxWidth: 'full' as const, padding: 'xs' as const };
+    if (isTablet) return { maxWidth: 'xl' as const, padding: 'sm' as const };
+    return { maxWidth: '2xl' as const, padding: 'md' as const };
+  };
+
+  const { maxWidth, padding } = getContainerSettings();
 
   return (
     <div 
@@ -70,25 +58,38 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         maxWidth: '100vw'
       }}
     >
-      {/* Enhanced dynamic gradient background */}
+      {/* Enhanced responsive background */}
       <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/30 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
-        {/* Animated floating orbs with better performance */}
-        <div className="absolute top-10 right-10 w-72 h-72 bg-gradient-to-br from-blue-400/15 via-purple-500/15 to-pink-500/15 rounded-full blur-3xl animate-pulse-soft opacity-80"></div>
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-gradient-to-tr from-emerald-400/15 via-cyan-500/15 to-blue-500/15 rounded-full blur-3xl animate-pulse-soft delay-1000 opacity-80"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-purple-400/10 via-pink-400/10 to-orange-400/10 rounded-full blur-3xl animate-pulse-soft delay-500 opacity-80"></div>
+        {/* Responsive animated floating orbs */}
+        {!isReducedMotion && (
+          <>
+            <div className={cn(
+              "absolute bg-gradient-to-br from-blue-400/15 via-purple-500/15 to-pink-500/15 rounded-full blur-3xl animate-pulse-soft opacity-80",
+              isMobile ? "top-5 right-5 w-40 h-40" : isTablet ? "top-8 right-8 w-60 h-60" : "top-10 right-10 w-72 h-72"
+            )}></div>
+            <div className={cn(
+              "absolute bg-gradient-to-tr from-emerald-400/15 via-cyan-500/15 to-blue-500/15 rounded-full blur-3xl animate-pulse-soft delay-1000 opacity-80",
+              isMobile ? "bottom-5 left-5 w-48 h-48" : isTablet ? "bottom-8 left-8 w-72 h-72" : "bottom-10 left-10 w-96 h-96"
+            )}></div>
+            <div className={cn(
+              "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-purple-400/10 via-pink-400/10 to-orange-400/10 rounded-full blur-3xl animate-pulse-soft delay-500 opacity-80",
+              isMobile ? "w-44 h-44" : isTablet ? "w-64 h-64" : "w-80 h-80"
+            )}></div>
+          </>
+        )}
         
-        {/* Premium effects layer with performance optimization */}
-        {enableParticles && !isReducedMotion && (
+        {/* Premium effects with better performance for mobile */}
+        {enableParticles && !isReducedMotion && width >= 768 && (
           <PremiumEffects 
             type={getBackgroundEffect()} 
-            density={viewportDimensions.width < 768 ? 'low' : animationLevel === 'full' ? 'high' : 'medium'}
+            density={width < 1024 ? 'low' : animationLevel === 'full' ? 'medium' : 'low'}
             speed={animationLevel === 'full' ? 'medium' : 'slow'}
-            interactive={animationLevel !== 'minimal' && viewportDimensions.width >= 768}
+            interactive={animationLevel !== 'minimal' && width >= 1024}
           />
         )}
         
-        {/* Enhanced mesh gradient overlay */}
-        <div className="absolute inset-0 opacity-40">
+        {/* Enhanced responsive mesh gradient */}
+        <div className={cn("absolute inset-0", isMobile ? "opacity-30" : "opacity-40")}>
           <div 
             className="absolute inset-0"
             style={{
@@ -102,7 +103,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           />
         </div>
         
-        {/* Subtle overlay for content readability */}
+        {/* Optimized overlay for content readability */}
         <div className="absolute inset-0 bg-white/10 dark:bg-slate-900/30 backdrop-blur-[0.5px]"></div>
       </div>
 
@@ -110,18 +111,25 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       
       <main className="flex-grow relative z-10">
         <ResponsiveContainer 
-          maxWidth={isDynamicSize ? 'full' : '2xl'}
-          padding={isDynamicSize ? 'sm' : 'lg'}
+          maxWidth={maxWidth}
+          padding={padding}
         >
           {!isHomePage ? (
             <GlassCard 
               variant="premium" 
-              size={isDynamicSize ? 'sm' : 'lg'}
-              className="min-h-[60vh] relative animate-fade-in"
+              size={isMobile ? 'sm' : isTablet ? 'md' : 'lg'}
+              className={cn(
+                "relative animate-fade-in",
+                isMobile ? "min-h-[50vh]" : "min-h-[60vh]"
+              )}
             >
-              {/* Enhanced decorative elements */}
-              <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-500/8 via-purple-500/8 to-transparent rounded-full blur-2xl animate-pulse-soft"></div>
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-pink-500/8 via-blue-500/8 to-transparent rounded-full blur-2xl animate-pulse-soft delay-1000"></div>
+              {/* Responsive decorative elements */}
+              {!isMobile && (
+                <>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/8 via-purple-500/8 to-transparent rounded-full blur-2xl animate-pulse-soft"></div>
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-pink-500/8 via-blue-500/8 to-transparent rounded-full blur-2xl animate-pulse-soft delay-1000"></div>
+                </>
+              )}
               
               <div className="relative z-10 h-full">
                 {children}

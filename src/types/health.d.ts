@@ -227,4 +227,12 @@ export interface HealthContextType {
   // Goals
   checkAndUpdateGoals: () => void;
   getGoalProgress: (type: string) => number;
+  
+  // Health Summary
+  getHealthSummary: () => {
+    todayCalories: number;
+    totalWorkouts: number;
+    avgSleepHours: number;
+    moodScore: number;
+  };
 }

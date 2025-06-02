@@ -23,11 +23,11 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
-  const { isMobile, isTablet } = useViewport();
+  const { isMobile, isTablet, width } = useViewport();
   
   const checkForArrows = () => {
     const container = scrollContainerRef.current;
-    if (!container) return;
+    if (!container || isMobile) return;
     
     setShowLeftArrow(container.scrollLeft > 20);
     setShowRightArrow(container.scrollLeft < container.scrollWidth - container.clientWidth - 20);
@@ -83,12 +83,39 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
     }
   };
 
+  // Enhanced responsive settings
+  const containerClass = cn(
+    "relative backdrop-blur-2xl rounded-3xl shadow-2xl border mx-auto max-w-fit transition-all duration-300",
+    "ring-1 ring-white/20 dark:ring-slate-700/20",
+    isMobile 
+      ? "bg-white/90 dark:bg-slate-900/90 border-gray-200/80 dark:border-gray-700/80 p-1 mx-2" 
+      : "bg-white/95 dark:bg-slate-900/95 border-gray-200/60 dark:border-gray-700/60 p-3",
+    className
+  );
+
+  const scrollContainerClass = cn(
+    "flex overflow-x-auto scrollbar-none scroll-smooth gap-1 py-2",
+    isMobile ? "px-2" : "px-12"
+  );
+
+  const getTabClass = (isActive: boolean) => cn(
+    "flex items-center whitespace-nowrap rounded-2xl transition-all duration-300 font-semibold group relative overflow-hidden min-w-fit border",
+    "hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-1",
+    isMobile 
+      ? "gap-2 px-3 py-2 text-xs min-w-[80px] justify-center" 
+      : isTablet 
+        ? "gap-2 px-4 py-2.5 text-sm min-w-[100px]" 
+        : "gap-3 px-6 py-3 text-sm min-w-fit",
+    isActive 
+      ? "bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white shadow-xl shadow-blue-500/30 active-tab transform scale-[1.02] border-blue-400/50" 
+      : "text-gray-700 dark:text-gray-200 bg-white/60 dark:bg-slate-800/60 hover:bg-white/80 dark:hover:bg-slate-800/80 hover:shadow-lg border-gray-200/50 dark:border-gray-700/50"
+  );
+
+  // Filter tabs for mobile to avoid overcrowding
+  const displayTabs = isMobile && tabs.length > 4 ? tabs.slice(0, 4) : tabs;
+
   return (
-    <div className={cn(
-      "relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-200/60 dark:border-gray-700/60 p-3 mx-auto max-w-fit",
-      "ring-1 ring-white/20 dark:ring-slate-700/20",
-      className
-    )}>
+    <div className={containerClass}>
       <div className="flex items-center relative">
         {showLeftArrow && !isMobile && (
           <Button
@@ -104,37 +131,43 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
         
         <div
           ref={scrollContainerRef}
-          className="flex overflow-x-auto scrollbar-none scroll-smooth gap-2 px-12 py-2"
+          className={scrollContainerClass}
           style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
         >
-          {tabs.map(tab => (
-            <NavLink
-              key={tab.path}
-              to={tab.path}
-              className={({ isActive }) => 
-                cn(
-                  "flex items-center gap-3 whitespace-nowrap px-6 py-3 rounded-xl transition-all duration-300 text-sm font-semibold group relative overflow-hidden min-w-fit",
-                  "hover:scale-[1.02] active:scale-[0.98] border",
-                  "focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2",
-                  isActive 
-                    ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/25 active-tab transform scale-[1.02] border-blue-400/50" 
-                    : "text-gray-700 dark:text-gray-200 bg-white/60 dark:bg-slate-800/60 hover:bg-white/80 dark:hover:bg-slate-800/80 hover:shadow-md border-gray-200/50 dark:border-gray-700/50",
-                  isMobile ? "flex-grow justify-center min-w-[140px]" : "min-w-fit"
-                )
-              }
-              role="tab"
-              aria-selected={location.pathname === tab.path}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <span className="relative z-10 transition-transform duration-300 group-hover:scale-110 flex-shrink-0">
-                {tab.icon}
-              </span>
-              <span className="relative z-10 font-semibold text-base leading-tight">{tab.name}</span>
-              {location.pathname === tab.path && (
-                <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-white/90 rounded-full shadow-lg"></div>
-              )}
-            </NavLink>
-          ))}
+          {displayTabs.map(tab => {
+            const isActive = location.pathname === tab.path;
+            return (
+              <NavLink
+                key={tab.path}
+                to={tab.path}
+                className={getTabClass(isActive)}
+                role="tab"
+                aria-selected={isActive}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                {tab.icon && (
+                  <span className={cn(
+                    "relative z-10 transition-transform duration-300 group-hover:scale-110 flex-shrink-0",
+                    isMobile ? "text-base" : "text-lg"
+                  )}>
+                    {tab.icon}
+                  </span>
+                )}
+                
+                <span className={cn(
+                  "relative z-10 font-semibold leading-tight",
+                  isMobile && tab.name.length > 8 ? "hidden" : ""
+                )}>
+                  {isMobile && tab.name.length > 8 ? tab.name.slice(0, 6) + '...' : tab.name}
+                </span>
+                
+                {isActive && (
+                  <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-white/90 rounded-full shadow-lg animate-pulse"></div>
+                )}
+              </NavLink>
+            );
+          })}
         </div>
         
         {showRightArrow && !isMobile && (
@@ -149,6 +182,10 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
           </Button>
         )}
       </div>
+
+      {/* Enhanced visual effects */}
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blue-500/60 to-transparent rounded-full animate-pulse"></div>
+      <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-3xl opacity-0 hover:opacity-100 blur-xl transition-opacity duration-500 -z-10"></div>
     </div>
   );
 };

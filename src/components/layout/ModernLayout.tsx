@@ -9,6 +9,7 @@ import { PremiumEffects } from '@/components/common';
 import ResponsiveContainer from './ResponsiveContainer';
 import GlassCard from '@/components/ui/glass-card';
 import { useViewport } from '@/hooks/use-viewport';
+import { cn } from '@/lib/utils';
 
 const ModernLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { getUnreadNotificationsCount } = useHealth();
@@ -38,7 +39,7 @@ const ModernLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     return 'particles';
   };
 
-  // Responsive container settings
+  // Enhanced responsive container settings
   const getContainerSettings = () => {
     if (isMobile) return { maxWidth: 'full' as const, padding: 'xs' as const };
     if (isTablet) return { maxWidth: 'xl' as const, padding: 'sm' as const };
@@ -56,28 +57,28 @@ const ModernLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         maxWidth: '100vw'
       }}
     >
-      {/* Optimized gradient background */}
+      {/* Enhanced gradient background with better performance */}
       <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50/50 to-indigo-100/50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
-        {/* Responsive floating orbs */}
+        {/* Responsive floating orbs with better animations */}
         {!isReducedMotion && (
           <>
             <div className={cn(
               "absolute bg-gradient-to-br from-blue-400/20 via-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-pulse-soft",
-              isMobile ? "top-5 right-5 w-32 h-32" : "top-10 right-10 w-72 h-72"
+              isMobile ? "top-3 right-3 w-24 h-24" : isTablet ? "top-6 right-6 w-48 h-48" : "top-10 right-10 w-72 h-72"
             )}></div>
             <div className={cn(
               "absolute bg-gradient-to-tr from-emerald-400/20 via-cyan-500/20 to-blue-500/20 rounded-full blur-3xl animate-pulse-soft delay-1000",
-              isMobile ? "bottom-5 left-5 w-40 h-40" : "bottom-10 left-10 w-96 h-96"
+              isMobile ? "bottom-3 left-3 w-32 h-32" : isTablet ? "bottom-6 left-6 w-56 h-56" : "bottom-10 left-10 w-96 h-96"
             )}></div>
             <div className={cn(
               "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-purple-400/10 via-pink-400/10 to-orange-400/10 rounded-full blur-3xl animate-pulse-soft delay-500",
-              isMobile ? "w-36 h-36" : "w-80 h-80"
+              isMobile ? "w-28 h-28" : isTablet ? "w-52 h-52" : "w-80 h-80"
             )}></div>
           </>
         )}
         
-        {/* Premium effects with performance optimization */}
-        {enableParticles && !isReducedMotion && !isMobile && (
+        {/* Premium effects with adaptive performance */}
+        {enableParticles && !isReducedMotion && width >= 768 && (
           <PremiumEffects 
             type={getBackgroundEffect()} 
             density={width < 1024 ? 'low' : animationLevel === 'full' ? 'medium' : 'low'}
@@ -86,8 +87,8 @@ const ModernLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
           />
         )}
         
-        {/* Responsive mesh gradient overlay */}
-        <div className={cn("absolute inset-0", isMobile ? "opacity-20" : "opacity-30")}>
+        {/* Enhanced responsive mesh gradient */}
+        <div className={cn("absolute inset-0", isMobile ? "opacity-25" : isTablet ? "opacity-30" : "opacity-35")}>
           <div 
             className="absolute inset-0"
             style={{
@@ -100,8 +101,11 @@ const ModernLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
           />
         </div>
         
-        {/* Subtle overlay for content readability */}
-        <div className="absolute inset-0 bg-white/20 dark:bg-slate-900/40 backdrop-blur-[0.5px]"></div>
+        {/* Adaptive overlay for content readability */}
+        <div className={cn(
+          "absolute inset-0 backdrop-blur-[0.5px]",
+          isMobile ? "bg-white/15 dark:bg-slate-900/35" : "bg-white/20 dark:bg-slate-900/40"
+        )}></div>
       </div>
 
       <Header />
@@ -117,14 +121,20 @@ const ModernLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
               size={isMobile ? 'sm' : isTablet ? 'md' : 'lg'}
               className={cn(
                 "relative animate-fade-in",
-                isMobile ? "min-h-[50vh]" : "min-h-[60vh]"
+                isMobile ? "min-h-[45vh] mx-1" : isTablet ? "min-h-[55vh] mx-2" : "min-h-[60vh]"
               )}
             >
-              {/* Responsive decorative elements */}
+              {/* Enhanced responsive decorative elements */}
               {!isMobile && (
                 <>
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-transparent rounded-full blur-2xl"></div>
-                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-pink-500/10 via-blue-500/10 to-transparent rounded-full blur-2xl"></div>
+                  <div className={cn(
+                    "absolute top-0 right-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-transparent rounded-full blur-2xl",
+                    isTablet ? "w-24 h-24" : "w-32 h-32"
+                  )}></div>
+                  <div className={cn(
+                    "absolute bottom-0 left-0 bg-gradient-to-tr from-pink-500/10 via-blue-500/10 to-transparent rounded-full blur-2xl",
+                    isTablet ? "w-20 h-20" : "w-24 h-24"
+                  )}></div>
                 </>
               )}
               

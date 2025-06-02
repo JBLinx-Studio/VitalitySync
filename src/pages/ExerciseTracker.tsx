@@ -78,7 +78,7 @@ const ExerciseTracker: React.FC = () => {
                     </p>
                   </div>
                   <div className="p-3 bg-orange-100 dark:bg-orange-900/40 rounded-2xl">
-                    <Stopwatch className="h-8 w-8 text-orange-600 dark:text-orange-400" />
+                    <Timer className="h-8 w-8 text-orange-600 dark:text-orange-400" />
                   </div>
                 </div>
               </CardContent>

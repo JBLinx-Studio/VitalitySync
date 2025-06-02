@@ -1,11 +1,17 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useViewport } from '@/hooks';
 import { cn } from '@/lib/utils';
 import { throttle } from '@/utils/performance';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface NavigationTab {
   name: string;
@@ -83,36 +89,36 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
     }
   };
 
-  // Enhanced responsive settings
+  // Mobile optimization: show only essential tabs + overflow menu
+  const visibleTabs = isMobile ? tabs.slice(0, 3) : tabs;
+  const overflowTabs = isMobile ? tabs.slice(3) : [];
+
   const containerClass = cn(
-    "relative backdrop-blur-2xl rounded-3xl shadow-2xl border mx-auto max-w-fit transition-all duration-300",
+    "relative backdrop-blur-2xl rounded-2xl md:rounded-3xl shadow-2xl border mx-auto max-w-fit transition-all duration-300",
     "ring-1 ring-white/20 dark:ring-slate-700/20",
     isMobile 
-      ? "bg-white/90 dark:bg-slate-900/90 border-gray-200/80 dark:border-gray-700/80 p-1 mx-2" 
-      : "bg-white/95 dark:bg-slate-900/95 border-gray-200/60 dark:border-gray-700/60 p-3",
+      ? "bg-white/95 dark:bg-slate-900/95 border-gray-200/80 dark:border-gray-700/80 p-1 mx-1" 
+      : "bg-white/95 dark:bg-slate-900/95 border-gray-200/60 dark:border-gray-700/60 p-2 md:p-3",
     className
   );
 
   const scrollContainerClass = cn(
-    "flex overflow-x-auto scrollbar-none scroll-smooth gap-1 py-2",
-    isMobile ? "px-2" : "px-12"
+    "flex overflow-x-auto scrollbar-none scroll-smooth gap-1 py-1 md:py-2",
+    isMobile ? "px-1" : "px-8 md:px-12"
   );
 
   const getTabClass = (isActive: boolean) => cn(
-    "flex items-center whitespace-nowrap rounded-2xl transition-all duration-300 font-semibold group relative overflow-hidden min-w-fit border",
+    "flex items-center whitespace-nowrap rounded-xl md:rounded-2xl transition-all duration-300 font-semibold group relative overflow-hidden min-w-fit border",
     "hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-1",
     isMobile 
-      ? "gap-2 px-3 py-2 text-xs min-w-[80px] justify-center" 
+      ? "gap-1 px-2 py-1.5 text-xs min-w-[60px] justify-center" 
       : isTablet 
-        ? "gap-2 px-4 py-2.5 text-sm min-w-[100px]" 
-        : "gap-3 px-6 py-3 text-sm min-w-fit",
+        ? "gap-2 px-3 py-2 text-sm min-w-[80px]" 
+        : "gap-3 px-4 md:px-6 py-2 md:py-3 text-sm min-w-fit",
     isActive 
       ? "bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white shadow-xl shadow-blue-500/30 active-tab transform scale-[1.02] border-blue-400/50" 
       : "text-gray-700 dark:text-gray-200 bg-white/60 dark:bg-slate-800/60 hover:bg-white/80 dark:hover:bg-slate-800/80 hover:shadow-lg border-gray-200/50 dark:border-gray-700/50"
   );
-
-  // Filter tabs for mobile to avoid overcrowding
-  const displayTabs = isMobile && tabs.length > 4 ? tabs.slice(0, 4) : tabs;
 
   return (
     <div className={containerClass}>
@@ -121,7 +127,7 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
           <Button
             variant="ghost"
             size="icon"
-            className="absolute left-2 z-20 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-200/60 dark:border-gray-700/60 h-9 w-9"
+            className="absolute left-2 z-20 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-200/60 dark:border-gray-700/60 h-8 w-8 md:h-9 md:w-9"
             onClick={scrollLeft}
             aria-label="Scroll tabs left"
           >
@@ -134,7 +140,7 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
           className={scrollContainerClass}
           style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
         >
-          {displayTabs.map(tab => {
+          {visibleTabs.map(tab => {
             const isActive = location.pathname === tab.path;
             return (
               <NavLink
@@ -149,7 +155,7 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
                 {tab.icon && (
                   <span className={cn(
                     "relative z-10 transition-transform duration-300 group-hover:scale-110 flex-shrink-0",
-                    isMobile ? "text-base" : "text-lg"
+                    isMobile ? "text-sm" : "text-base md:text-lg"
                   )}>
                     {tab.icon}
                   </span>
@@ -157,24 +163,54 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
                 
                 <span className={cn(
                   "relative z-10 font-semibold leading-tight",
-                  isMobile && tab.name.length > 8 ? "hidden" : ""
+                  isMobile && tab.name.length > 6 ? "hidden" : ""
                 )}>
-                  {isMobile && tab.name.length > 8 ? tab.name.slice(0, 6) + '...' : tab.name}
+                  {isMobile && tab.name.length > 6 ? tab.name.slice(0, 4) + '..' : tab.name}
                 </span>
                 
                 {isActive && (
-                  <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-white/90 rounded-full shadow-lg animate-pulse"></div>
+                  <div className="absolute bottom-0.5 md:bottom-1 left-1/2 transform -translate-x-1/2 w-6 md:w-8 h-0.5 md:h-1 bg-white/90 rounded-full shadow-lg animate-pulse"></div>
                 )}
               </NavLink>
             );
           })}
+          
+          {/* Overflow menu for mobile */}
+          {isMobile && overflowTabs.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "flex items-center gap-1 px-2 py-1.5 text-xs min-w-[40px] justify-center rounded-xl transition-all duration-300 font-semibold group relative overflow-hidden border",
+                    "text-gray-700 dark:text-gray-200 bg-white/60 dark:bg-slate-800/60 hover:bg-white/80 dark:hover:bg-slate-800/80 hover:shadow-lg border-gray-200/50 dark:border-gray-700/50"
+                  )}
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-gray-200/60 dark:border-gray-700/60" align="end">
+                {overflowTabs.map(tab => (
+                  <DropdownMenuItem key={tab.path} asChild>
+                    <NavLink
+                      to={tab.path}
+                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-slate-800"
+                    >
+                      {tab.icon}
+                      {tab.name}
+                    </NavLink>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
         
         {showRightArrow && !isMobile && (
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-2 z-20 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-200/60 dark:border-gray-700/60 h-9 w-9"
+            className="absolute right-2 z-20 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-200/60 dark:border-gray-700/60 h-8 w-8 md:h-9 md:w-9"
             onClick={scrollRight}
             aria-label="Scroll tabs right"
           >
@@ -184,8 +220,8 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
       </div>
 
       {/* Enhanced visual effects */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blue-500/60 to-transparent rounded-full animate-pulse"></div>
-      <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-3xl opacity-0 hover:opacity-100 blur-xl transition-opacity duration-500 -z-10"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 md:h-1 bg-gradient-to-r from-transparent via-blue-500/60 to-transparent rounded-full animate-pulse"></div>
+      <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-2xl md:rounded-3xl opacity-0 hover:opacity-100 blur-xl transition-opacity duration-500 -z-10"></div>
     </div>
   );
 };

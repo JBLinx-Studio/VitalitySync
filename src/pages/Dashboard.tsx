@@ -2,24 +2,21 @@
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Activity, 
-  Apple, 
-  Brain, 
+  BarChart3, 
   Calendar, 
   Flame, 
   Heart, 
   Moon, 
   Target, 
   TrendingUp, 
-  Utensils,
   Zap,
   Award,
   Clock,
-  BarChart3,
-  Plus
+  Plus,
+  Brain
 } from 'lucide-react';
 import { useHealth } from '@/contexts/HealthContext';
 import { useNavigate } from 'react-router-dom';
@@ -27,19 +24,23 @@ import GlassCard from '@/components/ui/glass-card';
 import ResponsiveContainer from '@/components/layout/ResponsiveContainer';
 import { useViewport } from '@/hooks';
 import { Badge } from '@/components/ui/badge';
+import { EnhancedQuickStatsCard } from '@/components/common/EnhancedQuickStatsCard';
+import QuickActionsPanel from '@/components/common/QuickActionsPanel';
+import AnalyticsDashboard from '@/components/common/AnalyticsDashboard';
 
 const Dashboard: React.FC = () => {
   const { 
     userProfile, 
     foodItems, 
     exerciseItems, 
-    sleepItems, 
-    mentalWellnessItems,
-    getHealthSummary 
+    sleepRecords, 
+    moodRecords,
+    getHealthSummary,
+    getTodaysWaterIntake
   } = useHealth();
   const navigate = useNavigate();
   const { isMobile, isTablet } = useViewport();
-  const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month'>('today');
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'actions'>('overview');
 
   // Enhanced health summary with more detailed analytics
   const healthSummary = useMemo(() => {
@@ -49,87 +50,59 @@ const Dashboard: React.FC = () => {
     // Today's data
     const todayFood = foodItems.filter(item => item.date === today);
     const todayExercise = exerciseItems.filter(item => item.date === today);
-    const todaySleep = sleepItems.filter(item => item.date === today);
-    const todayMood = mentalWellnessItems.filter(item => item.date === today);
-
-    // Calculate streaks
-    const calculateStreak = (items: any[], dateField = 'date') => {
-      const dates = [...new Set(items.map(item => item[dateField]))].sort();
-      let streak = 0;
-      let currentDate = new Date();
-      
-      for (let i = dates.length - 1; i >= 0; i--) {
-        const itemDate = new Date(dates[i]);
-        const daysDiff = Math.floor((currentDate.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24));
-        
-        if (daysDiff === streak) {
-          streak++;
-          currentDate = itemDate;
-        } else {
-          break;
-        }
-      }
-      return streak;
-    };
+    const todaySleep = sleepRecords.filter(item => item.date === today);
+    const todayMood = moodRecords.filter(item => item.date === today);
+    const todayWater = getTodaysWaterIntake();
 
     return {
       ...summary,
-      todayCalories: todayFood.reduce((sum, item) => sum + item.calories, 0),
+      todayCalories: todayFood.reduce((sum, item) => sum + (item.calories * item.quantity), 0),
       todayExerciseMinutes: todayExercise.reduce((sum, item) => sum + item.duration, 0),
       todaySleepHours: todaySleep.length > 0 ? todaySleep[0].duration : 0,
-      todayMoodScore: todayMood.length > 0 ? todayMood[0].mood_score : 0,
-      exerciseStreak: calculateStreak(exerciseItems),
-      foodStreak: calculateStreak(foodItems),
-      sleepStreak: calculateStreak(sleepItems),
+      todayMoodScore: todayMood.length > 0 ? (todayMood[0] as any).mood_score || 0 : 0,
+      todayWaterGlasses: Math.round(todayWater / 250), // Convert ml to glasses
       calorieGoal: userProfile?.daily_calorie_goal || 2000,
       exerciseGoal: userProfile?.daily_exercise_goal || 30,
-      waterGoal: userProfile?.daily_water_goal || 8,
-      weeklyProgress: {
-        exercise: Math.min((summary.totalDuration / 150) * 100, 100), // WHO recommends 150min/week
-        calories: Math.min((summary.totalCalories / (summary.calorieGoal * 7)) * 100, 100)
-      }
+      waterGoal: userProfile?.daily_water_goal || 8
     };
-  }, [foodItems, exerciseItems, sleepItems, mentalWellnessItems, userProfile, getHealthSummary]);
+  }, [foodItems, exerciseItems, sleepRecords, moodRecords, userProfile, getHealthSummary, getTodaysWaterIntake]);
 
-  const quickActions = [
+  const todayStats = [
     {
-      title: 'Log Meal',
-      description: 'Track your nutrition',
-      icon: <Utensils className="w-5 h-5" />,
-      path: '/food',
-      color: 'from-green-500 to-emerald-600',
-      count: healthSummary.todayCalories
+      title: 'Calories Today',
+      value: healthSummary.todayCalories,
+      goal: healthSummary.calorieGoal,
+      icon: <Flame className="w-6 h-6" />,
+      color: 'orange' as const,
+      unit: 'kcal',
+      trend: { value: 5, direction: 'up' as const }
     },
     {
-      title: 'Add Exercise',
-      description: 'Record workout',
-      icon: <Activity className="w-5 h-5" />,
-      path: '/exercise',
-      color: 'from-orange-500 to-red-600',
-      count: healthSummary.todayExerciseMinutes
+      title: 'Exercise Minutes',
+      value: healthSummary.todayExerciseMinutes,
+      goal: healthSummary.exerciseGoal,
+      icon: <Activity className="w-6 h-6" />,
+      color: 'blue' as const,
+      unit: 'min',
+      trend: { value: 12, direction: 'up' as const }
     },
     {
-      title: 'Log Sleep',
-      description: 'Track rest quality',
-      icon: <Moon className="w-5 h-5" />,
-      path: '/sleep',
-      color: 'from-purple-500 to-indigo-600',
-      count: healthSummary.todaySleepHours
+      title: 'Water Intake',
+      value: healthSummary.todayWaterGlasses,
+      goal: healthSummary.waterGoal,
+      icon: <Heart className="w-6 h-6" />,
+      color: 'blue' as const,
+      unit: 'glasses',
+      trend: { value: 8, direction: 'up' as const }
     },
     {
-      title: 'Mood Check',
-      description: 'Mental wellness',
-      icon: <Brain className="w-5 h-5" />,
-      path: '/mental',
-      color: 'from-pink-500 to-purple-600',
-      count: healthSummary.todayMoodScore
+      title: 'Sleep Hours',
+      value: healthSummary.todaySleepHours,
+      goal: 8,
+      icon: <Moon className="w-6 h-6" />,
+      color: 'purple' as const,
+      unit: 'hrs'
     }
-  ];
-
-  const achievements = [
-    { title: 'Exercise Streak', value: healthSummary.exerciseStreak, max: 30, icon: Activity },
-    { title: 'Food Logging', value: healthSummary.foodStreak, max: 30, icon: Apple },
-    { title: 'Sleep Tracking', value: healthSummary.sleepStreak, max: 30, icon: Moon }
   ];
 
   return (
@@ -142,220 +115,115 @@ const Dashboard: React.FC = () => {
               Welcome back, {userProfile?.name || 'Health Champion'}! 👋
             </h1>
             <p className="text-gray-600 dark:text-gray-300 text-lg">
-              Here's your health overview for today
+              Here's your comprehensive health overview
             </p>
           </div>
 
-          {/* Quick Stats Overview */}
-          <div className={`grid gap-4 md:gap-6 ${isMobile ? 'grid-cols-2' : 'grid-cols-4'}`}>
-            {[
-              {
-                title: 'Calories Today',
-                value: healthSummary.todayCalories,
-                goal: healthSummary.calorieGoal,
-                icon: <Flame className="w-6 h-6 text-orange-500" />,
-                color: 'orange',
-                unit: 'kcal'
-              },
-              {
-                title: 'Exercise Minutes',
-                value: healthSummary.todayExerciseMinutes,
-                goal: healthSummary.exerciseGoal,
-                icon: <Activity className="w-6 h-6 text-blue-500" />,
-                color: 'blue',
-                unit: 'min'
-              },
-              {
-                title: 'Sleep Hours',
-                value: healthSummary.todaySleepHours,
-                goal: 8,
-                icon: <Moon className="w-6 h-6 text-purple-500" />,
-                color: 'purple',
-                unit: 'hrs'
-              },
-              {
-                title: 'Mood Score',
-                value: healthSummary.todayMoodScore,
-                goal: 10,
-                icon: <Brain className="w-6 h-6 text-pink-500" />,
-                color: 'pink',
-                unit: '/10'
-              }
-            ].map((stat, index) => (
-              <GlassCard key={index} variant="premium" size={isMobile ? "sm" : "md"}>
-                <CardContent className={`${isMobile ? 'p-4' : 'p-6'}`}>
-                  <div className="flex items-center justify-between mb-3">
-                    {stat.icon}
-                    <Badge variant="outline" className="text-xs">
-                      {Math.round((stat.value / stat.goal) * 100)}%
+          {/* Navigation Tabs */}
+          <Tabs value={activeTab} onValueChange={(value: any) => setActiveTab(value)} className="w-full">
+            <TabsList className={`grid w-full ${isMobile ? 'grid-cols-3' : 'grid-cols-3'} mb-6`}>
+              <TabsTrigger value="overview" className="flex items-center gap-2">
+                <Target className="w-4 h-4" />
+                {!isMobile && "Overview"}
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="flex items-center gap-2">
+                <BarChart3 className="w-4 h-4" />
+                {!isMobile && "Analytics"}
+              </TabsTrigger>
+              <TabsTrigger value="actions" className="flex items-center gap-2">
+                <Zap className="w-4 h-4" />
+                {!isMobile && "Actions"}
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="overview" className="space-y-6">
+              {/* Today's Quick Stats */}
+              <div className={`grid gap-4 md:gap-6 ${isMobile ? 'grid-cols-2' : 'grid-cols-4'}`}>
+                {todayStats.map((stat, index) => (
+                  <EnhancedQuickStatsCard
+                    key={index}
+                    title={stat.title}
+                    value={stat.value}
+                    goal={stat.goal}
+                    unit={stat.unit}
+                    icon={stat.icon}
+                    color={stat.color}
+                    trend={stat.trend}
+                    size={isMobile ? 'sm' : 'md'}
+                  />
+                ))}
+              </div>
+
+              {/* Recent Activity */}
+              <GlassCard variant="premium">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-blue-500" />
+                    Recent Activity
+                    <Badge variant="outline" className="ml-auto">
+                      Latest
                     </Badge>
-                  </div>
-                  <div>
-                    <p className={`font-bold text-${stat.color}-600 dark:text-${stat.color}-400 ${isMobile ? 'text-xl' : 'text-2xl'}`}>
-                      {stat.value}{stat.unit}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Goal: {stat.goal}{stat.unit}
-                    </p>
-                    <Progress 
-                      value={Math.min((stat.value / stat.goal) * 100, 100)} 
-                      className="mt-2 h-2"
-                    />
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {[...foodItems, ...exerciseItems, ...sleepRecords]
+                      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                      .slice(0, 6)
+                      .map((item, index) => (
+                        <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-600/50 transition-colors">
+                          <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg text-white">
+                            {(item as any).name ? <Flame className="w-4 h-4" /> : 
+                             (item as any).duration ? <Activity className="w-4 h-4" /> :
+                             <Moon className="w-4 h-4" />}
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium">
+                              {(item as any).name || (item as any).exercise_type || 'Sleep tracked'}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {new Date(item.date).toLocaleDateString()} • {
+                                (item as any).calories ? `${(item as any).calories} cal` :
+                                (item as any).calories_burned ? `${(item as any).calories_burned} cal burned` :
+                                (item as any).duration ? `${(item as any).duration} min` : 'Logged'
+                              }
+                            </p>
+                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            {(item as any).meal_type || (item as any).type || 'sleep'}
+                          </Badge>
+                        </div>
+                      ))}
+                    {[...foodItems, ...exerciseItems, ...sleepRecords].length === 0 && (
+                      <div className="text-center py-8">
+                        <div className="p-4 bg-gray-100 dark:bg-slate-700 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                          <Calendar className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <p className="text-gray-500 dark:text-gray-400 mb-4">
+                          No recent activity. Start tracking your health journey!
+                        </p>
+                        <Button
+                          onClick={() => setActiveTab('actions')}
+                          className="bg-gradient-to-r from-blue-500 to-purple-500"
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Get Started
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </GlassCard>
-            ))}
-          </div>
+            </TabsContent>
 
-          {/* Quick Actions */}
-          <GlassCard variant="premium">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="w-5 h-5 text-yellow-500" />
-                Quick Actions
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className={`grid gap-4 ${isMobile ? 'grid-cols-2' : 'grid-cols-4'}`}>
-                {quickActions.map((action, index) => (
-                  <Button
-                    key={index}
-                    onClick={() => navigate(action.path)}
-                    variant="ghost"
-                    className={`h-auto p-4 flex flex-col items-center gap-3 bg-gradient-to-br ${action.color} hover:scale-105 transition-all duration-300 text-white border-0 shadow-lg`}
-                  >
-                    <div className="p-2 bg-white/20 rounded-xl">
-                      {action.icon}
-                    </div>
-                    <div className="text-center">
-                      <p className="font-semibold text-sm">{action.title}</p>
-                      <p className="text-xs opacity-90">{action.description}</p>
-                      {action.count > 0 && (
-                        <Badge variant="secondary" className="mt-1 text-xs">
-                          {action.count} today
-                        </Badge>
-                      )}
-                    </div>
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </GlassCard>
+            <TabsContent value="analytics" className="space-y-6">
+              <AnalyticsDashboard />
+            </TabsContent>
 
-          {/* Achievements & Streaks */}
-          <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
-            <GlassCard variant="premium">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Award className="w-5 h-5 text-yellow-500" />
-                  Achievements & Streaks
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {achievements.map((achievement, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <achievement.icon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                        <span className="font-medium">{achievement.title}</span>
-                      </div>
-                      <Badge variant={achievement.value >= 7 ? "default" : "secondary"}>
-                        {achievement.value} days
-                      </Badge>
-                    </div>
-                    <Progress value={(achievement.value / achievement.max) * 100} className="h-2" />
-                  </div>
-                ))}
-              </CardContent>
-            </GlassCard>
-
-            <GlassCard variant="premium">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-green-500" />
-                  Weekly Progress
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium">Exercise Goal</span>
-                    <span className="text-sm text-gray-500">
-                      {Math.round(healthSummary.weeklyProgress.exercise)}%
-                    </span>
-                  </div>
-                  <Progress value={healthSummary.weeklyProgress.exercise} className="h-3" />
-                  <p className="text-xs text-gray-500 mt-1">
-                    150 minutes recommended per week
-                  </p>
-                </div>
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium">Nutrition Tracking</span>
-                    <span className="text-sm text-gray-500">
-                      {foodItems.length > 0 ? '✅' : '⏳'}
-                    </span>
-                  </div>
-                  <Progress value={foodItems.length > 0 ? 100 : 0} className="h-3" />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Keep logging your meals daily
-                  </p>
-                </div>
-              </CardContent>
-            </GlassCard>
-          </div>
-
-          {/* Recent Activity */}
-          <GlassCard variant="premium">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="w-5 h-5 text-blue-500" />
-                Recent Activity
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {[...foodItems, ...exerciseItems, ...sleepItems]
-                  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                  .slice(0, 5)
-                  .map((item, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-700/50 rounded-xl">
-                      <div className="p-2 bg-blue-100 dark:bg-blue-900/40 rounded-lg">
-                        {(item as any).name ? <Utensils className="w-4 h-4 text-blue-600" /> : 
-                         (item as any).duration ? <Activity className="w-4 h-4 text-orange-600" /> :
-                         <Moon className="w-4 h-4 text-purple-600" />}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium">
-                          {(item as any).name || (item as any).exercise_type || 'Sleep tracked'}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {new Date(item.date).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <Badge variant="outline">
-                        {(item as any).calories || (item as any).calories_burned || 
-                         `${(item as any).duration}min` || 'Logged'}
-                      </Badge>
-                    </div>
-                  ))}
-                {[...foodItems, ...exerciseItems, ...sleepItems].length === 0 && (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500 dark:text-gray-400">
-                      No recent activity. Start tracking your health journey!
-                    </p>
-                    <Button
-                      onClick={() => navigate('/food')}
-                      className="mt-4 bg-gradient-to-r from-blue-500 to-purple-500"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Get Started
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </GlassCard>
+            <TabsContent value="actions" className="space-y-6">
+              <QuickActionsPanel />
+            </TabsContent>
+          </Tabs>
         </div>
       </ResponsiveContainer>
     </div>

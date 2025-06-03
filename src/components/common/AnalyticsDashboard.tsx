@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -17,7 +16,7 @@ import {
 } from 'lucide-react';
 import { useHealth } from '@/contexts/HealthContext';
 import { useViewport } from '@/hooks';
-import { EnhancedQuickStatsCard } from './EnhancedQuickStatsCard';
+import EnhancedQuickStatsCard from './EnhancedQuickStatsCard';
 
 const AnalyticsDashboard: React.FC = () => {
   const { 

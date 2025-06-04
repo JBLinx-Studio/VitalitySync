@@ -9,13 +9,11 @@ import {
   Bell,
   Palette,
   Languages,
-  Zap,
+  Sparkles,
   Eye,
   Scale,
   Lock,
-  HelpCircle,
-  Monitor,
-  Smartphone
+  HelpCircle
 } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import {
@@ -61,21 +59,21 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ userLoggedIn = false }) => {
           variant="outline" 
           size={isMobile ? "sm" : "icon"}
           className={cn(
-            "relative rounded-2xl bg-white/30 dark:bg-slate-800/30 border-white/40 dark:border-slate-700/40 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all duration-300 hover:scale-105 backdrop-blur-lg shadow-lg hover:shadow-xl",
-            isMobile ? "px-3 py-2" : "w-10 h-10"
+            "relative rounded-xl bg-white/20 dark:bg-slate-800/20 border-white/30 dark:border-slate-700/30 hover:bg-white/30 dark:hover:bg-slate-800/30 transition-all duration-300 hover:scale-105 backdrop-blur-sm",
+            isMobile ? "px-3 py-2" : "w-9 h-9"
           )}
         >
           <Settings className={cn(
             "text-gray-700 dark:text-gray-300 transition-transform hover:rotate-180 duration-500",
-            isMobile ? "h-4 w-4" : "h-5 w-5"
+            isMobile ? "h-4 w-4" : "h-4 w-4"
           )} />
-          {isMobile && <span className="ml-1.5 text-xs font-medium">Settings</span>}
+          {isMobile && <span className="ml-1.5 text-xs font-medium">Menu</span>}
           <span className="sr-only">Options</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         className={cn(
-          "backdrop-blur-3xl bg-white/95 dark:bg-slate-900/95 border-white/40 dark:border-slate-700/40 shadow-2xl rounded-2xl border-2",
+          "backdrop-blur-xl bg-white/95 dark:bg-slate-900/95 border-white/30 dark:border-slate-700/30 shadow-2xl rounded-2xl border-2",
           isMobile ? "w-56 mr-1" : "w-64 mr-2"
         )}
         sideOffset={8}
@@ -102,11 +100,11 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ userLoggedIn = false }) => {
           isMobile ? "max-h-[70vh]" : "max-h-[80vh]",
           "overflow-y-auto"
         )}>
-          {/* Enhanced theme toggle */}
+          {/* Quick theme toggle */}
           <DropdownMenuGroup>
             <DropdownMenuItem 
               onClick={toggleTheme}
-              className="cursor-pointer hover:bg-emerald-500/10 rounded-xl mx-2 my-1 px-3 py-2"
+              className="cursor-pointer hover:bg-emerald-500/10 rounded-lg mx-2"
             >
               {theme === 'dark' ? (
                 <>
@@ -128,17 +126,17 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ userLoggedIn = false }) => {
             </DropdownMenuItem>
           </DropdownMenuGroup>
 
-          <DropdownMenuSeparator className="my-2" />
+          <DropdownMenuSeparator />
 
-          {/* Enhanced appearance submenu */}
+          {/* Appearance submenu - simplified for mobile */}
           {!isMobile ? (
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger className="hover:bg-emerald-500/10 rounded-xl mx-2 px-3 py-2">
+              <DropdownMenuSubTrigger className="hover:bg-emerald-500/10 rounded-lg mx-2">
                 <Palette className="mr-3 h-4 w-4 text-emerald-500" />
                 <span>Appearance</span>
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
-                <DropdownMenuSubContent className="backdrop-blur-3xl bg-white/95 dark:bg-slate-900/95 border-white/40 dark:border-slate-700/40 rounded-xl shadow-2xl">
+                <DropdownMenuSubContent className="backdrop-blur-xl bg-white/95 dark:bg-slate-900/95 border-white/30 dark:border-slate-700/30 rounded-xl">
                   <DropdownMenuGroup>
                     {[
                       { key: 'teal-purple', colors: 'from-[#4FD1C5] to-[#9b87f5]', name: 'Teal-Purple' },
@@ -151,10 +149,10 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ userLoggedIn = false }) => {
                       <DropdownMenuItem 
                         key={key}
                         onClick={() => setColorTheme(key as any)}
-                        className={`cursor-pointer rounded-xl px-3 py-2 mx-1 ${colorTheme === key ? 'bg-emerald-500/20' : 'hover:bg-emerald-500/10'}`}
+                        className={`cursor-pointer rounded-lg ${colorTheme === key ? 'bg-emerald-500/20' : 'hover:bg-emerald-500/10'}`}
                       >
-                        <div className={`w-4 h-4 rounded-full bg-gradient-to-r ${colors} mr-3 shadow-lg`} />
-                        <span className="text-sm font-medium">{name}</span>
+                        <div className={`w-4 h-4 rounded-full bg-gradient-to-r ${colors} mr-3`} />
+                        <span className="text-sm">{name}</span>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuGroup>
@@ -164,31 +162,31 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ userLoggedIn = false }) => {
           ) : (
             <DropdownMenuItem 
               onClick={() => setEnableParticles(!enableParticles)}
-              className="cursor-pointer hover:bg-emerald-500/10 rounded-xl mx-2 my-1 px-3 py-2"
+              className="cursor-pointer hover:bg-emerald-500/10 rounded-lg mx-2"
             >
-              <Zap className="mr-3 h-4 w-4 text-emerald-500" />
+              <Sparkles className="mr-3 h-4 w-4 text-emerald-500" />
               <span className="text-sm">
                 {enableParticles ? 'Disable' : 'Enable'} Effects
               </span>
             </DropdownMenuItem>
           )}
           
-          <DropdownMenuSeparator className="my-2" />
+          <DropdownMenuSeparator />
           
-          {/* Enhanced settings shortcuts */}
+          {/* Settings shortcuts */}
           <DropdownMenuGroup>
             <DropdownMenuItem 
               onClick={() => navigate('/settings')}
-              className="cursor-pointer hover:bg-blue-500/10 rounded-xl mx-2 my-1 px-3 py-2"
+              className="cursor-pointer hover:bg-emerald-500/10 rounded-lg mx-2"
             >
-              <Monitor className={cn(
+              <Eye className={cn(
                 "mr-3 text-blue-500",
                 isMobile ? "h-4 w-4" : "h-4 w-4"
               )} />
-              <span className={isMobile ? "text-sm" : ""}>Display Settings</span>
+              <span className={isMobile ? "text-sm" : ""}>Display</span>
             </DropdownMenuItem>
             
-            <DropdownMenuItem className="cursor-pointer hover:bg-purple-500/10 rounded-xl mx-2 my-1 px-3 py-2">
+            <DropdownMenuItem className="cursor-pointer hover:bg-emerald-500/10 rounded-lg mx-2">
               <Bell className={cn(
                 "mr-3 text-purple-500",
                 isMobile ? "h-4 w-4" : "h-4 w-4"
@@ -196,43 +194,43 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ userLoggedIn = false }) => {
               <span className={isMobile ? "text-sm" : ""}>Notifications</span>
             </DropdownMenuItem>
             
-            <DropdownMenuItem className="cursor-pointer hover:bg-orange-500/10 rounded-xl mx-2 my-1 px-3 py-2">
+            <DropdownMenuItem className="cursor-pointer hover:bg-emerald-500/10 rounded-lg mx-2">
               <Lock className={cn(
                 "mr-3 text-orange-500",
                 isMobile ? "h-4 w-4" : "h-4 w-4"
               )} />
-              <span className={isMobile ? "text-sm" : ""}>Privacy & Security</span>
+              <span className={isMobile ? "text-sm" : ""}>Privacy</span>
             </DropdownMenuItem>
             
-            <DropdownMenuItem className="cursor-pointer hover:bg-green-500/10 rounded-xl mx-2 my-1 px-3 py-2">
+            <DropdownMenuItem className="cursor-pointer hover:bg-emerald-500/10 rounded-lg mx-2">
               <HelpCircle className={cn(
                 "mr-3 text-green-500",
                 isMobile ? "h-4 w-4" : "h-4 w-4"
               )} />
-              <span className={isMobile ? "text-sm" : ""}>Help & Support</span>
+              <span className={isMobile ? "text-sm" : ""}>Help</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           
           {userLoggedIn && (
             <>
-              <DropdownMenuSeparator className="my-2" />
+              <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem 
                   onClick={() => navigate('/profile')}
-                  className="cursor-pointer hover:bg-emerald-500/10 rounded-xl mx-2 my-1 px-3 py-2"
+                  className="cursor-pointer hover:bg-emerald-500/10 rounded-lg mx-2"
                 >
                   <User className={cn(
                     "mr-3 text-emerald-500",
                     isMobile ? "h-4 w-4" : "h-4 w-4"
                   )} />
-                  <span className={isMobile ? "text-sm" : ""}>My Profile</span>
+                  <span className={isMobile ? "text-sm" : ""}>Profile</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer text-red-500 hover:bg-red-500/10 rounded-xl mx-2 my-1 px-3 py-2">
+                <DropdownMenuItem className="cursor-pointer text-red-500 hover:bg-red-500/10 rounded-lg mx-2">
                   <LogOut className={cn(
                     "mr-3",
                     isMobile ? "h-4 w-4" : "h-4 w-4"
                   )} />
-                  <span className={isMobile ? "text-sm" : ""}>Sign Out</span>
+                  <span className={isMobile ? "text-sm" : ""}>Log out</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </>

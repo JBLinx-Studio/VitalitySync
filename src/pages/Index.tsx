@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Heart, Brain, Moon, Activity, Shield, Ruler, Award, Zap, Utensils, Sparkles, Target, TrendingUp, User, Play, ChevronRight, Pulse } from 'lucide-react';
+import { ArrowRight, Heart, Brain, Moon, Activity, Shield, Ruler, Award, Zap, Utensils, Sparkles, Target, TrendingUp, User, Play, ChevronRight } from 'lucide-react';
 import { useHealth } from '@/contexts/HealthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useViewport } from '@/hooks';
@@ -52,7 +52,7 @@ const Index = () => {
         <ResponsiveContainer maxWidth="2xl" padding={isMobile ? "sm" : "lg"}>
           <div className="text-center relative z-10">
             <div className="inline-flex items-center space-x-2 md:space-x-3 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 backdrop-blur-xl rounded-full px-4 md:px-6 py-2 md:py-3 mb-6 md:mb-8 border border-white/20 dark:border-slate-700/20 shadow-xl">
-              <Pulse className="w-4 h-4 md:w-5 md:h-5 text-blue-500 animate-pulse" />
+              <Activity className="w-4 h-4 md:w-5 md:h-5 text-blue-500 animate-pulse" />
               <span className="text-blue-600 dark:text-blue-400 font-semibold text-sm md:text-base">Complete Wellness Intelligence</span>
             </div>
             

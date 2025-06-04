@@ -30,10 +30,10 @@ const CompactNavigation: React.FC<CompactNavigationProps> = ({ items, className 
   const location = useLocation();
   const { isMobile, isTablet, width } = useViewport();
   
-  // Memoize responsive item limits for better performance
+  // Enhanced responsive item limits
   const visibleCount = useMemo(() => {
     if (width < 480) return 2;
-    if (width < 640) return 3;
+    if (width < 640) return 3; 
     if (width < 768) return 4;
     if (width < 1024) return 5;
     if (width < 1280) return 6;
@@ -41,7 +41,7 @@ const CompactNavigation: React.FC<CompactNavigationProps> = ({ items, className 
     return 8;
   }, [width]);
 
-  // Memoize grouped items for better performance
+  // Memoize grouped items
   const groupedItems = useMemo(() => {
     return items.reduce((acc, item) => {
       if (!acc[item.category]) acc[item.category] = [];
@@ -67,9 +67,8 @@ const CompactNavigation: React.FC<CompactNavigationProps> = ({ items, className 
     };
 
     return cn(
-      "flex items-center gap-2 px-3 py-2.5 rounded-2xl transition-all duration-300 font-semibold text-sm whitespace-nowrap border-2 relative overflow-hidden group backdrop-blur-lg",
-      "hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500/30 transform-gpu",
-      "shadow-lg hover:shadow-xl active:scale-[0.98]",
+      "flex items-center gap-2 px-4 py-3 rounded-2xl transition-all duration-300 font-semibold text-sm whitespace-nowrap border-2 relative overflow-hidden group backdrop-blur-lg transform-gpu",
+      "hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500/30 shadow-lg hover:shadow-xl active:scale-[0.98]",
       isActive 
         ? `bg-gradient-to-r ${categoryColors[category as keyof typeof categoryColors]} text-white border-white/40 scale-[1.02] shadow-xl` 
         : "text-gray-700 dark:text-gray-200 bg-white/80 dark:bg-slate-800/80 hover:bg-white/95 dark:hover:bg-slate-700/95 border-gray-200/70 dark:border-gray-700/70 hover:border-gray-300/80 dark:hover:border-gray-600/80"
@@ -88,7 +87,7 @@ const CompactNavigation: React.FC<CompactNavigationProps> = ({ items, className 
 
   return (
     <nav className={cn(
-      "flex items-center gap-2 p-3 bg-gradient-to-r from-white/40 via-white/30 to-white/40 dark:from-slate-900/40 dark:via-slate-900/30 dark:to-slate-900/40 backdrop-blur-3xl rounded-3xl border-2 border-white/50 dark:border-slate-700/50 shadow-2xl transition-all duration-300 hover:shadow-3xl",
+      "flex items-center gap-3 p-4 bg-gradient-to-r from-white/40 via-white/30 to-white/40 dark:from-slate-900/40 dark:via-slate-900/30 dark:to-slate-900/40 backdrop-blur-3xl rounded-3xl border-2 border-white/50 dark:border-slate-700/50 shadow-2xl transition-all duration-300 hover:shadow-3xl",
       "ring-1 ring-white/30 dark:ring-slate-700/30",
       className
     )}
@@ -96,7 +95,7 @@ const CompactNavigation: React.FC<CompactNavigationProps> = ({ items, className 
     aria-label="Main navigation"
     >
       {/* Visible navigation items */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         {visibleItems.map((item, index) => {
           const itemIsActive = isActive(item.path);
           return (
@@ -116,6 +115,7 @@ const CompactNavigation: React.FC<CompactNavigationProps> = ({ items, className 
                 )}>
                   {item.icon}
                 </span>
+                
                 {(!isMobile || itemIsActive) && (
                   <span className="hidden sm:inline relative z-10 font-bold">
                     {item.name}
@@ -148,7 +148,7 @@ const CompactNavigation: React.FC<CompactNavigationProps> = ({ items, className 
               variant="ghost"
               size="sm"
               className={cn(
-                "px-3 py-2.5 rounded-2xl border-2 transition-all duration-300 backdrop-blur-lg group relative overflow-hidden shadow-lg hover:shadow-xl",
+                "px-4 py-3 rounded-2xl border-2 transition-all duration-300 backdrop-blur-lg group relative overflow-hidden shadow-lg hover:shadow-xl",
                 "text-gray-700 dark:text-gray-200 bg-white/80 dark:bg-slate-800/80 hover:bg-white/95 dark:hover:bg-slate-700/95 border-gray-200/70 dark:border-gray-700/70 hover:scale-[1.02] active:scale-[0.98]"
               )}
               aria-label="More navigation options"

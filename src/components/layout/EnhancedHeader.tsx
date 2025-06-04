@@ -19,12 +19,12 @@ import {
 import { useHealth } from '@/contexts/HealthContext';
 import { Button } from '@/components/ui/button';
 import NotificationsMenu from '@/components/Notifications/NotificationsMenu';
-import { UserAvatar } from '@/components/common';
 import { useIsMobile, useViewport } from '@/hooks';
 import { cn } from '@/lib/utils';
 import OptionsMenu from '@/components/ui/options-menu';
-import CompactNavigation from './CompactNavigation';
 import GlassCard from '@/components/ui/glass-card';
+import AdvancedNavigationMenu from '@/components/navigation/AdvancedNavigationMenu';
+import EnhancedUserMenu from '@/components/navigation/EnhancedUserMenu';
 
 const EnhancedHeader: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -91,46 +91,23 @@ const EnhancedHeader: React.FC = () => {
             </div>
           </Link>
 
-          {/* Compact Navigation */}
+          {/* Advanced Navigation Menu */}
           <div className="hidden md:flex items-center justify-center flex-1 max-w-5xl mx-8">
-            <CompactNavigation items={navItems} />
+            <AdvancedNavigationMenu items={navItems} />
           </div>
 
-          {/* Enhanced Actions with proper spacing */}
+          {/* Enhanced Actions */}
           <div className="flex items-center gap-2 lg:gap-3 flex-shrink-0">
             {/* Notifications - Hidden on small screens */}
             <div className="hidden sm:block">
               <NotificationsMenu />
             </div>
 
-            {/* Options Menu - Always visible */}
+            {/* Options Menu */}
             <OptionsMenu userLoggedIn={!!userProfile} />
 
-            {/* User Profile Button */}
-            {userProfile ? (
-              <Link to="/profile" className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 rounded-full opacity-0 group-hover:opacity-70 blur-lg transition-all duration-500"></div>
-                <div className="relative transform transition-transform duration-300 group-hover:scale-110">
-                  <UserAvatar userProfile={userProfile} size={isMobile ? "sm" : "md"} />
-                </div>
-              </Link>
-            ) : (
-              <Link to="/profile">
-                <Button 
-                  className={cn(
-                    "bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-600 hover:from-emerald-600 hover:via-blue-600 hover:to-purple-700 hover:shadow-2xl transition-all duration-500 text-white border-0 hover:scale-110 rounded-2xl font-bold tracking-wide",
-                    isMobile ? "px-3 py-2 text-sm" : "px-6 py-2.5 text-base"
-                  )}
-                  size={isMobile ? "sm" : "default"}
-                >
-                  {isMobile ? (
-                    <User className="w-4 h-4" />
-                  ) : (
-                    "Get Started"
-                  )}
-                </Button>
-              </Link>
-            )}
+            {/* Enhanced User Profile Menu */}
+            <EnhancedUserMenu />
 
             {/* Mobile Menu Toggle */}
             <Button 
@@ -144,34 +121,9 @@ const EnhancedHeader: React.FC = () => {
           </div>
         </div>
         
-        {/* Enhanced Mobile Navigation Bar */}
+        {/* Enhanced Mobile Navigation */}
         <div className="md:hidden mt-4">
-          <div className="overflow-x-auto scrollbar-none">
-            <div className="flex gap-2 px-2 py-3 min-w-max">
-              {navItems.slice(0, 6).map((item) => {
-                const isActive = location.pathname.replace('/Health-and-Fitness-Webapp', '') === item.path;
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={cn(
-                      "flex items-center gap-2 px-3 py-2.5 rounded-2xl transition-all duration-500 flex-shrink-0 whitespace-nowrap text-sm font-bold border-2 relative overflow-hidden group",
-                      isActive 
-                        ? "bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 text-white shadow-2xl border-white/30 scale-105" 
-                        : "bg-white/70 dark:bg-slate-800/70 hover:bg-white/90 dark:hover:bg-slate-700/90 border-gray-200/60 dark:border-gray-700/60 hover:scale-105"
-                    )}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 -skew-x-12"></div>
-                    <span className={cn("transition-transform duration-300 relative z-10", isActive ? "scale-110" : "")}>{item.icon}</span>
-                    <span className="relative z-10">{item.name}</span>
-                    {isActive && (
-                      <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-8 h-1.5 bg-white/90 rounded-full animate-pulse"></div>
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
+          <AdvancedNavigationMenu items={navItems} className="w-full" />
         </div>
       </div>
 
@@ -223,14 +175,6 @@ const EnhancedHeader: React.FC = () => {
             </nav>
             
             <div className="border-t border-white/20 dark:border-slate-700/20 pt-4 mt-6 space-y-2">
-              <Link
-                to="/profile"
-                className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/20 dark:hover:bg-slate-800/20 transition-all duration-300 hover:scale-[1.02] border border-transparent"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <User className="w-4 h-4" />
-                <span className="font-medium">Profile</span>
-              </Link>
               <div className="px-3">
                 <NotificationsMenu />
               </div>

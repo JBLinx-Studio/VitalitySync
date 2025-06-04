@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronDown, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -30,8 +30,8 @@ const CompactNavigation: React.FC<CompactNavigationProps> = ({ items, className 
   const location = useLocation();
   const { isMobile, isTablet, width } = useViewport();
   
-  // Memoize responsive item limits for better performance
-  const visibleCount = useMemo(() => {
+  // Enhanced responsive item limits
+  const getVisibleItemCount = () => {
     if (width < 480) return 2;
     if (width < 640) return 3;
     if (width < 768) return 4;
@@ -39,19 +39,18 @@ const CompactNavigation: React.FC<CompactNavigationProps> = ({ items, className 
     if (width < 1280) return 6;
     if (width < 1536) return 7;
     return 8;
-  }, [width]);
+  };
 
-  // Memoize grouped items for better performance
-  const groupedItems = useMemo(() => {
-    return items.reduce((acc, item) => {
-      if (!acc[item.category]) acc[item.category] = [];
-      acc[item.category].push(item);
-      return acc;
-    }, {} as Record<string, NavigationItem[]>);
-  }, [items]);
+  // Group items by category
+  const groupedItems = items.reduce((acc, item) => {
+    if (!acc[item.category]) acc[item.category] = [];
+    acc[item.category].push(item);
+    return acc;
+  }, {} as Record<string, NavigationItem[]>);
 
-  const visibleItems = useMemo(() => items.slice(0, visibleCount), [items, visibleCount]);
-  const overflowItems = useMemo(() => items.slice(visibleCount), [items, visibleCount]);
+  const visibleCount = getVisibleItemCount();
+  const visibleItems = items.slice(0, visibleCount);
+  const overflowItems = items.slice(visibleCount);
 
   const isActive = (path: string) => {
     const currentPath = location.pathname.replace('/Health-and-Fitness-Webapp', '');
@@ -67,11 +66,11 @@ const CompactNavigation: React.FC<CompactNavigationProps> = ({ items, className 
     };
 
     return cn(
-      "flex items-center gap-2 px-3 py-2.5 rounded-2xl transition-all duration-300 font-semibold text-sm whitespace-nowrap border-2 relative overflow-hidden group backdrop-blur-lg",
-      "hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500/30 transform-gpu",
-      "shadow-lg hover:shadow-xl active:scale-[0.98]",
+      "flex items-center gap-2 px-3 py-2.5 rounded-2xl transition-all duration-500 font-semibold text-sm whitespace-nowrap border-2 relative overflow-hidden group backdrop-blur-lg",
+      "hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500/30 transform-gpu will-change-transform",
+      "shadow-lg hover:shadow-xl",
       isActive 
-        ? `bg-gradient-to-r ${categoryColors[category as keyof typeof categoryColors]} text-white border-white/40 scale-[1.02] shadow-xl` 
+        ? `bg-gradient-to-r ${categoryColors[category as keyof typeof categoryColors]} text-white border-white/40 scale-[1.03] shadow-2xl` 
         : "text-gray-700 dark:text-gray-200 bg-white/80 dark:bg-slate-800/80 hover:bg-white/95 dark:hover:bg-slate-700/95 border-gray-200/70 dark:border-gray-700/70 hover:border-gray-300/80 dark:hover:border-gray-600/80"
     );
   };
@@ -87,14 +86,11 @@ const CompactNavigation: React.FC<CompactNavigationProps> = ({ items, className 
   };
 
   return (
-    <nav className={cn(
-      "flex items-center gap-2 p-3 bg-gradient-to-r from-white/40 via-white/30 to-white/40 dark:from-slate-900/40 dark:via-slate-900/30 dark:to-slate-900/40 backdrop-blur-3xl rounded-3xl border-2 border-white/50 dark:border-slate-700/50 shadow-2xl transition-all duration-300 hover:shadow-3xl",
+    <div className={cn(
+      "flex items-center gap-2 p-3 bg-gradient-to-r from-white/40 via-white/30 to-white/40 dark:from-slate-900/40 dark:via-slate-900/30 dark:to-slate-900/40 backdrop-blur-3xl rounded-3xl border-2 border-white/50 dark:border-slate-700/50 shadow-2xl transition-all duration-500 hover:shadow-3xl",
       "ring-1 ring-white/30 dark:ring-slate-700/30",
       className
-    )}
-    role="navigation"
-    aria-label="Main navigation"
-    >
+    )}>
       {/* Visible navigation items */}
       <div className="flex items-center gap-2">
         {visibleItems.map((item, index) => {
@@ -104,14 +100,13 @@ const CompactNavigation: React.FC<CompactNavigationProps> = ({ items, className 
               <Link
                 to={item.path}
                 className={getItemClass(itemIsActive, item.category)}
-                aria-current={itemIsActive ? 'page' : undefined}
               >
                 {/* Enhanced shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-[shimmer_1.5s_ease-in-out] transition-opacity duration-300 -skew-x-12"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-[shimmer_2s_ease-in-out] transition-opacity duration-300 -skew-x-12"></div>
                 
                 <span className={cn(
-                  "transition-all duration-300 relative z-10 flex-shrink-0",
-                  itemIsActive ? "scale-110 drop-shadow-lg" : "group-hover:scale-105",
+                  "transition-all duration-500 relative z-10 flex-shrink-0",
+                  itemIsActive ? "scale-110 drop-shadow-lg" : "group-hover:scale-110",
                   isMobile ? "text-base" : "text-lg"
                 )}>
                   {item.icon}
@@ -148,10 +143,9 @@ const CompactNavigation: React.FC<CompactNavigationProps> = ({ items, className 
               variant="ghost"
               size="sm"
               className={cn(
-                "px-3 py-2.5 rounded-2xl border-2 transition-all duration-300 backdrop-blur-lg group relative overflow-hidden shadow-lg hover:shadow-xl",
-                "text-gray-700 dark:text-gray-200 bg-white/80 dark:bg-slate-800/80 hover:bg-white/95 dark:hover:bg-slate-700/95 border-gray-200/70 dark:border-gray-700/70 hover:scale-[1.02] active:scale-[0.98]"
+                "px-3 py-2.5 rounded-2xl border-2 transition-all duration-500 backdrop-blur-lg group relative overflow-hidden shadow-lg hover:shadow-xl",
+                "text-gray-700 dark:text-gray-200 bg-white/80 dark:bg-slate-800/80 hover:bg-white/95 dark:hover:bg-slate-700/95 border-gray-200/70 dark:border-gray-700/70 hover:scale-[1.03]"
               )}
-              aria-label="More navigation options"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 -skew-x-12"></div>
               <MoreHorizontal className="h-5 w-5 relative z-10" />
@@ -199,7 +193,7 @@ const CompactNavigation: React.FC<CompactNavigationProps> = ({ items, className 
       
       {/* Enhanced ambient glow */}
       <div className="absolute -inset-2 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-3xl opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-700 -z-10"></div>
-    </nav>
+    </div>
   );
 };
 

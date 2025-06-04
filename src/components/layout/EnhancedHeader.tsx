@@ -69,7 +69,7 @@ const EnhancedHeader: React.FC = () => {
     >
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between gap-6">
-          {/* Enhanced Logo */}
+          {/* Enhanced Logo with better icon */}
           <Link 
             to="/" 
             className="flex items-center gap-4 flex-shrink-0 group"
@@ -79,6 +79,7 @@ const EnhancedHeader: React.FC = () => {
                 <Zap className="text-white w-6 h-6 lg:w-7 lg:h-7 drop-shadow-lg" />
               </div>
               <div className="absolute -inset-1 bg-gradient-to-br from-emerald-400 via-blue-500 to-purple-600 rounded-3xl opacity-0 group-hover:opacity-60 blur-xl transition-all duration-500"></div>
+              {/* Pulsing ring effect */}
               <div className="absolute -inset-2 bg-gradient-to-br from-emerald-400/30 via-blue-500/30 to-purple-600/30 rounded-3xl opacity-0 group-hover:opacity-100 animate-ping"></div>
             </div>
             <div className="hidden sm:flex flex-col">
@@ -91,27 +92,24 @@ const EnhancedHeader: React.FC = () => {
             </div>
           </Link>
 
-          {/* Compact Navigation */}
+          {/* Compact Navigation - Enhanced spacing */}
           <div className="hidden md:flex items-center justify-center flex-1 max-w-5xl mx-8">
             <CompactNavigation items={navItems} />
           </div>
 
-          {/* Enhanced Actions with proper spacing */}
-          <div className="flex items-center gap-2 lg:gap-3 flex-shrink-0">
-            {/* Notifications - Hidden on small screens */}
+          {/* Enhanced Actions */}
+          <div className="flex items-center gap-3 lg:gap-4 flex-shrink-0">
             <div className="hidden sm:block">
               <NotificationsMenu />
             </div>
 
-            {/* Options Menu - Always visible */}
             <OptionsMenu userLoggedIn={!!userProfile} />
 
-            {/* User Profile Button */}
             {userProfile ? (
               <Link to="/profile" className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 rounded-full opacity-0 group-hover:opacity-70 blur-lg transition-all duration-500"></div>
                 <div className="relative transform transition-transform duration-300 group-hover:scale-110">
-                  <UserAvatar userProfile={userProfile} size={isMobile ? "sm" : "md"} />
+                  <UserAvatar userProfile={userProfile} />
                 </div>
               </Link>
             ) : (
@@ -119,20 +117,15 @@ const EnhancedHeader: React.FC = () => {
                 <Button 
                   className={cn(
                     "bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-600 hover:from-emerald-600 hover:via-blue-600 hover:to-purple-700 hover:shadow-2xl transition-all duration-500 text-white border-0 hover:scale-110 rounded-2xl font-bold tracking-wide",
-                    isMobile ? "px-3 py-2 text-sm" : "px-6 py-2.5 text-base"
+                    isMobile ? "px-4 py-2.5 text-sm" : "px-8 py-3 text-base"
                   )}
                   size={isMobile ? "sm" : "default"}
                 >
-                  {isMobile ? (
-                    <User className="w-4 h-4" />
-                  ) : (
-                    "Get Started"
-                  )}
+                  {isMobile ? "Start" : "Get Started"}
                 </Button>
               </Link>
             )}
 
-            {/* Mobile Menu Toggle */}
             <Button 
               variant="ghost"
               size="icon"
@@ -155,7 +148,7 @@ const EnhancedHeader: React.FC = () => {
                     key={item.path}
                     to={item.path}
                     className={cn(
-                      "flex items-center gap-2 px-3 py-2.5 rounded-2xl transition-all duration-500 flex-shrink-0 whitespace-nowrap text-sm font-bold border-2 relative overflow-hidden group",
+                      "flex items-center gap-2 px-4 py-3 rounded-2xl transition-all duration-500 flex-shrink-0 whitespace-nowrap text-sm font-bold border-2 relative overflow-hidden group",
                       isActive 
                         ? "bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 text-white shadow-2xl border-white/30 scale-105" 
                         : "bg-white/70 dark:bg-slate-800/70 hover:bg-white/90 dark:hover:bg-slate-700/90 border-gray-200/60 dark:border-gray-700/60 hover:scale-105"
@@ -233,9 +226,6 @@ const EnhancedHeader: React.FC = () => {
               </Link>
               <div className="px-3">
                 <NotificationsMenu />
-              </div>
-              <div className="px-3">
-                <OptionsMenu userLoggedIn={!!userProfile} />
               </div>
             </div>
           </GlassCard>

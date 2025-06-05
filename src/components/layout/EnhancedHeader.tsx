@@ -58,13 +58,13 @@ const EnhancedHeader: React.FC = () => {
     closeMobileMenu();
   }, [location.pathname, closeMobileMenu]);
 
-  // Memoized navigation items for better performance with updated categories
+  // Memoized navigation items for better performance
   const navItems = useMemo(() => [
     { path: "/dashboard", icon: <TrendingUp className="w-5 h-5" />, name: "Dashboard", category: 'core' as const },
-    { path: "/food", icon: <Utensils className="w-5 h-5" />, name: "Nutrition", category: 'health' as const },
-    { path: "/exercise", icon: <Activity className="w-5 h-5" />, name: "Fitness", category: 'health' as const },
-    { path: "/sleep", icon: <Moon className="w-5 h-5" />, name: "Sleep", category: 'health' as const },
-    { path: "/body", icon: <Ruler className="w-5 h-5" />, name: "Body", category: 'health' as const },
+    { path: "/food", icon: <Utensils className="w-5 h-5" />, name: "Nutrition", category: 'tracking' as const },
+    { path: "/exercise", icon: <Activity className="w-5 h-5" />, name: "Fitness", category: 'tracking' as const },
+    { path: "/sleep", icon: <Moon className="w-5 h-5" />, name: "Sleep", category: 'tracking' as const },
+    { path: "/body", icon: <Ruler className="w-5 h-5" />, name: "Body", category: 'tracking' as const },
     { path: "/mental", icon: <Brain className="w-5 h-5" />, name: "Mental", category: 'wellness' as const },
     { path: "/community", icon: <Users className="w-5 h-5" />, name: "Community", category: 'social' as const },
     { path: "/achievements", icon: <Award className="w-5 h-5" />, name: "Achievements", category: 'social' as const },

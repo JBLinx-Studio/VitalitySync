@@ -57,6 +57,31 @@ export const throttle = <T extends (...args: any[]) => any>(
 };
 
 /**
+ * Memoize function results for performance optimization
+ * @param fn Function to memoize
+ * @param getKey Function to generate cache key
+ * @returns Memoized function
+ */
+export const memoize = <T extends (...args: any[]) => any>(
+  fn: T,
+  getKey?: (...args: Parameters<T>) => string
+): T => {
+  const cache = new Map();
+  
+  return ((...args: Parameters<T>) => {
+    const key = getKey ? getKey(...args) : JSON.stringify(args);
+    
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+    
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  }) as T;
+};
+
+/**
  * Checks if the device has low memory or CPU capabilities
  * @returns boolean indicating if device should use reduced animations/effects
  */
@@ -68,6 +93,44 @@ export const shouldReduceEffects = (): boolean => {
   const userPreference = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   
   return saveData || lowMemory || userPreference;
+};
+
+/**
+ * Optimized requestAnimationFrame wrapper
+ * @param callback Function to call on next animation frame
+ * @returns Cancel function
+ */
+export const raf = (callback: () => void): (() => void) => {
+  const id = requestAnimationFrame(callback);
+  return () => cancelAnimationFrame(id);
+};
+
+/**
+ * Intersection Observer utility for lazy loading
+ * @param elements Elements to observe
+ * @param callback Function to call when element enters viewport
+ * @param options Intersection observer options
+ */
+export const createIntersectionObserver = (
+  elements: Element[],
+  callback: (entry: IntersectionObserverEntry) => void,
+  options: IntersectionObserverInit = {}
+) => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(callback);
+  }, {
+    threshold: 0.1,
+    rootMargin: '50px',
+    ...options
+  });
+
+  elements.forEach(el => observer.observe(el));
+  
+  return {
+    disconnect: () => observer.disconnect(),
+    observe: (el: Element) => observer.observe(el),
+    unobserve: (el: Element) => observer.unobserve(el)
+  };
 };
 
 /**
@@ -98,5 +161,29 @@ export const measureRenderTime = (
 };
 
 /**
- * Updates the utils/index.ts file to export the performance utilities
+ * Batch DOM updates for better performance
+ * @param updates Array of functions that make DOM updates
  */
+export const batchDOMUpdates = (updates: (() => void)[]): void => {
+  raf(() => {
+    updates.forEach(update => update());
+  });
+};
+
+/**
+ * Preload images for better user experience
+ * @param imageUrls Array of image URLs to preload
+ * @returns Promise that resolves when all images are loaded
+ */
+export const preloadImages = (imageUrls: string[]): Promise<void[]> => {
+  return Promise.all(
+    imageUrls.map(url => 
+      new Promise<void>((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve();
+        img.onerror = reject;
+        img.src = url;
+      })
+    )
+  );
+};

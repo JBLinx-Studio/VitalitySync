@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ChevronDown, ArrowRight, Plus, Sparkles, Target, Activity } from 'lucide-react';
+import { ChevronDown, ChevronRight, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useViewport } from '@/hooks';
 import { debounce } from '@/utils/performance';
@@ -18,8 +18,16 @@ interface NavigationItem {
   name: string;
   path: string;
   icon: React.ReactNode;
-  category: 'core' | 'health' | 'wellness' | 'social';
+  category: 'dashboard' | 'tracking' | 'wellness' | 'social';
   description?: string;
+}
+
+interface NavigationCategory {
+  name: string;
+  icon: string;
+  items: NavigationItem[];
+  color: string;
+  gradient: string;
 }
 
 interface AdvancedNavigationMenuProps {
@@ -32,60 +40,105 @@ const AdvancedNavigationMenu: React.FC<AdvancedNavigationMenuProps> = ({
   className = '' 
 }) => {
   const location = useLocation();
-  const { isMobile, isTablet } = useViewport();
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const { isMobile, isTablet, width } = useViewport();
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  const [openCategory, setOpenCategory] = useState<string | null>(null);
 
-  // Organize items by category with better grouping
-  const organizedItems = useMemo(() => ({
-    core: items.filter(item => ['dashboard'].includes(item.name.toLowerCase())),
-    health: items.filter(item => ['nutrition', 'fitness', 'sleep', 'body'].includes(item.name.toLowerCase())),
-    wellness: items.filter(item => ['mental'].includes(item.name.toLowerCase())),
-    social: items.filter(item => ['community', 'achievements'].includes(item.name.toLowerCase()))
-  }), [items]);
+  // Memoized categories for better performance
+  const categories: NavigationCategory[] = useMemo(() => [
+    {
+      name: 'Dashboard',
+      icon: '📊',
+      color: 'blue',
+      gradient: 'from-blue-500 via-indigo-500 to-purple-600',
+      items: items.filter(item => item.category === 'dashboard')
+    },
+    {
+      name: 'Health Tracking',
+      icon: '🎯',
+      color: 'emerald',
+      gradient: 'from-emerald-500 via-teal-500 to-cyan-600',
+      items: items.filter(item => item.category === 'tracking')
+    },
+    {
+      name: 'Wellness',
+      icon: '🧘',
+      color: 'purple',
+      gradient: 'from-purple-500 via-pink-500 to-rose-600',
+      items: items.filter(item => item.category === 'wellness')
+    },
+    {
+      name: 'Community',
+      icon: '👥',
+      color: 'orange',
+      gradient: 'from-orange-500 via-red-500 to-pink-600',
+      items: items.filter(item => item.category === 'social')
+    }
+  ].filter(category => category.items.length > 0), [items]);
 
-  // Check if item is active
+  // Optimized active check with memoization
   const isActive = useCallback((path: string) => {
     const currentPath = location.pathname.replace('/Health-and-Fitness-Webapp', '');
     return currentPath === path;
   }, [location.pathname]);
 
-  // Mobile navigation for smaller screens
+  // Debounced hover handlers for better performance
+  const handleCategoryHover = useCallback(
+    debounce((categoryName: string | null) => {
+      setHoveredCategory(categoryName);
+    }, 100),
+    []
+  );
+
+  // Get descriptions for items
+  const getItemDescription = useCallback((itemName: string) => {
+    const descriptions = {
+      'Dashboard': 'Analytics & insights overview',
+      'Nutrition': 'Smart food & macro tracking',
+      'Fitness': 'Exercise & workout logging',
+      'Sleep': 'Sleep quality & pattern analysis',
+      'Body': 'Measurements & progress tracking',
+      'Mental': 'Mood & mental wellness tracking',
+      'Community': 'Connect with other users',
+      'Achievements': 'Goals, rewards & milestones'
+    };
+    return descriptions[itemName] || 'Health tracking feature';
+  }, []);
+
+  // Mobile responsive navigation
   if (isMobile) {
     return (
-      <div className={cn("w-full", className)}>
-        <div className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-3xl border border-white/30 dark:border-slate-700/30 rounded-3xl p-3 shadow-2xl">
-          <div className="grid grid-cols-4 gap-2">
-            {items.slice(0, 8).map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={cn(
-                  "flex flex-col items-center gap-2 p-4 rounded-2xl transition-all duration-500 group relative overflow-hidden",
-                  isActive(item.path)
-                    ? "bg-gradient-to-br from-emerald-500/90 via-blue-500/90 to-purple-500/90 text-white shadow-2xl scale-110 transform"
-                    : "hover:bg-white/60 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300 hover:scale-105 hover:shadow-xl"
-                )}
-              >
-                {isActive(item.path) && (
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/10 rounded-2xl"></div>
-                )}
-                
-                <div className={cn(
-                  "text-xl transition-all duration-500 relative z-10",
-                  isActive(item.path) ? "scale-125 drop-shadow-lg" : "group-hover:scale-110"
-                )}>
-                  {item.icon}
+      <div className={cn("w-full overflow-hidden", className)}>
+        <div className="bg-white/10 dark:bg-slate-900/10 backdrop-blur-3xl border-2 border-white/20 dark:border-slate-700/20 rounded-3xl shadow-2xl p-3">
+          <div className="grid grid-cols-2 gap-2">
+            {categories.map((category) => (
+              <div key={category.name} className="space-y-2">
+                <div className="flex items-center gap-2 px-2 py-1">
+                  <span className="text-lg">{category.icon}</span>
+                  <span className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider truncate">
+                    {category.name}
+                  </span>
                 </div>
-                <span className="text-xs font-bold text-center leading-tight relative z-10">
-                  {item.name}
-                </span>
-                
-                {isActive(item.path) && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse shadow-lg">
-                    <Sparkles className="w-2 h-2 text-yellow-800 m-0.5" />
-                  </div>
-                )}
-              </Link>
+                {category.items.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={cn(
+                      "flex items-center gap-2 p-2.5 rounded-2xl transition-all duration-300 text-sm font-medium border-2 group relative overflow-hidden",
+                      isActive(item.path)
+                        ? `bg-gradient-to-r ${category.gradient} text-white border-white/30 shadow-xl scale-105`
+                        : "bg-white/70 dark:bg-slate-800/70 hover:bg-white/90 dark:hover:bg-slate-700/90 border-gray-200/50 dark:border-gray-700/50 hover:scale-105 hover:shadow-lg"
+                    )}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -skew-x-12"></div>
+                    <span className="text-base relative z-10">{item.icon}</span>
+                    <span className="truncate relative z-10">{item.name}</span>
+                    {isActive(item.path) && (
+                      <div className="w-2 h-2 rounded-full bg-white/90 animate-pulse relative z-10"></div>
+                    )}
+                  </Link>
+                ))}
+              </div>
             ))}
           </div>
         </div>
@@ -96,216 +149,127 @@ const AdvancedNavigationMenu: React.FC<AdvancedNavigationMenuProps> = ({
   return (
     <NavigationMenu className={className}>
       <NavigationMenuList className="space-x-2">
-        {/* Core Dashboard */}
-        <NavigationMenuItem>
-          <NavigationMenuLink asChild>
-            <Link
-              to="/dashboard"
-              className={cn(
-                "group inline-flex h-14 w-max items-center justify-center rounded-2xl px-8 py-3 text-sm font-bold transition-all duration-500 relative overflow-hidden shadow-lg hover:shadow-2xl",
-                isActive("/dashboard")
-                  ? "bg-gradient-to-r from-emerald-500 via-teal-600 to-blue-600 text-white shadow-2xl scale-110 transform"
-                  : "hover:bg-white/70 dark:hover:bg-slate-800/70 text-slate-700 dark:text-slate-200 hover:scale-105 bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/30 dark:border-slate-700/30"
-              )}
-            >
-              <div className="flex items-center gap-3 relative z-10">
-                <div className={cn(
-                  "transition-all duration-500",
-                  isActive("/dashboard") ? "scale-125" : "group-hover:scale-110"
-                )}>
-                  {organizedItems.core[0]?.icon}
-                </div>
-                <span className="font-bold">Overview</span>
-                <Target className={cn(
-                  "w-4 h-4 transition-all duration-500",
-                  isActive("/dashboard") ? "text-yellow-300" : "text-emerald-500"
-                )} />
-              </div>
-              {isActive("/dashboard") && (
-                <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-black/10 rounded-2xl"></div>
-              )}
-            </Link>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-
-        {/* Health Tracking */}
-        <NavigationMenuItem>
-          <NavigationMenuTrigger 
-            className={cn(
-              "group h-14 px-8 rounded-2xl font-bold transition-all duration-500 relative overflow-hidden shadow-lg hover:shadow-2xl backdrop-blur-xl",
-              organizedItems.health.some(item => isActive(item.path))
-                ? "bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600 text-white shadow-2xl scale-110 transform"
-                : "hover:bg-white/70 dark:hover:bg-slate-800/70 text-slate-700 dark:text-slate-200 hover:scale-105 bg-white/40 dark:bg-slate-900/40 border border-white/30 dark:border-slate-700/30"
-            )}
-          >
-            <div className="flex items-center gap-3 relative z-10">
-              <Activity className={cn(
-                "w-5 h-5 transition-all duration-500",
-                organizedItems.health.some(item => isActive(item.path)) ? "scale-125 text-yellow-300" : "text-blue-500 group-hover:scale-110"
-              )} />
-              <span className="font-bold">Health Tracking</span>
-              <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-            </div>
-            {organizedItems.health.some(item => isActive(item.path)) && (
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-black/10 rounded-2xl"></div>
-            )}
-          </NavigationMenuTrigger>
+        {categories.map((category) => {
+          const hasActiveItem = category.items.some(item => isActive(item.path));
           
-          <NavigationMenuContent className="min-w-[450px] p-0">
-            <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-3xl border-2 border-white/30 dark:border-slate-700/30 rounded-3xl shadow-2xl overflow-hidden">
-              <div className="p-8 bg-gradient-to-br from-blue-50/90 via-indigo-50/90 to-purple-50/90 dark:from-slate-800/90 dark:to-slate-700/90 border-b-2 border-white/30 dark:border-slate-600/30">
-                <div className="flex items-center gap-4 mb-3">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-xl">
-                    <Activity className="w-6 h-6 text-white" />
+          return (
+            <NavigationMenuItem key={category.name}>
+              <NavigationMenuTrigger 
+                className={cn(
+                  "group h-14 px-6 transition-all duration-500 backdrop-blur-2xl shadow-xl border-2 rounded-3xl font-bold text-sm relative overflow-hidden",
+                  "hover:shadow-2xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500/30",
+                  hasActiveItem 
+                    ? `bg-gradient-to-r ${category.gradient} text-white border-white/30 shadow-2xl scale-105`
+                    : "bg-white/80 dark:bg-slate-800/80 hover:bg-white/95 dark:hover:bg-slate-700/95 border-gray-200/50 dark:border-gray-700/50 text-gray-700 dark:text-gray-200"
+                )}
+                onMouseEnter={() => handleCategoryHover(category.name)}
+                onMouseLeave={() => handleCategoryHover(null)}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -skew-x-12"></div>
+                <div className="flex items-center gap-3 relative z-10">
+                  <span className={cn(
+                    "text-xl transition-transform duration-300",
+                    hasActiveItem ? "scale-110 drop-shadow-lg" : "group-hover:scale-110"
+                  )}>
+                    {category.icon}
+                  </span>
+                  <span className="hidden sm:inline font-semibold tracking-wide">
+                    {category.name}
+                  </span>
+                  <ChevronDown className="h-4 w-4 transition-all duration-300 group-data-[state=open]:rotate-180 opacity-70" />
+                </div>
+                {hasActiveItem && (
+                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-white/90 rounded-full animate-pulse shadow-lg"></div>
+                )}
+                {hoveredCategory === category.name && (
+                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-pink-500/30 rounded-3xl opacity-70 blur-xl transition-opacity duration-500 -z-10"></div>
+                )}
+              </NavigationMenuTrigger>
+              
+              <NavigationMenuContent className="min-w-[500px] md:min-w-[600px] lg:min-w-[700px] p-0">
+                <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-3xl border-2 border-white/50 dark:border-gray-700/50 rounded-3xl shadow-2xl overflow-hidden">
+                  {/* Enhanced header */}
+                  <div className={cn(
+                    "relative p-6 bg-gradient-to-br overflow-hidden",
+                    category.gradient
+                  )}>
+                    <div className="absolute inset-0 bg-black/20"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+                    
+                    <div className="relative z-10 flex items-center gap-4">
+                      <div className="w-16 h-16 rounded-3xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white text-2xl font-bold shadow-xl border border-white/30">
+                        {category.icon}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
+                          {category.name}
+                        </h3>
+                        <p className="text-white/90 text-sm leading-relaxed">
+                          {category.name === 'Dashboard' && 'Comprehensive overview and insights into your health journey'}
+                          {category.name === 'Health Tracking' && 'Monitor and track all aspects of your physical health'}
+                          {category.name === 'Wellness' && 'Mental health, mindfulness and overall wellbeing tools'}
+                          {category.name === 'Community' && 'Connect, share and achieve your goals together'}
+                        </p>
+                      </div>
+                      <div className="text-white/60">
+                        <Sparkles className="w-8 h-8" />
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-1">
-                      Track Your Health
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-300">
-                      Monitor every aspect of your wellness journey with precision
-                    </p>
+                  
+                  {/* Enhanced navigation items */}
+                  <div className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {category.items.map((item) => (
+                        <NavigationMenuLink key={item.path} asChild>
+                          <Link
+                            to={item.path}
+                            className={cn(
+                              "group flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 hover:scale-105 border-2 relative overflow-hidden backdrop-blur-sm",
+                              "focus:outline-none focus:ring-4 focus:ring-blue-500/30",
+                              isActive(item.path)
+                                ? `bg-gradient-to-r ${category.gradient} text-white border-white/30 shadow-xl scale-105`
+                                : "bg-white/60 dark:bg-slate-800/60 hover:bg-white/80 dark:hover:bg-slate-700/80 border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl"
+                            )}
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -skew-x-12"></div>
+                            
+                            <div className={cn(
+                              "w-12 h-12 rounded-2xl flex items-center justify-center text-lg transition-all duration-300 relative z-10 shadow-lg",
+                              isActive(item.path) 
+                                ? "bg-white/20 text-white scale-110 shadow-xl" 
+                                : "bg-gray-100 dark:bg-slate-700 group-hover:scale-110 group-hover:shadow-xl"
+                            )}>
+                              {item.icon}
+                            </div>
+                            
+                            <div className="flex-1 relative z-10">
+                              <div className="font-bold text-base mb-1">{item.name}</div>
+                              <div className={cn(
+                                "text-sm opacity-80 leading-relaxed",
+                                isActive(item.path) ? "text-white/90" : "text-gray-600 dark:text-gray-400"
+                              )}>
+                                {getItemDescription(item.name)}
+                              </div>
+                            </div>
+                            
+                            <div className="relative z-10 flex items-center gap-2">
+                              {isActive(item.path) && (
+                                <div className="w-3 h-3 rounded-full bg-white/90 animate-pulse shadow-lg"></div>
+                              )}
+                              <ChevronRight className="w-5 h-5 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+                            </div>
+                          </Link>
+                        </NavigationMenuLink>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-              
-              <div className="p-6 grid grid-cols-2 gap-4">
-                {organizedItems.health.map((item) => (
-                  <NavigationMenuLink key={item.path} asChild>
-                    <Link
-                      to={item.path}
-                      className={cn(
-                        "group flex items-center gap-4 p-5 rounded-2xl transition-all duration-500 hover:scale-105 relative overflow-hidden",
-                        isActive(item.path)
-                          ? "bg-gradient-to-br from-blue-500/20 via-indigo-500/20 to-purple-500/20 text-blue-700 dark:text-blue-300 shadow-2xl border-2 border-blue-300/50 dark:border-blue-600/50 scale-105"
-                          : "hover:bg-white/60 dark:hover:bg-slate-800/60 hover:shadow-xl border-2 border-transparent hover:border-white/40 dark:hover:border-slate-600/40"
-                      )}
-                    >
-                      <div className={cn(
-                        "w-12 h-12 rounded-xl flex items-center justify-center text-xl transition-all duration-500 shadow-lg",
-                        isActive(item.path) 
-                          ? "bg-gradient-to-br from-blue-400 to-purple-600 text-white scale-110 shadow-2xl" 
-                          : "bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 group-hover:scale-110 group-hover:shadow-xl"
-                      )}>
-                        {item.icon}
-                      </div>
-                      
-                      <div className="flex-1">
-                        <div className="font-bold text-base mb-1">{item.name}</div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                          {item.name === 'Nutrition' && 'Smart food tracking & meal planning'}
-                          {item.name === 'Fitness' && 'Workouts, exercises & activity monitoring'}
-                          {item.name === 'Sleep' && 'Rest patterns & recovery analysis'}
-                          {item.name === 'Body' && 'Body measurements & progress tracking'}
-                        </div>
-                      </div>
-                      
-                      <ArrowRight className={cn(
-                        "w-5 h-5 transition-all duration-500",
-                        isActive(item.path) ? "text-blue-600 scale-125" : "opacity-0 group-hover:opacity-100 group-hover:scale-110"
-                      )} />
-                      
-                      {isActive(item.path) && (
-                        <div className="absolute -top-2 -right-2 w-4 h-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-lg">
-                          <Sparkles className="w-3 h-3 text-yellow-800 m-0.5" />
-                        </div>
-                      )}
-                    </Link>
-                  </NavigationMenuLink>
-                ))}
-              </div>
-            </div>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-
-        {/* Wellness & Social */}
-        <NavigationMenuItem>
-          <NavigationMenuTrigger 
-            className={cn(
-              "group h-14 px-8 rounded-2xl font-bold transition-all duration-500 relative overflow-hidden shadow-lg hover:shadow-2xl backdrop-blur-xl",
-              [...organizedItems.wellness, ...organizedItems.social].some(item => isActive(item.path))
-                ? "bg-gradient-to-r from-purple-500 via-pink-600 to-rose-600 text-white shadow-2xl scale-110 transform"
-                : "hover:bg-white/70 dark:hover:bg-slate-800/70 text-slate-700 dark:text-slate-200 hover:scale-105 bg-white/40 dark:bg-slate-900/40 border border-white/30 dark:border-slate-700/30"
-            )}
-          >
-            <div className="flex items-center gap-3 relative z-10">
-              <Sparkles className={cn(
-                "w-5 h-5 transition-all duration-500",
-                [...organizedItems.wellness, ...organizedItems.social].some(item => isActive(item.path)) ? "scale-125 text-yellow-300" : "text-purple-500 group-hover:scale-110"
-              )} />
-              <span className="font-bold">Wellness & Social</span>
-              <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-            </div>
-            {[...organizedItems.wellness, ...organizedItems.social].some(item => isActive(item.path)) && (
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-black/10 rounded-2xl"></div>
-            )}
-          </NavigationMenuTrigger>
-          
-          <NavigationMenuContent className="min-w-[400px] p-0">
-            <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-3xl border-2 border-white/30 dark:border-slate-700/30 rounded-3xl shadow-2xl overflow-hidden">
-              <div className="p-8 bg-gradient-to-br from-purple-50/90 via-pink-50/90 to-rose-50/90 dark:from-slate-800/90 dark:to-slate-700/90 border-b-2 border-white/30 dark:border-slate-600/30">
-                <div className="flex items-center gap-4 mb-3">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-xl">
-                    <Sparkles className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-1">
-                      Mind & Community
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-300">
-                      Mental wellness and meaningful social connections
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="p-6 space-y-3">
-                {[...organizedItems.wellness, ...organizedItems.social].map((item) => (
-                  <NavigationMenuLink key={item.path} asChild>
-                    <Link
-                      to={item.path}
-                      className={cn(
-                        "group flex items-center gap-4 p-5 rounded-2xl transition-all duration-500 hover:scale-105 w-full relative overflow-hidden",
-                        isActive(item.path)
-                          ? "bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-rose-500/20 text-purple-700 dark:text-purple-300 shadow-2xl border-2 border-purple-300/50 dark:border-purple-600/50 scale-105"
-                          : "hover:bg-white/60 dark:hover:bg-slate-800/60 hover:shadow-xl border-2 border-transparent hover:border-white/40 dark:hover:border-slate-600/40"
-                      )}
-                    >
-                      <div className={cn(
-                        "w-11 h-11 rounded-xl flex items-center justify-center text-lg transition-all duration-500 shadow-lg",
-                        isActive(item.path) 
-                          ? "bg-gradient-to-br from-purple-400 to-pink-600 text-white scale-110 shadow-2xl" 
-                          : "bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 group-hover:scale-110 group-hover:shadow-xl"
-                      )}>
-                        {item.icon}
-                      </div>
-                      
-                      <div className="flex-1">
-                        <div className="font-bold text-base mb-1">{item.name}</div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                          {item.name === 'Mental' && 'Mood tracking & mindfulness practices'}
-                          {item.name === 'Community' && 'Connect with like-minded wellness enthusiasts'}
-                          {item.name === 'Achievements' && 'Goals, milestones & reward system'}
-                        </div>
-                      </div>
-                      
-                      <ArrowRight className={cn(
-                        "w-5 h-5 transition-all duration-500",
-                        isActive(item.path) ? "text-purple-600 scale-125" : "opacity-0 group-hover:opacity-100 group-hover:scale-110"
-                      )} />
-                      
-                      {isActive(item.path) && (
-                        <div className="absolute -top-2 -right-2 w-4 h-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-lg">
-                          <Sparkles className="w-3 h-3 text-yellow-800 m-0.5" />
-                        </div>
-                      )}
-                    </Link>
-                  </NavigationMenuLink>
-                ))}
-              </div>
-            </div>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          );
+        })}
       </NavigationMenuList>
     </NavigationMenu>
   );

@@ -24,9 +24,9 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 215 20.2% 65.1%;
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    /* Cosmic Theme Colors */
+    /* Enhanced Cosmic Theme Colors */
     --cosmic-nebula: 124, 58, 237;
     --cosmic-highlight: 6, 182, 212;
     --cosmic-star: 251, 191, 36;
@@ -86,71 +86,78 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: 'Poppins', system-ui, sans-serif;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 }
 
-/* Cosmic theme glass effects */
+/* Enhanced Glass Effects with Sophisticated Atmospherics */
 .glass-card {
-  @apply bg-white/70 dark:bg-cosmic-deep/70 backdrop-blur-md border border-white/20 dark:border-cosmic-nebula/20 shadow-md;
+  @apply bg-white/80 dark:bg-cosmic-deep/80 backdrop-blur-2xl border border-white/30 dark:border-cosmic-nebula/30 shadow-2xl;
 }
 
 .frosted-glass {
-  @apply bg-white/50 dark:bg-cosmic-deep/60 backdrop-blur-xl border border-white/30 dark:border-cosmic-nebula/20 shadow-lg;
+  @apply bg-white/70 dark:bg-cosmic-deep/70 backdrop-blur-3xl border border-white/40 dark:border-cosmic-nebula/30 shadow-2xl;
 }
 
 .neo-glass {
-  @apply bg-gradient-to-br from-white/70 to-white/30 dark:from-cosmic-deep/70 dark:to-cosmic-space/40 backdrop-blur-md border border-white/40 dark:border-cosmic-nebula/20 shadow-lg;
+  @apply bg-gradient-to-br from-white/80 to-white/40 dark:from-cosmic-deep/80 dark:to-cosmic-space/50 backdrop-blur-2xl border border-white/50 dark:border-cosmic-nebula/30 shadow-2xl;
 }
 
 .ultra-glass {
-  @apply bg-gradient-to-br from-white/60 to-white/20 dark:from-cosmic-deep/60 dark:to-cosmic-space/30 backdrop-blur-2xl border border-white/30 dark:border-cosmic-nebula/30 shadow-xl;
+  @apply bg-gradient-to-br from-white/70 to-white/30 dark:from-cosmic-deep/70 dark:to-cosmic-space/40 backdrop-blur-3xl border border-white/40 dark:border-cosmic-nebula/40 shadow-cosmic;
 }
 
 .iridescent-glass {
-  @apply bg-gradient-to-br from-white/50 via-white/30 to-white/40 dark:from-cosmic-deep/50 dark:via-cosmic-nebula/10 dark:to-cosmic-highlight/10 backdrop-blur-xl border border-white/20 dark:border-cosmic-nebula/20 shadow-xl;
+  @apply bg-gradient-to-br from-white/60 via-white/40 to-white/50 dark:from-cosmic-deep/60 dark:via-cosmic-nebula/15 dark:to-cosmic-highlight/15 backdrop-blur-3xl border border-white/30 dark:border-cosmic-nebula/30 shadow-cosmic-glow;
 }
 
 .cosmic-glass {
-  @apply bg-gradient-to-br from-cosmic-deep/70 via-cosmic-space/50 to-cosmic-nebula/20 backdrop-blur-xl border border-cosmic-nebula/30 shadow-cosmic;
+  @apply bg-gradient-to-br from-cosmic-deep/80 via-cosmic-space/60 to-cosmic-nebula/30 backdrop-blur-3xl border border-cosmic-nebula/40 shadow-cosmic-glow;
 }
 
-/* Cosmic animations */
+/* Enhanced Cosmic Animations with Sophisticated Timing */
 @keyframes cosmic-pulse {
   0%, 100% {
-    opacity: 0.7;
+    opacity: 0.8;
     transform: scale(1);
   }
   50% {
     opacity: 0.4;
-    transform: scale(1.3);
+    transform: scale(1.4);
   }
 }
 
 @keyframes nebula-drift {
   0% {
     transform: rotate(0deg) scale(1);
-    opacity: 0.2;
-  }
-  33% {
-    transform: rotate(120deg) scale(1.2);
     opacity: 0.3;
   }
+  33% {
+    transform: rotate(120deg) scale(1.3);
+    opacity: 0.4;
+  }
   66% {
-    transform: rotate(240deg) scale(0.9);
-    opacity: 0.1;
+    transform: rotate(240deg) scale(0.8);
+    opacity: 0.2;
   }
   100% {
     transform: rotate(360deg) scale(1);
-    opacity: 0.2;
+    opacity: 0.3;
   }
 }
 
 @keyframes star-twinkle {
   0%, 100% {
-    opacity: 0.9;
+    opacity: 1;
+    transform: scale(1);
   }
   50% {
-    opacity: 0.4;
+    opacity: 0.3;
+    transform: scale(0.8);
   }
 }
 
@@ -172,27 +179,68 @@
   }
 }
 
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .animate-cosmic-pulse {
-  animation: cosmic-pulse 8s ease-in-out infinite;
+  animation: cosmic-pulse 10s ease-in-out infinite;
 }
 
 .animate-nebula-drift {
-  animation: nebula-drift 30s linear infinite;
+  animation: nebula-drift 40s linear infinite;
 }
 
 .animate-star-twinkle {
-  animation: star-twinkle 3s ease-in-out infinite;
+  animation: star-twinkle 4s ease-in-out infinite;
 }
 
 .animate-spin-slow {
-  animation: spin-slow 20s linear infinite;
+  animation: spin-slow 25s linear infinite;
 }
 
 .animate-spin-reverse-slow {
-  animation: spin-reverse-slow 15s linear infinite;
+  animation: spin-reverse-slow 20s linear infinite;
 }
 
-/* Star field effects */
+.animate-shimmer {
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out forwards;
+}
+
+/* Enhanced Star Field Effects */
 .stars-small, .stars-medium, .stars-large {
   position: absolute;
   top: 0;
@@ -200,42 +248,44 @@
   right: 0;
   bottom: 0;
   pointer-events: none;
+  z-index: 1;
 }
 
 .stars-small {
-  background-image: radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0)),
-                    radial-gradient(1px 1px at 40px 70px, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0)),
-                    radial-gradient(1px 1px at 50px 160px, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0)),
-                    radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)),
-                    radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0)),
-                    radial-gradient(1px 1px at 160px 120px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
+  background-image: radial-gradient(1px 1px at 25px 35px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)),
+                    radial-gradient(1px 1px at 45px 75px, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0)),
+                    radial-gradient(1px 1px at 65px 165px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)),
+                    radial-gradient(1px 1px at 95px 45px, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0)),
+                    radial-gradient(1px 1px at 135px 85px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)),
+                    radial-gradient(1px 1px at 165px 125px, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
   background-repeat: repeat;
-  background-size: 200px 200px;
+  background-size: 220px 220px;
+  animation: star-twinkle 5s ease-in-out infinite;
 }
 
 .stars-medium {
-  background-image: radial-gradient(2px 2px at 100px 50px, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0)),
-                    radial-gradient(2px 2px at 150px 150px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)),
-                    radial-gradient(2px 2px at 20px 120px, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0)),
-                    radial-gradient(2px 2px at 170px 90px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
+  background-image: radial-gradient(2px 2px at 110px 55px, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0)),
+                    radial-gradient(2px 2px at 155px 155px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)),
+                    radial-gradient(2px 2px at 25px 125px, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0)),
+                    radial-gradient(2px 2px at 175px 95px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
   background-repeat: repeat;
-  background-size: 300px 300px;
-  animation: star-twinkle 5s ease-in-out infinite alternate;
+  background-size: 320px 320px;
+  animation: star-twinkle 7s ease-in-out infinite alternate;
 }
 
 .stars-large {
-  background-image: radial-gradient(3px 3px at 120px 40px, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0)),
-                    radial-gradient(3px 3px at 40px 60px, rgba(251, 191, 36, 0.8), rgba(251, 191, 36, 0)),
-                    radial-gradient(3px 3px at 200px 150px, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0)),
-                    radial-gradient(3px 3px at 250px 50px, rgba(6, 182, 212, 0.8), rgba(6, 182, 212, 0));
+  background-image: radial-gradient(3px 3px at 125px 45px, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0)),
+                    radial-gradient(3px 3px at 45px 65px, rgba(251, 191, 36, 0.9), rgba(251, 191, 36, 0)),
+                    radial-gradient(3px 3px at 205px 155px, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0)),
+                    radial-gradient(3px 3px at 255px 55px, rgba(6, 182, 212, 0.9), rgba(6, 182, 212, 0));
   background-repeat: repeat;
-  background-size: 400px 400px;
-  animation: star-twinkle 7s ease-in-out infinite alternate-reverse;
+  background-size: 420px 420px;
+  animation: star-twinkle 9s ease-in-out infinite alternate-reverse;
 }
 
-/* Cosmic text effects */
+/* Enhanced Text Effects */
 .text-glow {
-  text-shadow: 0 0 10px rgba(var(--cosmic-nebula), 0.7);
+  text-shadow: 0 0 15px rgba(var(--cosmic-nebula), 0.8), 0 0 30px rgba(var(--cosmic-nebula), 0.4);
 }
 
 .text-cosmic {
@@ -252,37 +302,107 @@
   color: transparent;
 }
 
-/* Custom scrollbar */
+/* Enhanced Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
   background: rgba(var(--cosmic-deep), 0.1);
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(var(--cosmic-nebula), 0.5);
-  border-radius: 10px;
+  background: rgba(var(--cosmic-nebula), 0.6);
+  border-radius: 12px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(var(--cosmic-nebula), 0.8);
+  background: rgba(var(--cosmic-nebula), 0.9);
 }
 
 .scrollbar-thin {
   scrollbar-width: thin;
+  scrollbar-color: rgba(var(--cosmic-nebula), 0.6) rgba(var(--cosmic-deep), 0.1);
 }
 
-/* Focus and selection styles */
+/* Enhanced Focus and Selection */
 ::selection {
-  background-color: rgba(var(--cosmic-nebula), 0.3);
+  background-color: rgba(var(--cosmic-nebula), 0.4);
   color: white;
 }
 
 *:focus-visible {
-  outline: 2px solid rgba(var(--cosmic-nebula), 0.6);
-  outline-offset: 2px;
+  outline: 2px solid rgba(var(--cosmic-nebula), 0.7);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* Professional Interactive Elements */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.group-hover-scale {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.group:hover .group-hover-scale {
+  transform: scale(1.05);
+}
+
+/* Sophisticated Button Styles */
+.btn-primary {
+  @apply bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white font-semibold px-6 py-3 rounded-2xl shadow-2xl hover:shadow-cosmic transition-all duration-500 hover:scale-105;
+}
+
+.btn-secondary {
+  @apply bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-700 border border-gray-200/60 dark:border-gray-700/60 text-gray-700 dark:text-gray-200 font-semibold px-6 py-3 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 backdrop-blur-xl;
+}
+
+/* Professional Card Styles */
+.card-professional {
+  @apply bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-gray-200/50 dark:border-gray-700/50 rounded-3xl shadow-2xl hover:shadow-cosmic transition-all duration-500 hover:scale-[1.02];
+}
+
+/* Enhanced Animations for Better UX */
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 4s ease-in-out infinite;
+}
+
+/* Accessibility Enhancements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .glass-card,
+  .frosted-glass,
+  .neo-glass,
+  .ultra-glass,
+  .iridescent-glass {
+    @apply bg-white dark:bg-slate-900 border-2 border-gray-800 dark:border-gray-200;
+  }
 }

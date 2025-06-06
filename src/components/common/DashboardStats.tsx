@@ -72,7 +72,7 @@ const DashboardStats: React.FC = () => {
         value: todayWaterGlasses,
         goal: 10,
         icon: <Droplets className="w-6 h-6" />,
-        color: 'cyan' as const,
+        color: 'blue' as const,
         unit: 'glasses',
         trend: { 
           value: Math.round(((todayWaterGlasses - weekAvg.water) / weekAvg.water) * 100), 
@@ -98,8 +98,8 @@ const DashboardStats: React.FC = () => {
 
   return (
     <div className="relative">
-      {/* Enhanced atmospheric background */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-50/20 via-purple-50/15 to-pink-50/20 dark:from-blue-950/20 dark:via-purple-950/15 dark:to-pink-950/20 rounded-3xl blur-2xl"></div>
+      {/* Enhanced atmospheric background with vibrant orange theme */}
+      <div className="absolute inset-0 bg-gradient-to-r from-orange-50/30 via-amber-50/20 to-red-50/30 dark:from-orange-950/30 dark:via-amber-950/20 dark:to-red-950/30 rounded-3xl blur-2xl"></div>
       
       <div className={`relative grid gap-6 ${isMobile ? 'grid-cols-2' : 'grid-cols-4'}`}>
         {todayStats.map((stat, index) => (
@@ -107,8 +107,8 @@ const DashboardStats: React.FC = () => {
             key={index}
             className="group relative"
           >
-            {/* Floating decorative elements */}
-            <div className="absolute -top-2 -right-2 w-4 h-4 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-full blur-sm animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            {/* Floating decorative elements with orange theme */}
+            <div className="absolute -top-2 -right-2 w-4 h-4 bg-gradient-to-br from-orange-400/40 to-red-400/40 rounded-full blur-sm animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             
             <EnhancedQuickStatsCard
               title={stat.title}
@@ -120,7 +120,7 @@ const DashboardStats: React.FC = () => {
               trend={stat.trend}
               size={isMobile ? 'sm' : 'md'}
               subtitle={stat.subtitle}
-              className="relative bg-white/30 dark:bg-slate-900/30 backdrop-blur-2xl border border-white/40 dark:border-slate-700/40 hover:shadow-2xl transition-all duration-500 hover:scale-105 rounded-3xl overflow-hidden"
+              className="relative bg-white/40 dark:bg-slate-900/40 backdrop-blur-3xl border border-white/60 dark:border-slate-700/60 hover:shadow-2xl transition-all duration-500 hover:scale-105 rounded-3xl overflow-hidden"
             />
           </div>
         ))}

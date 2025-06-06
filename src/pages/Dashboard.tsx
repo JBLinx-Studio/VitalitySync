@@ -15,7 +15,9 @@ import {
   Flame,
   Shield,
   Star,
-  Rocket
+  Rocket,
+  Users,
+  Award
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ResponsiveContainer from '@/components/layout/ResponsiveContainer';
@@ -50,46 +52,57 @@ const Dashboard: React.FC = () => {
   const tabConfig = useMemo(() => [
     {
       value: 'overview',
-      label: 'Overview',
+      label: 'Health Hub',
       icon: Target,
       color: 'from-orange-500 to-amber-500',
-      description: 'Your health snapshot'
+      description: 'Your complete wellness snapshot'
     },
     {
       value: 'analytics',
       label: 'Analytics',
       icon: BarChart3,
       color: 'from-blue-500 to-cyan-500',
-      description: 'Deep insights & trends'
+      description: 'Deep insights & performance metrics'
     },
     {
       value: 'ai-insights',
       label: 'AI Coach',
       icon: Brain,
       color: 'from-emerald-500 to-teal-500',
-      description: 'Personalized recommendations'
+      description: 'Intelligent health recommendations'
     },
     {
       value: 'goals',
       label: 'Goals',
       icon: Trophy,
       color: 'from-yellow-500 to-orange-500',
-      description: 'Achievement tracking'
+      description: 'Achievements & milestone tracking'
     },
     {
       value: 'trends',
       label: 'Trends',
       icon: TrendingUp,
       color: 'from-purple-500 to-pink-500',
-      description: 'Health patterns'
+      description: 'Long-term health pattern analysis'
     }
   ], []);
 
   const getWelcomeMessage = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return 'Rise & Shine';
+    if (hour < 17) return 'Power Through';
+    return 'Wind Down';
+  };
+
+  const getMotivationalMessage = () => {
+    const messages = [
+      "Your health journey is extraordinary",
+      "Every step forward is a victory",
+      "Transform your life with purpose",
+      "Unlock your full potential today",
+      "Be the hero of your health story"
+    ];
+    return messages[new Date().getDate() % messages.length];
   };
 
   return (
@@ -121,7 +134,7 @@ const Dashboard: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <div className="relative">
-                    <div className="w-16 h-16 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-vibrant animate-bounce-glow">
+                    <div className="w-16 h-16 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-vibrant">
                       <Crown className="w-8 h-8 text-white" />
                     </div>
                     <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center animate-pulse">
@@ -130,10 +143,10 @@ const Dashboard: React.FC = () => {
                   </div>
                   <div>
                     <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 bg-clip-text text-transparent mb-2 animate-fade-in">
-                      {getWelcomeMessage()}, {userProfile?.name || 'Champion'}! 🔥
+                      {getWelcomeMessage()}, {userProfile?.name || 'Health Champion'}! 🚀
                     </h1>
-                    <p className="text-xl text-gray-600 dark:text-gray-300">
-                      Your premium health command center
+                    <p className="text-xl text-gray-600 dark:text-gray-300 font-medium">
+                      {getMotivationalMessage()}
                     </p>
                   </div>
                 </div>
@@ -143,14 +156,35 @@ const Dashboard: React.FC = () => {
                 <div className="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl text-white font-bold shadow-vibrant hover:shadow-vibrant-glow transition-all duration-500 hover:scale-105">
                   <div className="flex items-center gap-2">
                     <Shield className="w-5 h-5" />
-                    <span>Premium Active</span>
+                    <span>VitalitySync Pro</span>
                   </div>
                 </div>
                 <div className="px-4 py-2 bg-orange-100 dark:bg-orange-900/30 rounded-xl border border-orange-200 dark:border-orange-700">
                   <div className="flex items-center gap-2 text-orange-700 dark:text-orange-300">
-                    <Rocket className="w-4 h-4" />
-                    <span className="font-semibold">AI Powered</span>
+                    <Users className="w-4 h-4" />
+                    <span className="font-semibold">Community Member</span>
                   </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Motivational banner */}
+            <div className="p-6 bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-yellow-500/10 dark:from-orange-400/10 dark:via-amber-400/10 dark:to-yellow-400/10 rounded-3xl border border-orange-200/30 dark:border-orange-700/30 backdrop-blur-xl">
+              <div className="flex items-center gap-4 text-center md:text-left">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-2xl flex items-center justify-center shadow-lg">
+                  <Rocket className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-orange-700 dark:text-orange-300 mb-1">
+                    Your Wellness Mission Control is Ready
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Track, analyze, and optimize every aspect of your health journey with AI-powered insights and personalized recommendations.
+                  </p>
+                </div>
+                <div className="hidden md:flex items-center gap-2">
+                  <Award className="w-5 h-5 text-orange-500" />
+                  <span className="text-sm font-medium text-orange-600 dark:text-orange-400">Level up daily</span>
                 </div>
               </div>
             </div>
@@ -175,7 +209,7 @@ const Dashboard: React.FC = () => {
                     {/* Enhanced shimmer effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 -skew-x-12 group-hover:animate-energy-flow"></div>
                     
-                    <tab.icon className={cn("w-5 h-5 relative z-10", isMobile && "w-4 h-4", activeTab === tab.value && "animate-bounce-glow")} />
+                    <tab.icon className={cn("w-5 h-5 relative z-10", isMobile && "w-4 h-4")} />
                     {!isMobile && <span className="relative z-10">{tab.label}</span>}
                     
                     {activeTab === tab.value && (

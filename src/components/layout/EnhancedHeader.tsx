@@ -16,7 +16,8 @@ import {
   Zap,
   Flame,
   Heart,
-  Activity
+  Activity,
+  TrendingUp
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -105,8 +106,8 @@ const EnhancedHeader: React.FC = () => {
             {/* Enhanced Logo */}
             <Link to="/" className="group flex items-center gap-3 hover:scale-105 transition-all duration-500">
               <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 via-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-vibrant group-hover:shadow-vibrant-glow transition-all duration-500 group-hover:rotate-6">
-                  <Flame className="w-7 h-7 text-white animate-bounce-glow" />
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 via-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-vibrant transition-shadow duration-500 group-hover:shadow-vibrant-glow">
+                  <TrendingUp className="w-7 h-7 text-white group-hover:scale-110 transition-transform duration-300" />
                 </div>
                 <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center animate-pulse">
                   <Sparkles className="w-2.5 h-2.5 text-white" />
@@ -114,10 +115,10 @@ const EnhancedHeader: React.FC = () => {
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 bg-clip-text text-transparent">
-                  VitalityHub
+                  VitalitySync
                 </h1>
                 <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
-                  Premium Health Tracker
+                  Premium Health Intelligence
                 </p>
               </div>
             </Link>
@@ -142,7 +143,7 @@ const EnhancedHeader: React.FC = () => {
                         {/* Shimmer effect */}
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 -skew-x-12 group-hover:animate-energy-flow"></div>
                         
-                        <item.icon className={cn("w-4 h-4 relative z-10", isActive && "animate-bounce-glow")} />
+                        <item.icon className={cn("w-4 h-4 relative z-10")} />
                         <span className="relative z-10">{item.label}</span>
                         
                         {isActive && (

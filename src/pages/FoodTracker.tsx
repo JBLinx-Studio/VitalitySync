@@ -21,7 +21,8 @@ import {
   Scan,
   Coffee,
   Apple,
-  Droplets
+  Droplets,
+  Brain
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import GlassCard from '@/components/ui/glass-card';
@@ -31,6 +32,8 @@ import { searchByBarcode, searchFreeRecipes, getApiStatus } from '@/services/api
 import FoodSearchResults from '@/components/FoodDiary/FoodSearchResults';
 import FoodEntryForm from '@/components/FoodDiary/FoodEntryForm';
 import BarcodeScanner from '@/components/BarcodeScanner';
+import MealPlanningHub from '@/components/nutrition/MealPlanningHub';
+import NutritionInsights from '@/components/nutrition/NutritionInsights';
 import { useViewport } from '@/hooks/use-viewport';
 
 const FoodTracker: React.FC = () => {
@@ -173,16 +176,16 @@ const FoodTracker: React.FC = () => {
       )}>
         <div>
           <h1 className={cn(
-            "font-bold bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent",
+            "font-bold bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 bg-clip-text text-transparent",
             headerSize
           )}>
-            Nutrition Hub 🍽️
+            Nutrition Command Center 🍽️
           </h1>
           <p className={cn(
             "text-gray-600 dark:text-gray-300 mt-2",
             isMobile ? "text-sm" : isTablet ? "text-base" : "text-lg"
           )}>
-            Track nutrition with precision and discover healthy recipes
+            Advanced nutrition tracking with AI-powered meal planning and insights
           </p>
         </div>
         <div className={cn("flex gap-2", isMobile ? "flex-col w-full" : "flex-row")}>
@@ -291,7 +294,7 @@ const FoodTracker: React.FC = () => {
       <Tabs defaultValue="log" className="w-full">
         <TabsList className={cn(
           "grid w-full mb-6",
-          isMobile ? "grid-cols-2 h-auto" : "grid-cols-5"
+          isMobile ? "grid-cols-2 h-auto" : "grid-cols-6"
         )}>
           <TabsTrigger value="log" className={cn(isMobile ? "text-xs p-2" : "")}>
             {isMobile ? "Log" : "Log Food"}
@@ -299,9 +302,10 @@ const FoodTracker: React.FC = () => {
           <TabsTrigger value="search" className={cn(isMobile ? "text-xs p-2" : "")}>
             {isMobile ? "Search" : "Search Foods"}
           </TabsTrigger>
+          {!isMobile && <TabsTrigger value="planning">Meal Planning</TabsTrigger>}
+          {!isMobile && <TabsTrigger value="insights">AI Insights</TabsTrigger>}
           {!isMobile && <TabsTrigger value="recipes">Recipes</TabsTrigger>}
           {!isMobile && <TabsTrigger value="meals">Meals</TabsTrigger>}
-          {!isMobile && <TabsTrigger value="insights">Insights</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="log" className="space-y-6">
@@ -399,41 +403,22 @@ const FoodTracker: React.FC = () => {
           </GlassCard>
         </TabsContent>
 
-        {/* Enhanced Meals Tab with better responsive design */}
-        {!isMobile && (
-          <TabsContent value="meals" className="space-y-6">
-            <div className={cn("grid gap-4", gridCols)}>
-              {meals.map((meal) => (
-                <GlassCard key={meal.id} variant="premium" className="p-4 hover:scale-105 transition-transform cursor-pointer group">
-                  <div className="text-center relative overflow-hidden">
-                    <div className={cn(
-                      "absolute inset-0 bg-gradient-to-br opacity-10 group-hover:opacity-20 transition-opacity rounded-xl",
-                      meal.color
-                    )}></div>
-                    <div className="relative z-10">
-                      <div className="text-3xl mb-3">{meal.icon}</div>
-                      <h3 className="font-semibold text-lg mb-2">{meal.name}</h3>
-                      <div className="space-y-1">
-                        <p className="text-2xl font-bold">{meal.calories}</p>
-                        <p className="text-sm text-gray-500">calories</p>
-                        <p className="text-xs text-gray-400">{meal.foods} foods logged</p>
-                      </div>
-                    </div>
-                  </div>
-                </GlassCard>
-              ))}
-            </div>
-          </TabsContent>
-        )}
-
-        {/* Other tabs content remains similar but with responsive improvements */}
+        {/* New Enhanced Tabs */}
         {!isMobile && (
           <>
+            <TabsContent value="planning">
+              <MealPlanningHub />
+            </TabsContent>
+
+            <TabsContent value="insights">
+              <NutritionInsights />
+            </TabsContent>
+
             <TabsContent value="recipes">
               <GlassCard variant="premium" className={cardPadding}>
                 <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
                   <ChefHat className="w-5 h-5 text-green-500" />
-                  Free Recipe Database
+                  Recipe Database & Integration
                 </h3>
                 <div className="space-y-4">
                   <div className="flex gap-3">
@@ -469,28 +454,28 @@ const FoodTracker: React.FC = () => {
               </GlassCard>
             </TabsContent>
 
-            <TabsContent value="insights">
-              <GlassCard variant="premium" className={cardPadding}>
-                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-purple-500" />
-                  Nutrition Insights & APIs
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {Object.entries(getApiStatus()).map(([key, api]) => (
-                    <div key={key} className={cn(
-                      "p-4 rounded-xl border",
-                      api.status === 'active' ? 'bg-green-50 border-green-200 dark:bg-green-900/20' :
-                      api.status === 'ready' ? 'bg-blue-50 border-blue-200 dark:bg-blue-900/20' :
-                      'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20'
-                    )}>
-                      <h4 className="font-medium mb-1">{api.description}</h4>
-                      <Badge variant={api.status === 'active' ? 'default' : api.status === 'ready' ? 'secondary' : 'outline'}>
-                        {api.status}
-                      </Badge>
+            <TabsContent value="meals">
+              <div className={cn("grid gap-4", gridCols)}>
+                {meals.map((meal) => (
+                  <GlassCard key={meal.id} variant="premium" className="p-4 hover:scale-105 transition-transform cursor-pointer group">
+                    <div className="text-center relative overflow-hidden">
+                      <div className={cn(
+                        "absolute inset-0 bg-gradient-to-br opacity-10 group-hover:opacity-20 transition-opacity rounded-xl",
+                        meal.color
+                      )}></div>
+                      <div className="relative z-10">
+                        <div className="text-3xl mb-3">{meal.icon}</div>
+                        <h3 className="font-semibold text-lg mb-2">{meal.name}</h3>
+                        <div className="space-y-1">
+                          <p className="text-2xl font-bold">{meal.calories}</p>
+                          <p className="text-sm text-gray-500">calories</p>
+                          <p className="text-xs text-gray-400">{meal.foods} foods logged</p>
+                        </div>
+                      </div>
                     </div>
-                  ))}
-                </div>
-              </GlassCard>
+                  </GlassCard>
+                ))}
+              </div>
             </TabsContent>
           </>
         )}

@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -31,6 +30,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useViewport } from '@/hooks/use-viewport';
 import { cn } from '@/lib/utils';
 import UserAvatar from '@/components/ui/user-avatar';
+import NotificationsMenu from '@/components/Notifications/NotificationsMenu';
 
 const EnhancedHeader: React.FC = () => {
   const location = useLocation();
@@ -187,9 +187,8 @@ const EnhancedHeader: React.FC = () => {
               </Button>
               
               {isNotificationsOpen && (
-                <div className="absolute right-0 mt-2 w-80 z-50 bg-white dark:bg-slate-900 rounded-xl shadow-vibrant border border-orange-200/50 dark:border-orange-700/50 p-4">
-                  <h3 className="font-semibold mb-2">Notifications</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">No new notifications</p>
+                <div className="absolute right-0 mt-2 w-80 z-50">
+                  <NotificationsMenu onClose={() => setIsNotificationsOpen(false)} />
                 </div>
               )}
             </div>
@@ -203,8 +202,8 @@ const EnhancedHeader: React.FC = () => {
                 className="flex items-center gap-2 hover:bg-orange-50 dark:hover:bg-orange-950/20"
               >
                 <UserAvatar 
-                  userProfile={userProfile || { name: 'User', email: 'user@example.com' }}
-                  size="sm" 
+                  name={userProfile?.name || 'User'} 
+                  size="sm"
                   className="ring-2 ring-orange-200 dark:ring-orange-700"
                 />
                 {!isMobile && (
@@ -218,10 +217,7 @@ const EnhancedHeader: React.FC = () => {
                 <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-xl shadow-vibrant border border-orange-200/50 dark:border-orange-700/50 py-2 z-50">
                   <div className="px-4 py-3 border-b border-orange-200/50 dark:border-orange-700/50">
                     <div className="flex items-center gap-3">
-                      <UserAvatar 
-                        userProfile={userProfile || { name: 'User', email: 'user@example.com' }}
-                        size="md" 
-                      />
+                      <UserAvatar name={userProfile?.name || 'User'} size="md" />
                       <div>
                         <p className="font-semibold text-sm">{userProfile?.name || 'Health Champion'}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">

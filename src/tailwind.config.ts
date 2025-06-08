@@ -81,6 +81,14 @@ export default {
           fiber: '#38B2AC',
           sugar: '#F56565',
           sodium: '#D69E2E'
+        },
+        cosmic: {
+          deep: '#0F172A',
+          space: '#1E293B',
+          nebula: '#7C3AED',
+          star: '#FBBF24',
+          accent: '#EC4899',
+          highlight: '#06B6D4'
         }
       },
       borderRadius: {
@@ -99,6 +107,9 @@ export default {
         'glow': '0 0 25px rgba(155, 135, 245, 0.7)',
         'rainbow': '0 5px 20px rgba(155, 135, 245, 0.5), 0 12px 30px rgba(79, 209, 197, 0.4)',
         'intense': '0 10px 30px rgba(0, 0, 0, 0.2), 0 0 10px rgba(79, 209, 197, 0.5)',
+        'cosmic': '0 8px 32px rgba(15, 23, 42, 0.3), 0 4px 16px rgba(124, 58, 237, 0.2)',
+        'cosmic-glow': '0 0 30px rgba(124, 58, 237, 0.6), 0 0 60px rgba(6, 182, 212, 0.3)',
+        'prismatic': '0 5px 20px rgba(236, 72, 153, 0.5), 0 12px 30px rgba(6, 182, 212, 0.4)',
       },
       keyframes: {
         'accordion-down': {
@@ -145,6 +156,54 @@ export default {
             boxShadow: '0 0 20px rgba(79, 209, 197, 0.8), 0 0 30px rgba(79, 209, 197, 0.4)' 
           },
         },
+        'cosmic-pulse': {
+          '0%, 100%': { 
+            opacity: '0.8',
+            transform: 'scale(1)'
+          },
+          '50%': { 
+            opacity: '0.4',
+            transform: 'scale(1.5)'
+          },
+        },
+        'star-twinkle': {
+          '0%, 100%': { 
+            opacity: '1',
+            transform: 'scale(1)'
+          },
+          '50%': { 
+            opacity: '0.5',
+            transform: 'scale(0.8)'
+          },
+        },
+        'nebula-drift': {
+          '0%': { 
+            transform: 'rotate(0deg) scale(1)',
+            opacity: '0.8'
+          },
+          '50%': { 
+            transform: 'rotate(180deg) scale(1.2)',
+            opacity: '0.6'
+          },
+          '100%': { 
+            transform: 'rotate(360deg) scale(1)',
+            opacity: '0.8'
+          },
+        },
+        'prismatic-shift': {
+          '0%': { 
+            backgroundPosition: '0% 50%',
+            filter: 'hue-rotate(0deg)'
+          },
+          '50%': { 
+            backgroundPosition: '100% 50%',
+            filter: 'hue-rotate(180deg)'
+          },
+          '100%': { 
+            backgroundPosition: '0% 50%',
+            filter: 'hue-rotate(360deg)'
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -158,6 +217,10 @@ export default {
         'shimmer': 'shimmer 3s ease-in-out infinite',
         'glow': 'glow 3s ease-in-out infinite',
         'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'cosmic-pulse': 'cosmic-pulse 8s ease-in-out infinite',
+        'star-twinkle': 'star-twinkle 3s ease-in-out infinite',
+        'nebula-drift': 'nebula-drift 30s linear infinite',
+        'prismatic-shift': 'prismatic-shift 6s linear infinite',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -169,6 +232,8 @@ export default {
         'gradient-neon': 'linear-gradient(to right, #12c2e9, #c471ed, #f64f59)',
         'gradient-sunset': 'linear-gradient(to right, #fa709a, #fee140)',
         'gradient-vapor': 'linear-gradient(to top, #a18cd1, #fbc2eb)',
+        'gradient-cosmic': 'linear-gradient(to bottom right, #0F172A, #1E293B, #7C3AED)',
+        'gradient-aurora': 'linear-gradient(to right, #4ade80, #06b6d4, #8b5cf6)',
       },
       transitionProperty: {
         'height': 'height',

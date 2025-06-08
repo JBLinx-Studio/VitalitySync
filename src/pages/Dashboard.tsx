@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
@@ -22,7 +21,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import ResponsiveContainer from '@/components/layout/ResponsiveContainer';
 import { useViewport } from '@/hooks';
-import EnhancedDashboardOverview from '@/components/dashboard/EnhancedDashboardOverview';
+import RevolutionaryDashboard from '@/components/dashboard/RevolutionaryDashboard';
 import AnalyticsDashboard from '@/components/common/AnalyticsDashboard';
 import AIInsightsPanel from '@/components/dashboard/AIInsightsPanel';
 import AdvancedMetrics from '@/components/dashboard/AdvancedMetrics';
@@ -116,15 +115,13 @@ const Dashboard: React.FC = () => {
       "min-h-screen relative overflow-hidden",
       "bg-gradient-to-br from-slate-900 via-gray-900 to-black"
     )}>
-      {/* Powerful Background Effects */}
+      {/* Enhanced Background Effects */}
       <div className="fixed inset-0 -z-10">
-        {/* Base gradient */}
         <div className={cn(
           "absolute inset-0 bg-gradient-to-br transition-all duration-1000",
           `${currentTab?.bgGradient || 'from-slate-900/80 to-gray-900/80'}`
         )}></div>
         
-        {/* Dynamic orbs */}
         <div className={cn(
           "absolute rounded-full blur-3xl animate-pulse opacity-30 transition-all duration-1000",
           isMobile ? "top-10 right-10 w-40 h-40" : "top-20 right-20 w-96 h-96",
@@ -145,13 +142,12 @@ const Dashboard: React.FC = () => {
           activeTab === 'trends' && "bg-gradient-to-tr from-pink-400/60 to-rose-500/60"
         )}></div>
 
-        {/* Grid pattern overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
       </div>
 
       <ResponsiveContainer maxWidth="7xl" padding={isMobile ? "sm" : "lg"} className="relative z-10">
         <div className="space-y-8 md:space-y-12">
-          {/* Powerful Header Section */}
+          {/* Revolutionary Header Section */}
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-gray-900/40 to-black/60 backdrop-blur-3xl rounded-3xl border border-white/10 shadow-2xl"></div>
             <div className="relative p-8 md:p-12">
@@ -168,7 +164,6 @@ const Dashboard: React.FC = () => {
                       <div className="absolute -top-3 -right-3 w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center animate-pulse shadow-xl">
                         <Crown className="w-6 h-6 text-white" />
                       </div>
-                      {/* Powerful pulsing rings */}
                       <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/20 to-transparent scale-125 animate-pulse opacity-40"></div>
                       <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/15 to-transparent scale-150 animate-pulse delay-500 opacity-30"></div>
                     </div>
@@ -216,7 +211,6 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
               
-              {/* Enhanced focus banner */}
               <div className="mt-8 p-8 bg-gradient-to-r from-black/40 via-gray-900/60 to-black/40 rounded-3xl border border-white/20 backdrop-blur-xl shadow-inner">
                 <div className="flex items-center gap-6">
                   <div className={cn(
@@ -245,7 +239,7 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Powerful Tab Navigation */}
+          {/* Enhanced Tab Navigation */}
           <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
             <div className="relative mb-12">
               <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-gray-900/60 to-black/80 backdrop-blur-3xl rounded-3xl border border-white/20 shadow-2xl"></div>
@@ -253,7 +247,7 @@ const Dashboard: React.FC = () => {
                 <TabsList className={cn(
                   "grid w-full bg-transparent gap-4",
                   isMobile ? "grid-cols-2 p-4" : "grid-cols-5 p-6",
-                  "min-h-[80px]" // Ensure enough height for buttons
+                  "min-h-[80px]"
                 )}>
                   {tabConfig.slice(0, isMobile ? 2 : 5).map((tab) => (
                     <TabsTrigger 
@@ -272,7 +266,6 @@ const Dashboard: React.FC = () => {
                         ]
                       )}
                     >
-                      {/* Enhanced shimmer effects */}
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 -skew-x-12 animate-pulse"></div>
                       
                       <tab.icon className={cn("relative z-10", isMobile ? "w-6 h-6" : "w-7 h-7")} />
@@ -285,7 +278,6 @@ const Dashboard: React.FC = () => {
                   ))}
                 </TabsList>
                 
-                {/* Enhanced tab descriptions */}
                 {!isMobile && (
                   <div className="relative mt-8 text-center">
                     <p className="text-lg text-gray-300 font-semibold bg-black/40 rounded-full px-8 py-4 inline-block backdrop-blur-xl border border-white/20 shadow-lg">
@@ -299,7 +291,7 @@ const Dashboard: React.FC = () => {
             {/* Tab Content */}
             <div className="mt-10">
               <TabsContent value="overview" className="space-y-8 animate-fade-in">
-                <EnhancedDashboardOverview />
+                <RevolutionaryDashboard />
               </TabsContent>
 
               <TabsContent value="analytics" className="space-y-8 animate-fade-in">

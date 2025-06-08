@@ -70,7 +70,7 @@ const TabsContent = React.forwardRef<
         {props.children}
       </div>
     </div>
-  </TabsContent>
+  </TabsPrimitive.Content>
 ))
 TabsContent.displayName = TabsPrimitive.Content.displayName
 

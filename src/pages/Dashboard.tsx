@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
@@ -21,7 +22,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import ResponsiveContainer from '@/components/layout/ResponsiveContainer';
 import { useViewport } from '@/hooks';
-import RevolutionaryDashboard from '@/components/dashboard/RevolutionaryDashboard';
+import DashboardStats from '@/components/common/DashboardStats';
 import AnalyticsDashboard from '@/components/common/AnalyticsDashboard';
 import AIInsightsPanel from '@/components/dashboard/AIInsightsPanel';
 import AdvancedMetrics from '@/components/dashboard/AdvancedMetrics';
@@ -145,7 +146,7 @@ const Dashboard: React.FC = () => {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
       </div>
 
-      <ResponsiveContainer maxWidth="7xl" padding={isMobile ? "sm" : "lg"} className="relative z-10">
+      <ResponsiveContainer maxWidth="2xl" padding={isMobile ? "sm" : "lg"} className="relative z-10">
         <div className="space-y-8 md:space-y-12">
           {/* Revolutionary Header Section */}
           <div className="relative">
@@ -291,7 +292,7 @@ const Dashboard: React.FC = () => {
             {/* Tab Content */}
             <div className="mt-10">
               <TabsContent value="overview" className="space-y-8 animate-fade-in">
-                <RevolutionaryDashboard />
+                <DashboardStats />
               </TabsContent>
 
               <TabsContent value="analytics" className="space-y-8 animate-fade-in">

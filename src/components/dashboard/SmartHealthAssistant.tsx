@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { 
   Bot, 
   Sparkles, 
@@ -21,10 +20,11 @@ import {
   Star,
   Send,
   Mic,
-  Camera
+  Camera,
+  Gem,
+  Crown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import GlassCard from '@/components/ui/glass-card';
 
 const SmartHealthAssistant: React.FC = () => {
   const [chatInput, setChatInput] = useState('');
@@ -66,163 +66,178 @@ const SmartHealthAssistant: React.FC = () => {
   ];
 
   const quickActions = [
-    { label: 'Log Meal', icon: Apple, color: 'from-green-500 to-emerald-500' },
-    { label: 'Start Workout', icon: Activity, color: 'from-orange-500 to-red-500' },
-    { label: 'Track Sleep', icon: Moon, color: 'from-purple-500 to-indigo-500' },
-    { label: 'Check Goals', icon: Target, color: 'from-blue-500 to-cyan-500' }
+    { label: 'Log Meal', icon: Apple, color: 'from-green-400 to-emerald-500' },
+    { label: 'Start Workout', icon: Activity, color: 'from-orange-400 to-red-500' },
+    { label: 'Track Sleep', icon: Moon, color: 'from-purple-400 to-indigo-500' },
+    { label: 'Check Goals', icon: Target, color: 'from-blue-400 to-cyan-500' }
   ];
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'border-red-500/30 bg-red-50/50 dark:bg-red-900/20';
-      case 'medium': return 'border-yellow-500/30 bg-yellow-50/50 dark:bg-yellow-900/20';
-      case 'low': return 'border-green-500/30 bg-green-50/50 dark:bg-green-900/20';
-      default: return 'border-gray-500/30 bg-gray-50/50 dark:bg-gray-900/20';
+      case 'high': return 'border-red-400/50 bg-red-500/10 backdrop-blur-xl';
+      case 'medium': return 'border-yellow-400/50 bg-yellow-500/10 backdrop-blur-xl';
+      case 'low': return 'border-green-400/50 bg-green-500/10 backdrop-blur-xl';
+      default: return 'border-gray-400/50 bg-gray-500/10 backdrop-blur-xl';
     }
   };
 
   const handleVoiceInput = () => {
     setIsListening(!isListening);
-    // Voice recognition would be implemented here
   };
 
   return (
-    <div className="space-y-6">
-      {/* AI Assistant Header */}
-      <GlassCard variant="premium" className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-vibrant">
-                <Bot className="w-8 h-8 text-white" />
+    <div className="space-y-8">
+      {/* Premium AI Assistant Header */}
+      <div className="relative">
+        <div className="absolute inset-0 bg-white/5 backdrop-blur-3xl rounded-3xl border border-white/10 shadow-2xl"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-pink-500/10 to-purple-500/20 rounded-3xl"></div>
+        
+        <div className="relative p-8">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-6">
+              <div className="relative">
+                <div className="absolute -inset-3 bg-gradient-to-r from-purple-400/30 via-pink-400/30 to-purple-400/30 rounded-full blur-xl animate-pulse"></div>
+                <div className="relative w-20 h-20 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-2xl">
+                  <Bot className="w-10 h-10 text-white" />
+                </div>
+                <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center animate-pulse shadow-xl">
+                  <Sparkles className="w-4 h-4 text-white" />
+                </div>
               </div>
-              <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center animate-pulse">
-                <Sparkles className="w-3 h-3 text-white" />
-              </div>
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                VitalitySync AI Coach
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300">
-                Your personal health optimization assistant
-              </p>
-            </div>
-          </div>
-          <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2">
-            <Shield className="w-4 h-4 mr-2" />
-            Premium AI
-          </Badge>
-        </div>
-
-        {/* Chat Interface */}
-        <div className="space-y-4">
-          <div className="flex gap-3">
-            <div className="flex-1 relative">
-              <Input
-                placeholder="Ask me anything about your health journey..."
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                className="pr-24 rounded-xl border-purple-200 dark:border-purple-700 focus:border-purple-500"
-              />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={handleVoiceInput}
-                  className={cn(
-                    "w-8 h-8 p-0 rounded-lg",
-                    isListening && "bg-red-500 text-white animate-pulse"
-                  )}
-                >
-                  <Mic className="w-4 h-4" />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="w-8 h-8 p-0 rounded-lg"
-                >
-                  <Camera className="w-4 h-4" />
-                </Button>
+              <div>
+                <h2 className="text-3xl font-black bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent mb-2">
+                  VitalitySync AI Coach
+                </h2>
+                <p className="text-gray-300 text-lg">
+                  Your personal health optimization assistant
+                </p>
               </div>
             </div>
-            <Button className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl px-6">
-              <Send className="w-4 h-4 mr-2" />
-              Send
-            </Button>
+            <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 text-base">
+              <Crown className="w-5 h-5 mr-2" />
+              Elite AI
+            </Badge>
           </div>
 
-          {/* Quick Actions */}
-          <div className="flex flex-wrap gap-2">
-            {quickActions.map((action, index) => (
-              <Button
-                key={index}
-                size="sm"
-                variant="outline"
-                className="rounded-xl border-purple-200 dark:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-              >
-                <action.icon className="w-4 h-4 mr-2" />
-                {action.label}
+          {/* Premium Chat Interface */}
+          <div className="space-y-6">
+            <div className="flex gap-4">
+              <div className="flex-1 relative">
+                <Input
+                  placeholder="Ask me anything about your health journey..."
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  className="pr-28 rounded-2xl border-purple-400/30 bg-white/10 backdrop-blur-xl text-white placeholder:text-gray-400 focus:border-purple-400 h-14 text-lg"
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={handleVoiceInput}
+                    className={cn(
+                      "w-10 h-10 p-0 rounded-xl transition-all duration-300",
+                      isListening && "bg-red-500 text-white animate-pulse shadow-lg"
+                    )}
+                  >
+                    <Mic className="w-5 h-5" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="w-10 h-10 p-0 rounded-xl hover:bg-white/20"
+                  >
+                    <Camera className="w-5 h-5" />
+                  </Button>
+                </div>
+              </div>
+              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl px-8 h-14 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300">
+                <Send className="w-5 h-5 mr-2" />
+                Send
               </Button>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="flex flex-wrap gap-3">
+              {quickActions.map((action, index) => (
+                <Button
+                  key={index}
+                  size="sm"
+                  variant="outline"
+                  className="rounded-xl border-purple-300/30 bg-white/10 backdrop-blur-xl hover:bg-white/20 text-white font-semibold px-4 py-2"
+                >
+                  <action.icon className="w-4 h-4 mr-2" />
+                  {action.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Smart Suggestions */}
+      <div className="relative">
+        <div className="absolute inset-0 bg-white/5 backdrop-blur-3xl rounded-3xl border border-white/10 shadow-2xl"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-pink-500/10 rounded-3xl"></div>
+        
+        <div className="relative p-8">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-xl">
+                <Brain className="w-6 h-6 text-white" />
+              </div>
+              Personalized Insights & Recommendations
+            </h3>
+            <Badge variant="secondary" className="flex items-center gap-2 bg-white/20 backdrop-blur-xl text-white border-white/30">
+              <TrendingUp className="w-4 h-4" />
+              AI-Powered
+            </Badge>
+          </div>
+
+          <div className="grid gap-6">
+            {smartSuggestions.map((suggestion, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "p-6 rounded-2xl border-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl",
+                  getPriorityColor(suggestion.priority)
+                )}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-4 flex-1">
+                    <div className="p-3 bg-white/20 backdrop-blur-xl rounded-2xl shadow-lg">
+                      <suggestion.icon className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h4 className="font-bold text-lg text-white">{suggestion.title}</h4>
+                        <Badge 
+                          variant={suggestion.priority === 'high' ? 'destructive' : 'secondary'}
+                          className="text-xs font-semibold"
+                        >
+                          {suggestion.priority}
+                        </Badge>
+                      </div>
+                      <p className="text-gray-300 leading-relaxed mb-4">
+                        {suggestion.description}
+                      </p>
+                      <Button 
+                        size="sm" 
+                        className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold px-6 shadow-lg hover:shadow-xl transition-all duration-300"
+                      >
+                        {suggestion.action}
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Star className="w-5 h-5 text-yellow-400" />
+                    <Gem className="w-4 h-4 text-purple-400" />
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
-      </GlassCard>
-
-      {/* Smart Suggestions */}
-      <GlassCard variant="premium" className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-semibold flex items-center gap-2">
-            <Brain className="w-5 h-5 text-purple-500" />
-            Personalized Insights & Recommendations
-          </h3>
-          <Badge variant="secondary" className="flex items-center gap-1">
-            <TrendingUp className="w-3 h-3" />
-            AI-Powered
-          </Badge>
-        </div>
-
-        <div className="grid gap-4">
-          {smartSuggestions.map((suggestion, index) => (
-            <div
-              key={index}
-              className={cn(
-                "p-4 rounded-xl border-2 transition-all duration-300 hover:scale-[1.02]",
-                getPriorityColor(suggestion.priority)
-              )}
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-3 flex-1">
-                  <div className="p-2 bg-white/80 dark:bg-slate-800/80 rounded-lg">
-                    <suggestion.icon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-semibold">{suggestion.title}</h4>
-                      <Badge 
-                        variant={suggestion.priority === 'high' ? 'destructive' : 'secondary'}
-                        className="text-xs"
-                      >
-                        {suggestion.priority}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                      {suggestion.description}
-                    </p>
-                    <Button 
-                      size="sm" 
-                      className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg"
-                    >
-                      {suggestion.action}
-                    </Button>
-                  </div>
-                </div>
-                <Star className="w-4 h-4 text-yellow-500" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </GlassCard>
+      </div>
     </div>
   );
 };

@@ -1,516 +1,319 @@
-
-import React from 'react';
-import { useHealth } from '@/contexts/HealthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Activity, Weight, Heart, Utensils, CigaretteOff, Brain, Award, Moon } from 'lucide-react';
-import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Bar, BarChart } from 'recharts';
-import NotificationsMenu from '@/components/Notifications/NotificationsMenu';
-import { Button } from '@/components/ui/button';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import React, { useState, useCallback, useMemo } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  BarChart3, 
+  Target, 
+  Brain,
+  Trophy,
+  TrendingUp,
+  Sparkles,
+  Gauge,
+  Activity,
+  Zap,
+  Crown,
+  Star,
+  Rocket,
+  Award,
+  Calendar,
+  Clock,
+  Shield
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-const Star = ({ className }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-  </svg>
-);
+import ResponsiveContainer from '@/components/layout/ResponsiveContainer';
+import { useViewport } from '@/hooks';
+import RevolutionaryDashboard from '@/components/dashboard/RevolutionaryDashboard';
+import AnalyticsDashboard from '@/components/common/AnalyticsDashboard';
+import AIInsightsPanel from '@/components/dashboard/AIInsightsPanel';
+import AdvancedMetrics from '@/components/dashboard/AdvancedMetrics';
+import HealthTrends from '@/components/dashboard/HealthTrends';
+import PersonalizedGoals from '@/components/dashboard/PersonalizedGoals';
+import SmartHealthAssistant from '@/components/dashboard/SmartHealthAssistant';
+import { useHealth } from '@/contexts/HealthContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { cn } from '@/lib/utils';
 
 const Dashboard: React.FC = () => {
-  const { 
-    userProfile, 
-    dailyGoals,
-    calculateBMI,
-    getNutritionSummary,
-    getExerciseSummary,
-    getTodaysWaterIntake,
-    getSleepSummary,
-    getMoodSummary,
-    addictionRecords,
-    getAddictionSummary
-  } = useHealth();
-
+  const { userProfile } = useHealth();
+  const { theme, colorTheme } = useTheme();
   const navigate = useNavigate();
-  const nutritionSummary = getNutritionSummary();
-  const exerciseSummary = getExerciseSummary();
-  const waterIntake = getTodaysWaterIntake();
-  const sleepSummary = getSleepSummary();
-  const moodSummary = getMoodSummary();
-  const bmi = calculateBMI();
+  const { isMobile, isTablet } = useViewport();
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'ai-coach' | 'goals' | 'trends'>('overview');
 
-  const remainingCalories = dailyGoals.calories - nutritionSummary.totalCalories + exerciseSummary.totalCaloriesBurned;
+  const handleGetStarted = useCallback(() => {
+    setActiveTab('goals');
+  }, []);
 
-  // Calculate macro percentages for pie chart
-  const totalMacroGrams = nutritionSummary.totalProtein + nutritionSummary.totalCarbs + nutritionSummary.totalFat;
-  const macroData = [
-    { name: 'Protein', value: nutritionSummary.totalProtein, color: '#3182CE' },
-    { name: 'Carbs', value: nutritionSummary.totalCarbs, color: '#ED8936' },
-    { name: 'Fat', value: nutritionSummary.totalFat, color: '#ECC94B' },
-  ];
+  const handleTabChange = useCallback((value: any) => {
+    setActiveTab(value);
+  }, []);
 
-  const COLORS = ['#3182CE', '#ED8936', '#ECC94B'];
+  const tabConfig = useMemo(() => [
+    {
+      value: 'overview',
+      label: 'Smart Overview',
+      icon: Gauge,
+      color: 'from-emerald-500 to-teal-600',
+      description: 'Intelligent health dashboard with real-time insights',
+      bgGradient: 'from-emerald-500/20 via-teal-500/10 to-cyan-500/20'
+    },
+    {
+      value: 'analytics',
+      label: 'Deep Analytics',
+      icon: BarChart3,
+      color: 'from-blue-500 to-indigo-600',
+      description: 'Advanced performance metrics and data analysis',
+      bgGradient: 'from-blue-500/20 via-indigo-500/10 to-purple-500/20'
+    },
+    {
+      value: 'ai-coach',
+      label: 'AI Health Coach',
+      icon: Brain,
+      color: 'from-purple-500 to-pink-600',
+      description: 'Personalized AI-powered health recommendations',
+      bgGradient: 'from-purple-500/20 via-pink-500/10 to-rose-500/20'
+    },
+    {
+      value: 'goals',
+      label: 'Goal Mastery',
+      icon: Trophy,
+      color: 'from-amber-500 to-orange-600',
+      description: 'Achievement tracking and milestone management',
+      bgGradient: 'from-amber-500/20 via-orange-500/10 to-red-500/20'
+    },
+    {
+      value: 'trends',
+      label: 'Health Evolution',
+      icon: TrendingUp,
+      color: 'from-rose-500 to-pink-600',
+      description: 'Long-term patterns and trend visualization',
+      bgGradient: 'from-rose-500/20 via-pink-500/10 to-purple-500/20'
+    }
+  ], []);
 
-  // Get addiction data if available
-  const hasAddictionData = addictionRecords.length > 0;
-  const smokingSummary = hasAddictionData ? getAddictionSummary('smoking') : null;
-  
-  // Prepare weekly metrics data
-  const getWeeklyData = () => {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const today = new Date().getDay();
-    const sortedDays = [...days.slice(today + 1), ...days.slice(0, today + 1)];
-    
-    return sortedDays.map(day => ({
-      name: day,
-      calories: Math.floor(Math.random() * 500) + 1500,
-      exercise: Math.floor(Math.random() * 60) + 20,
-      sleep: Math.floor(Math.random() * 2) + 6,
-      mood: Math.floor(Math.random() * 3) + 3,
-    }));
+  const getWelcomeMessage = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
   };
-  
-  const weeklyData = getWeeklyData();
+
+  const getMotivationalMessage = () => {
+    const messages = [
+      "Your health transformation journey begins here",
+      "Data-driven wellness for extraordinary results",
+      "Unlock your potential with intelligent insights",
+      "Every metric tells your unique wellness story",
+      "Advanced analytics for peak performance"
+    ];
+    return messages[new Date().getDate() % messages.length];
+  };
+
+  const currentTab = tabConfig.find(tab => tab.value === activeTab);
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-800">Health Dashboard</h1>
-        <div className="flex items-center gap-3">
-          <NotificationsMenu />
-        </div>
+    <div className={cn(
+      "min-h-screen relative overflow-hidden",
+      "bg-gradient-to-br from-slate-900 via-gray-900 to-black"
+    )}>
+      {/* Enhanced Background Effects */}
+      <div className="fixed inset-0 -z-10">
+        <div className={cn(
+          "absolute inset-0 bg-gradient-to-br transition-all duration-1000",
+          `${currentTab?.bgGradient || 'from-slate-900/80 to-gray-900/80'}`
+        )}></div>
+        
+        <div className={cn(
+          "absolute rounded-full blur-3xl animate-pulse opacity-30 transition-all duration-1000",
+          isMobile ? "top-10 right-10 w-40 h-40" : "top-20 right-20 w-96 h-96",
+          activeTab === 'overview' && "bg-gradient-to-br from-emerald-400/60 to-teal-500/60",
+          activeTab === 'analytics' && "bg-gradient-to-br from-blue-400/60 to-indigo-500/60",
+          activeTab === 'ai-coach' && "bg-gradient-to-br from-purple-400/60 to-pink-500/60",
+          activeTab === 'goals' && "bg-gradient-to-br from-amber-400/60 to-orange-500/60",
+          activeTab === 'trends' && "bg-gradient-to-br from-rose-400/60 to-pink-500/60"
+        )}></div>
+        
+        <div className={cn(
+          "absolute rounded-full blur-3xl animate-pulse delay-1000 opacity-25 transition-all duration-1000",
+          isMobile ? "bottom-10 left-10 w-48 h-48" : "bottom-20 left-20 w-[32rem] h-[32rem]",
+          activeTab === 'overview' && "bg-gradient-to-tr from-teal-400/60 to-emerald-500/60",
+          activeTab === 'analytics' && "bg-gradient-to-tr from-indigo-400/60 to-blue-500/60",
+          activeTab === 'ai-coach' && "bg-gradient-to-tr from-pink-400/60 to-purple-500/60",
+          activeTab === 'goals' && "bg-gradient-to-tr from-orange-400/60 to-amber-500/60",
+          activeTab === 'trends' && "bg-gradient-to-tr from-pink-400/60 to-rose-500/60"
+        )}></div>
+
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
       </div>
 
-      {!userProfile ? (
-        <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-          <p className="text-yellow-700">
-            Welcome! To get started, please set up your profile to customize your health tracking experience.
-          </p>
-          <Button 
-            variant="link" 
-            className="text-health-primary font-medium hover:underline mt-2 p-0"
-            onClick={() => navigate('/profile')}
-          >
-            Set up profile →
-          </Button>
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center">
-                  <Utensils className="mr-2 h-5 w-5 text-health-primary" />
-                  Daily Calories
-                </CardTitle>
-                <CardDescription>Calories consumed vs. goal</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">
-                      {nutritionSummary.totalCalories} / {dailyGoals.calories} kcal
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {remainingCalories > 0 ? `${remainingCalories} kcal remaining` : 'Goal exceeded'}
-                    </span>
-                  </div>
-                  <Progress 
-                    value={(nutritionSummary.totalCalories / dailyGoals.calories) * 100} 
-                    className="h-2" 
-                  />
-                  <div className="text-xs text-gray-500 mt-2">
-                    Burned: {exerciseSummary.totalCaloriesBurned} kcal
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full mt-2"
-                    onClick={() => navigate('/food')}
-                  >
-                    Track Food
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center">
-                  <Activity className="mr-2 h-5 w-5 text-health-primary" />
-                  Exercise
-                </CardTitle>
-                <CardDescription>Today's activity summary</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-sm">Duration</span>
-                    <span className="font-medium">{exerciseSummary.totalDuration} min</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Calories Burned</span>
-                    <span className="font-medium">{exerciseSummary.totalCaloriesBurned} kcal</span>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full mt-3"
-                    onClick={() => navigate('/exercise')}
-                  >
-                    Track Exercise
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center">
-                  <Weight className="mr-2 h-5 w-5 text-health-primary" />
-                  Body Metrics
-                </CardTitle>
-                <CardDescription>Your health indicators</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-sm">Weight</span>
-                    <span className="font-medium">{userProfile?.weight} kg</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">BMI</span>
-                    <span className="font-medium">{bmi ? bmi.toFixed(1) : 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Water</span>
-                    <span className="font-medium">{waterIntake} / {dailyGoals.water} ml</span>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full mt-3"
-                    onClick={() => navigate('/body')}
-                  >
-                    Body Measurements
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className={hasAddictionData ? "" : "bg-gray-50"}>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center">
-                  <CigaretteOff className="mr-2 h-5 w-5 text-health-primary" />
-                  Addiction Recovery
-                </CardTitle>
-                <CardDescription>Track your progress</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {hasAddictionData && smokingSummary ? (
-                  <div className="space-y-1">
-                    <div className="flex justify-between">
-                      <span className="text-sm">Today's usage</span>
-                      <span className="font-medium">{smokingSummary.totalToday} items</span>
+      <ResponsiveContainer maxWidth="7xl" padding={isMobile ? "sm" : "lg"} className="relative z-10">
+        <div className="space-y-8 md:space-y-12">
+          {/* Revolutionary Header Section */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-gray-900/40 to-black/60 backdrop-blur-3xl rounded-3xl border border-white/10 shadow-2xl"></div>
+            <div className="relative p-8 md:p-12">
+              <div className="flex items-center justify-between flex-wrap gap-6">
+                <div className="space-y-6">
+                  <div className="flex items-center gap-6">
+                    <div className="relative group">
+                      <div className={cn(
+                        "w-28 h-28 rounded-3xl flex items-center justify-center shadow-2xl transition-all duration-500 group-hover:scale-110",
+                        `bg-gradient-to-br ${currentTab?.color || 'from-slate-500 to-gray-600'}`
+                      )}>
+                        <currentTab.icon className="w-14 h-14 text-white" />
+                      </div>
+                      <div className="absolute -top-3 -right-3 w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center animate-pulse shadow-xl">
+                        <Crown className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/20 to-transparent scale-125 animate-pulse opacity-40"></div>
+                      <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/15 to-transparent scale-150 animate-pulse delay-500 opacity-30"></div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm">Avg. daily</span>
-                      <span className="font-medium">{smokingSummary.averageDaily.toFixed(1)} items</span>
+                    <div>
+                      <h1 className="text-5xl md:text-7xl lg:text-8xl font-black bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent mb-4">
+                        {getWelcomeMessage()}, {userProfile?.name || 'Champion'}
+                      </h1>
+                      <p className="text-2xl md:text-3xl text-gray-300 font-bold mb-4">
+                        {getMotivationalMessage()}
+                      </p>
+                      <div className="flex items-center gap-4">
+                        <div className="px-6 py-3 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-2xl border border-emerald-400/30 backdrop-blur-xl">
+                          <div className="flex items-center gap-3 text-emerald-300">
+                            <Zap className="w-5 h-5" />
+                            <span className="font-bold">Real-time Processing</span>
+                          </div>
+                        </div>
+                        <div className="px-6 py-3 bg-gradient-to-r from-blue-500/30 to-indigo-500/30 rounded-2xl border border-blue-400/30 backdrop-blur-xl">
+                          <div className="flex items-center gap-3 text-blue-300">
+                            <Star className="w-5 h-5" />
+                            <span className="font-bold">AI Powered</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm">Streak</span>
-                      <span className="font-medium">{smokingSummary.streakDays} days</span>
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full mt-3"
-                      onClick={() => navigate('/addiction')}
-                    >
-                      Manage Addictions
-                    </Button>
                   </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-[100px]">
-                    <p className="text-sm text-gray-500 text-center mb-3">
-                      Start tracking addictions to see your progress
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  <div className="px-8 py-5 bg-gradient-to-r from-white to-gray-100 rounded-2xl text-black font-bold shadow-2xl border border-white/20">
+                    <div className="flex items-center gap-3">
+                      <Shield className="w-7 h-7" />
+                      <div>
+                        <div className="text-sm opacity-80">VitalitySync</div>
+                        <div className="text-xl">Elite Dashboard</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="px-6 py-4 bg-black/60 rounded-xl border border-gray-700/50 backdrop-blur-xl">
+                    <div className="flex items-center gap-3 text-gray-300">
+                      <Clock className="w-6 h-6" />
+                      <span className="font-bold">{new Date().toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-8 p-8 bg-gradient-to-r from-black/40 via-gray-900/60 to-black/40 rounded-3xl border border-white/20 backdrop-blur-xl shadow-inner">
+                <div className="flex items-center gap-6">
+                  <div className={cn(
+                    "w-20 h-20 rounded-3xl flex items-center justify-center shadow-xl",
+                    `bg-gradient-to-br ${currentTab?.color || 'from-slate-500 to-gray-600'}`
+                  )}>
+                    <Rocket className="w-10 h-10 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-3xl font-black text-white mb-3">
+                      Revolutionary Health Intelligence Platform
+                    </h3>
+                    <p className="text-gray-300 text-lg leading-relaxed">
+                      {currentTab?.description} - Experience next-generation health monitoring with advanced AI algorithms, real-time data processing, and personalized insights that adapt to your unique wellness journey.
                     </p>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => navigate('/addiction')}
-                    >
-                      Start Tracking
-                    </Button>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                  <div className="hidden md:flex items-center gap-6">
+                    <div className="text-right">
+                      <div className="text-sm text-gray-400">Active Module</div>
+                      <div className="font-bold text-xl text-white">{currentTab?.label}</div>
+                    </div>
+                    <Award className="w-10 h-10 text-amber-400" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="col-span-1">
-              <CardHeader>
-                <CardTitle className="text-lg">Nutrition Breakdown</CardTitle>
-                <CardDescription>Today's macronutrient distribution</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-2">
-                {totalMacroGrams > 0 ? (
-                  <div className="flex flex-col md:flex-row items-center">
-                    <div className="w-48 h-48">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={macroData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={40}
-                            outerRadius={80}
-                            paddingAngle={2}
-                            dataKey="value"
-                          >
-                            {macroData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <Tooltip />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-                    <div className="space-y-2 mt-4 md:mt-0 md:ml-6">
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 rounded-full bg-health-protein mr-2"></div>
-                        <span className="text-sm">Protein: {nutritionSummary.totalProtein}g</span>
-                        <span className="text-xs text-gray-500 ml-2">
-                          ({totalMacroGrams ? Math.round((nutritionSummary.totalProtein / totalMacroGrams) * 100) : 0}%)
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 rounded-full bg-health-carbs mr-2"></div>
-                        <span className="text-sm">Carbs: {nutritionSummary.totalCarbs}g</span>
-                        <span className="text-xs text-gray-500 ml-2">
-                          ({totalMacroGrams ? Math.round((nutritionSummary.totalCarbs / totalMacroGrams) * 100) : 0}%)
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 rounded-full bg-health-fat mr-2"></div>
-                        <span className="text-sm">Fat: {nutritionSummary.totalFat}g</span>
-                        <span className="text-xs text-gray-500 ml-2">
-                          ({totalMacroGrams ? Math.round((nutritionSummary.totalFat / totalMacroGrams) * 100) : 0}%)
-                        </span>
-                      </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="mt-3"
-                        onClick={() => navigate('/food')}
-                      >
-                        Nutrition Details
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    <p>No nutrition data for today</p>
-                    <Button 
-                      variant="link" 
-                      className="text-health-primary hover:underline mt-2"
-                      onClick={() => navigate('/food')}
+          {/* Enhanced Tab Navigation */}
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+            <div className="relative mb-12">
+              <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-gray-900/60 to-black/80 backdrop-blur-3xl rounded-3xl border border-white/20 shadow-2xl"></div>
+              <div className="relative p-6 md:p-10">
+                <TabsList className={cn(
+                  "grid w-full bg-transparent gap-4",
+                  isMobile ? "grid-cols-2 p-4" : "grid-cols-5 p-6",
+                  "min-h-[80px]"
+                )}>
+                  {tabConfig.slice(0, isMobile ? 2 : 5).map((tab) => (
+                    <TabsTrigger 
+                      key={tab.value} 
+                      value={tab.value} 
+                      className={cn(
+                        "relative flex items-center gap-4 transition-all duration-700 font-bold text-base overflow-hidden group border-2 border-transparent",
+                        "hover:scale-105 hover:shadow-2xl",
+                        isMobile ? "p-4 rounded-2xl min-h-[60px]" : "p-6 rounded-3xl min-h-[70px]",
+                        activeTab === tab.value && [
+                          `bg-gradient-to-br ${tab.color} text-white shadow-2xl scale-105 border-white/30`
+                        ],
+                        activeTab !== tab.value && [
+                          "bg-gradient-to-br from-gray-800/80 to-gray-900/80 text-gray-300",
+                          "hover:from-gray-700/80 hover:to-gray-800/80 hover:text-white"
+                        ]
+                      )}
                     >
-                      Add food entry
-                    </Button>
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 -skew-x-12 animate-pulse"></div>
+                      
+                      <tab.icon className={cn("relative z-10", isMobile ? "w-6 h-6" : "w-7 h-7")} />
+                      {!isMobile && <span className="relative z-10 text-lg">{tab.label}</span>}
+                      
+                      {activeTab === tab.value && (
+                        <Sparkles className="w-6 h-6 text-white/90 animate-pulse relative z-10 ml-auto" />
+                      )}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                
+                {!isMobile && (
+                  <div className="relative mt-8 text-center">
+                    <p className="text-lg text-gray-300 font-semibold bg-black/40 rounded-full px-8 py-4 inline-block backdrop-blur-xl border border-white/20 shadow-lg">
+                      {currentTab?.description}
+                    </p>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="col-span-1">
-              <CardHeader>
-                <CardTitle className="text-lg">Weekly Health Overview</CardTitle>
-                <CardDescription>Track your progress across metrics</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[250px]">
-                  <ChartContainer
-                    config={{
-                      calories: { label: "Calories", color: "#EC4899" },
-                      exercise: { label: "Exercise (min)", color: "#3B82F6" },
-                      sleep: { label: "Sleep (hrs)", color: "#8B5CF6" },
-                      mood: { label: "Mood", color: "#10B981" }
-                    }}
-                  >
-                    <LineChart data={weeklyData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                      <XAxis
-                        dataKey="name"
-                        stroke="#888888"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                      />
-                      <YAxis
-                        stroke="#888888"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                        tickFormatter={(value) => `${value}`}
-                      />
-                      <Tooltip content={<ChartTooltipContent />} />
-                      <Line
-                        type="monotone"
-                        dataKey="calories"
-                        strokeWidth={2}
-                        activeDot={{ r: 6, strokeWidth: 0 }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="exercise"
-                        strokeWidth={2}
-                        activeDot={{ r: 6, strokeWidth: 0 }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="sleep"
-                        strokeWidth={2}
-                        activeDot={{ r: 6, strokeWidth: 0 }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="mood"
-                        strokeWidth={2}
-                        activeDot={{ r: 6, strokeWidth: 0 }}
-                      />
-                    </LineChart>
-                  </ChartContainer>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg">
-                  <Moon className="mr-2 h-5 w-5 text-health-primary" />
-                  Sleep Quality
-                </CardTitle>
-                <CardDescription>Your sleep patterns</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Average Duration</span>
-                    <span className="font-medium">{sleepSummary.averageDuration.toFixed(1)} hrs</span>
-                  </div>
-                  <Progress 
-                    value={(sleepSummary.averageDuration / dailyGoals.sleep) * 100} 
-                    className="h-2" 
-                  />
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Quality Rating</span>
-                    <div className="flex">
-                      {Array(5).fill(0).map((_, i) => (
-                        <Star 
-                          key={i} 
-                          className={`h-4 w-4 ${i < Math.round(sleepSummary.averageQuality/2) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full mt-2"
-                    onClick={() => navigate('/sleep')}
-                  >
-                    Sleep Details
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg">
-                  <Brain className="mr-2 h-5 w-5 text-health-primary" />
-                  Mental Wellness
-                </CardTitle>
-                <CardDescription>Your emotional health</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Predominant Mood</span>
-                    <span className="font-medium capitalize">{moodSummary.predominantMood}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Average Stress Level</span>
-                    <div className="bg-gray-100 rounded-full h-2 w-24">
-                      <div 
-                        className="bg-orange-400 rounded-full h-2" 
-                        style={{ width: `${(moodSummary.averageStressLevel / 10) * 100}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-sm font-medium">{moodSummary.averageStressLevel.toFixed(1)}/10</span>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full mt-3"
-                    onClick={() => navigate('/mental')}
-                  >
-                    Mental Wellness Details
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg">
-                  <Award className="mr-2 h-5 w-5 text-yellow-500" />
-                  Achievements
-                </CardTitle>
-                <CardDescription>Your health milestones</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm">Streak Days</span>
-                    <span className="font-medium">{smokingSummary?.streakDays || 0} days</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Exercise Sessions</span>
-                    <span className="font-medium">{exerciseSummary.totalDuration > 0 ? '1' : '0'} today</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Water Goal</span>
-                    <span className="font-medium">
-                      {waterIntake >= dailyGoals.water ? 'Achieved' : `${Math.round((waterIntake / dailyGoals.water) * 100)}%`}
-                    </span>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full mt-3"
-                    onClick={() => navigate('/achievements')}
-                  >
-                    View All Achievements
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </>
-      )}
+            {/* Tab Content */}
+            <div className="mt-10">
+              <TabsContent value="overview" className="space-y-8 animate-fade-in">
+                <RevolutionaryDashboard />
+              </TabsContent>
+
+              <TabsContent value="analytics" className="space-y-8 animate-fade-in">
+                <AnalyticsDashboard />
+                <AdvancedMetrics />
+              </TabsContent>
+
+              <TabsContent value="ai-coach" className="space-y-8 animate-fade-in">
+                <SmartHealthAssistant />
+              </TabsContent>
+
+              <TabsContent value="goals" className="space-y-8 animate-fade-in">
+                <PersonalizedGoals />
+              </TabsContent>
+
+              <TabsContent value="trends" className="space-y-8 animate-fade-in">
+                <HealthTrends />
+              </TabsContent>
+            </div>
+          </Tabs>
+        </div>
+      </ResponsiveContainer>
     </div>
   );
 };

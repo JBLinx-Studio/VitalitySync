@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
@@ -9,7 +8,7 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-md",
+      "rounded-xl border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-md",
       className
     )}
     {...props}
@@ -76,153 +75,8 @@ const CardFooter = React.forwardRef<
 ))
 CardFooter.displayName = "CardFooter"
 
-// Enhanced glass card variants with improved visual effects
+// Premium glass card variants with enhanced visual effects
 const GlassCard = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg glass-card shadow-soft transition-all duration-300 hover:shadow-lg relative overflow-hidden",
-      className
-    )}
-    {...props}
-  />
-))
-GlassCard.displayName = "GlassCard"
-
-const FrostedCard = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg frosted-glass shadow-soft transition-all duration-300 hover:shadow-lg relative overflow-hidden",
-      className
-    )}
-    {...props}
-  />
-))
-FrostedCard.displayName = "FrostedCard"
-
-const NeoCard = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg neo-glass shadow-soft transition-all duration-300 hover:shadow-lg relative overflow-hidden",
-      className
-    )}
-    {...props}
-  />
-))
-NeoCard.displayName = "NeoCard"
-
-// Ultra-enhanced card with advanced effects and animations
-const UltraCard = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, children, ...props }, ref) => {
-  const [position, setPosition] = React.useState({ x: 0, y: 0 });
-  const cardRef = React.useRef<HTMLDivElement>(null);
-  
-  const handleMouseMove = React.useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) - 0.5;
-    const y = ((e.clientY - rect.top) / rect.height) - 0.5;
-    
-    setPosition({ x, y });
-  }, []);
-  
-  const handleMouseLeave = React.useCallback(() => {
-    setPosition({ x: 0, y: 0 });
-  }, []);
-  
-  const style = {
-    transform: `perspective(1000px) rotateX(${position.y * -10}deg) rotateY(${position.x * 10}deg) scale(1.02)`,
-    transition: 'all 0.2s ease'
-  };
-  
-  return (
-    <div
-      ref={mergeRefs(ref, cardRef)}
-      className={cn(
-        "rounded-lg ultra-glass shadow-glow transition-all duration-300 hover:shadow-highlight relative overflow-hidden",
-        className
-      )}
-      style={style}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      {...props}
-    >
-      <span className="absolute inset-0 bg-gradient-to-br from-transparent to-white/5 dark:from-transparent dark:to-white/10"></span>
-      <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-gradient-radial from-health-primary/20 to-transparent blur-2xl transform transition-all duration-700 ease-out group-hover:translate-x-10"></div>
-      <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-gradient-radial from-health-secondary/20 to-transparent blur-2xl transform transition-all duration-700 ease-out group-hover:translate-x-10"></div>
-      <div className="relative z-10">
-        {children}
-      </div>
-    </div>
-  );
-})
-UltraCard.displayName = "UltraCard"
-
-// New iridescent glass effect card
-const IridescentCard = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, children, ...props }, ref) => {
-  const [position, setPosition] = React.useState({ x: 0, y: 0 });
-  const cardRef = React.useRef<HTMLDivElement>(null);
-  
-  const handleMouseMove = React.useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) - 0.5;
-    const y = ((e.clientY - rect.top) / rect.height) - 0.5;
-    
-    setPosition({ x, y });
-  }, []);
-  
-  const handleMouseLeave = React.useCallback(() => {
-    setPosition({ x: 0, y: 0 });
-  }, []);
-  
-  const style = {
-    transform: `perspective(1000px) rotateX(${position.y * -8}deg) rotateY(${position.x * 8}deg) scale(1.02)`,
-    transition: 'all 0.3s ease'
-  };
-  
-  return (
-    <div
-      ref={mergeRefs(ref, cardRef)}
-      className={cn(
-        "rounded-lg iridescent-glass shadow-rainbow transition-all duration-500 hover:shadow-highlight relative overflow-hidden",
-        className
-      )}
-      style={style}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      {...props}
-    >
-      <div className="absolute inset-0 bg-gradient-to-br from-transparent to-white/5 dark:from-transparent dark:to-white/10 z-0"></div>
-      <div className="absolute inset-0 iridescent-shimmer z-0"></div>
-      <div className="relative z-10">
-        {children}
-      </div>
-    </div>
-  );
-})
-IridescentCard.displayName = "IridescentCard"
-
-// New floating card with parallax effect
-const FloatingCard = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, children, ...props }, ref) => {
@@ -230,118 +84,68 @@ const FloatingCard = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "rounded-lg float-card shadow-soft transition-all duration-500 hover:shadow-highlight relative overflow-hidden animate-float-slow",
+        "rounded-xl premium-glass-card shadow-soft transition-all duration-300 hover:shadow-premium relative overflow-hidden",
         className
       )}
       {...props}
     >
-      <div className="absolute inset-0 bg-gradient-to-tr from-health-primary/10 to-health-secondary/10 z-0"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 z-0 rounded-xl"></div>
+      <div className="absolute inset-0 light-reflection z-0 rounded-xl"></div>
       <div className="relative z-10">
         {children}
       </div>
     </div>
   );
 })
-FloatingCard.displayName = "FloatingCard"
+GlassCard.displayName = "GlassCard"
 
-// New cosmic card with space-like effects
-const CosmicCard = React.forwardRef<
+// Enhanced frosted glass effect with premium aesthetics
+const FrostedCard = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, children, ...props }, ref) => {
-  const [position, setPosition] = React.useState({ x: 0, y: 0 });
-  const cardRef = React.useRef<HTMLDivElement>(null);
-  
-  const handleMouseMove = React.useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) - 0.5;
-    const y = ((e.clientY - rect.top) / rect.height) - 0.5;
-    
-    setPosition({ x, y });
-  }, []);
-  
-  const handleMouseLeave = React.useCallback(() => {
-    setPosition({ x: 0, y: 0 });
-  }, []);
-  
-  const style = {
-    transform: `perspective(1000px) rotateX(${position.y * -5}deg) rotateY(${position.x * 5}deg)`,
-    transition: 'all 0.3s ease'
-  };
-  
   return (
     <div
-      ref={mergeRefs(ref, cardRef)}
+      ref={ref}
       className={cn(
-        "rounded-lg cosmic-glass shadow-cosmic transition-all duration-500 hover:shadow-cosmic-glow relative overflow-hidden",
+        "rounded-xl premium-frosted shadow-premium transition-all duration-300 hover:shadow-premium-hover relative overflow-hidden",
         className
       )}
-      style={style}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       {...props}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/40 to-purple-900/30 z-0"></div>
-      <div className="absolute inset-0 cosmic-stars z-0"></div>
-      <div className="absolute inset-0 cosmic-nebula z-0"></div>
+      <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-white/5 to-transparent z-0 rounded-xl"></div>
+      <div className="absolute inset-0 premium-shimmer z-0 rounded-xl"></div>
       <div className="relative z-10">
         {children}
       </div>
     </div>
   );
 })
-CosmicCard.displayName = "CosmicCard"
+FrostedCard.displayName = "FrostedCard"
 
-// New prismatic card with rainbow reflections
-const PrismaticCard = React.forwardRef<
+// Premium neo-morphic effect with enhanced borders and shadows
+const NeoCard = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, children, ...props }, ref) => {
-  const [position, setPosition] = React.useState({ x: 0, y: 0 });
-  const cardRef = React.useRef<HTMLDivElement>(null);
-  
-  const handleMouseMove = React.useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) - 0.5;
-    const y = ((e.clientY - rect.top) / rect.height) - 0.5;
-    
-    setPosition({ x, y });
-  }, []);
-  
-  const handleMouseLeave = React.useCallback(() => {
-    setPosition({ x: 0, y: 0 });
-  }, []);
-  
-  const style = {
-    transform: `perspective(1000px) rotateX(${position.y * -7}deg) rotateY(${position.x * 7}deg) scale(1.02)`,
-    transition: 'all 0.3s ease'
-  };
-  
   return (
     <div
-      ref={mergeRefs(ref, cardRef)}
+      ref={ref}
       className={cn(
-        "rounded-lg prismatic-glass shadow-rainbow transition-all duration-500 hover:shadow-prismatic relative overflow-hidden",
+        "rounded-xl premium-neo shadow-neo transition-all duration-300 hover:shadow-neo-hover relative overflow-hidden",
         className
       )}
-      style={style}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       {...props}
     >
-      <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-white/10 dark:from-white/5 dark:to-white/10 z-0"></div>
-      <div className="absolute inset-0 prismatic-effect z-0"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent z-0 rounded-xl"></div>
+      <div className="absolute -inset-[1px] premium-border z-0 rounded-xl"></div>
       <div className="relative z-10">
         {children}
       </div>
     </div>
   );
 })
-PrismaticCard.displayName = "PrismaticCard"
+NeoCard.displayName = "NeoCard"
 
 // Utility function to merge refs
 function mergeRefs<T = any>(
@@ -358,6 +162,372 @@ function mergeRefs<T = any>(
   };
 }
 
+// Ultra-premium 3D interactive card with advanced lighting effects
+const UltraCard = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, children, ...props }, ref) => {
+  const [position, setPosition] = React.useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = React.useState(false);
+  const cardRef = React.useRef<HTMLDivElement>(null);
+  
+  const handleMouseMove = React.useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) - 0.5;
+    const y = ((e.clientY - rect.top) / rect.height) - 0.5;
+    
+    setPosition({ x, y });
+  }, []);
+  
+  const handleMouseEnter = React.useCallback(() => {
+    setIsHovering(true);
+  }, []);
+  
+  const handleMouseLeave = React.useCallback(() => {
+    setIsHovering(false);
+    setPosition({ x: 0, y: 0 });
+  }, []);
+  
+  const style = {
+    transform: isHovering ? 
+      `perspective(1000px) rotateX(${position.y * -8}deg) rotateY(${position.x * 8}deg) scale(1.02)` :
+      'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)',
+    transition: 'all 0.3s ease'
+  };
+  
+  return (
+    <div
+      ref={mergeRefs(ref, cardRef)}
+      className={cn(
+        "rounded-xl ultra-premium-glass shadow-ultra transition-all duration-500 relative overflow-hidden",
+        isHovering ? "shadow-ultra-hover" : "",
+        className
+      )}
+      style={style}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      {...props}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent z-0 rounded-xl"></div>
+      <div className={`absolute inset-0 ultra-light-effect transition-opacity duration-500 ${isHovering ? 'opacity-100' : 'opacity-0'} z-0 rounded-xl`} 
+           style={{ 
+             background: `radial-gradient(circle at ${50 + position.x * 100}% ${50 + position.y * 100}%, rgba(255,255,255,0.15) 0%, transparent 60%)` 
+           }}>
+      </div>
+      <div className="absolute inset-0 premium-highlight z-0 rounded-xl"></div>
+      <div className="relative z-10">
+        {children}
+      </div>
+    </div>
+  );
+})
+UltraCard.displayName = "UltraCard"
+
+// Premium iridescent effect with improved rainbow reflections
+const IridescentCard = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, children, ...props }, ref) => {
+  const [position, setPosition] = React.useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = React.useState(false);
+  const cardRef = React.useRef<HTMLDivElement>(null);
+  
+  const handleMouseMove = React.useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) - 0.5;
+    const y = ((e.clientY - rect.top) / rect.height) - 0.5;
+    
+    setPosition({ x, y });
+  }, []);
+  
+  const handleMouseEnter = React.useCallback(() => {
+    setIsHovering(true);
+  }, []);
+  
+  const handleMouseLeave = React.useCallback(() => {
+    setIsHovering(false);
+    setPosition({ x: 0, y: 0 });
+  }, []);
+  
+  const style = {
+    transform: isHovering ? 
+      `perspective(1000px) rotateX(${position.y * -7}deg) rotateY(${position.x * 7}deg) scale(1.02)` :
+      'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)',
+    transition: 'all 0.4s ease'
+  };
+  
+  return (
+    <div
+      ref={mergeRefs(ref, cardRef)}
+      className={cn(
+        "rounded-xl premium-iridescent shadow-iridescent transition-all duration-500 relative overflow-hidden",
+        isHovering ? "shadow-iridescent-hover" : "",
+        className
+      )}
+      style={style}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      {...props}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent z-0 rounded-xl"></div>
+      <div className="absolute inset-0 premium-iridescent-effect z-0 rounded-xl"></div>
+      <div className={`absolute inset-0 iridescent-highlight transition-opacity duration-500 ${isHovering ? 'opacity-100' : 'opacity-60'} z-0 rounded-xl`}></div>
+      <div className="relative z-10">
+        {children}
+      </div>
+    </div>
+  );
+})
+IridescentCard.displayName = "IridescentCard"
+
+// Premium cosmic card with advanced space effects
+const CosmicCard = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, children, ...props }, ref) => {
+  const [position, setPosition] = React.useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = React.useState(false);
+  const cardRef = React.useRef<HTMLDivElement>(null);
+  
+  const handleMouseMove = React.useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) - 0.5;
+    const y = ((e.clientY - rect.top) / rect.height) - 0.5;
+    
+    setPosition({ x, y });
+  }, []);
+  
+  const handleMouseEnter = React.useCallback(() => {
+    setIsHovering(true);
+  }, []);
+  
+  const handleMouseLeave = React.useCallback(() => {
+    setIsHovering(false);
+    setPosition({ x: 0, y: 0 });
+  }, []);
+  
+  const style = {
+    transform: isHovering ? 
+      `perspective(1000px) rotateX(${position.y * -5}deg) rotateY(${position.x * 5}deg)` :
+      'perspective(1000px) rotateX(0deg) rotateY(0deg)',
+    transition: 'all 0.4s ease'
+  };
+  
+  return (
+    <div
+      ref={mergeRefs(ref, cardRef)}
+      className={cn(
+        "rounded-xl premium-cosmic shadow-cosmic transition-all duration-500 relative overflow-hidden",
+        isHovering ? "shadow-cosmic-hover" : "",
+        className
+      )}
+      style={style}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      {...props}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/40 to-purple-900/30 z-0 rounded-xl"></div>
+      <div className="absolute inset-0 premium-stars z-0 rounded-xl"></div>
+      <div className="absolute inset-0 premium-nebula z-0 rounded-xl"></div>
+      <div className={`absolute inset-0 cosmic-pulse transition-opacity duration-500 ${isHovering ? 'opacity-100' : 'opacity-70'} z-0 rounded-xl`}></div>
+      <div className="relative z-10">
+        {children}
+      </div>
+    </div>
+  );
+})
+CosmicCard.displayName = "CosmicCard"
+
+// Premium floating card effect with gentle animation
+const FloatingCard = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, children, ...props }, ref) => {
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "rounded-xl premium-float shadow-float transition-all duration-500 hover:shadow-float-hover relative overflow-hidden animate-premium-float",
+        className
+      )}
+      {...props}
+    >
+      <div className="absolute inset-0 bg-gradient-to-tr from-health-primary/10 to-health-secondary/10 z-0 rounded-xl"></div>
+      <div className="absolute inset-0 premium-float-effect z-0 rounded-xl"></div>
+      <div className="relative z-10">
+        {children}
+      </div>
+    </div>
+  );
+})
+FloatingCard.displayName = "FloatingCard"
+
+// Premium gradient card with advanced color transitions
+const GradientCard = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, children, ...props }, ref) => {
+  const [isHovering, setIsHovering] = React.useState(false);
+  
+  const handleMouseEnter = React.useCallback(() => {
+    setIsHovering(true);
+  }, []);
+  
+  const handleMouseLeave = React.useCallback(() => {
+    setIsHovering(false);
+  }, []);
+  
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "rounded-xl premium-gradient shadow-gradient transition-all duration-500 relative overflow-hidden",
+        isHovering ? "shadow-gradient-hover" : "",
+        className
+      )}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      {...props}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-health-primary/80 to-health-secondary/80 z-0 rounded-xl"></div>
+      <div className={`absolute inset-0 premium-gradient-pulse transition-opacity duration-500 ${isHovering ? 'opacity-100' : 'opacity-80'} z-0 rounded-xl`}></div>
+      <div className="relative z-10 text-white">
+        {children}
+      </div>
+    </div>
+  );
+})
+GradientCard.displayName = "GradientCard"
+
+// Premium aurora card with northern lights effect
+const AuroraCard = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, children, ...props }, ref) => {
+  const [position, setPosition] = React.useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = React.useState(false);
+  const cardRef = React.useRef<HTMLDivElement>(null);
+  
+  const handleMouseMove = React.useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) - 0.5;
+    const y = ((e.clientY - rect.top) / rect.height) - 0.5;
+    
+    setPosition({ x, y });
+  }, []);
+  
+  const handleMouseEnter = React.useCallback(() => {
+    setIsHovering(true);
+  }, []);
+  
+  const handleMouseLeave = React.useCallback(() => {
+    setIsHovering(false);
+    setPosition({ x: 0, y: 0 });
+  }, []);
+  
+  const style = {
+    transform: isHovering ? 
+      `perspective(1000px) rotateX(${position.y * -6}deg) rotateY(${position.x * 6}deg) scale(1.01)` :
+      'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)',
+    transition: 'all 0.4s ease'
+  };
+  
+  return (
+    <div
+      ref={mergeRefs(ref, cardRef)}
+      className={cn(
+        "rounded-xl premium-aurora shadow-aurora transition-all duration-500 relative overflow-hidden",
+        isHovering ? "shadow-aurora-hover" : "",
+        className
+      )}
+      style={style}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      {...props}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-[#073b4c]/30 to-[#118ab2]/20 z-0 rounded-xl"></div>
+      <div className="absolute inset-0 premium-aurora-effect z-0 rounded-xl"></div>
+      <div className={`absolute inset-0 aurora-highlight transition-opacity duration-500 ${isHovering ? 'opacity-100' : 'opacity-70'} z-0 rounded-xl`}></div>
+      <div className="relative z-10">
+        {children}
+      </div>
+    </div>
+  );
+})
+AuroraCard.displayName = "AuroraCard"
+
+// Premium prismatic card with rainbow reflections and interactive effects
+const PrismaticCard = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, children, ...props }, ref) => {
+  const [position, setPosition] = React.useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = React.useState(false);
+  const cardRef = React.useRef<HTMLDivElement>(null);
+  
+  const handleMouseMove = React.useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) - 0.5;
+    const y = ((e.clientY - rect.top) / rect.height) - 0.5;
+    
+    setPosition({ x, y });
+  }, []);
+  
+  const handleMouseEnter = React.useCallback(() => {
+    setIsHovering(true);
+  }, []);
+  
+  const handleMouseLeave = React.useCallback(() => {
+    setIsHovering(false);
+    setPosition({ x: 0, y: 0 });
+  }, []);
+  
+  const style = {
+    transform: isHovering ? 
+      `perspective(1000px) rotateX(${position.y * -7}deg) rotateY(${position.x * 7}deg) scale(1.02)` :
+      'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)',
+    transition: 'all 0.4s ease'
+  };
+  
+  return (
+    <div
+      ref={mergeRefs(ref, cardRef)}
+      className={cn(
+        "rounded-xl premium-prismatic shadow-prismatic transition-all duration-500 relative overflow-hidden",
+        isHovering ? "shadow-prismatic-hover" : "",
+        className
+      )}
+      style={style}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      {...props}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent z-0 rounded-xl"></div>
+      <div className="absolute inset-0 premium-prismatic-effect z-0 rounded-xl"></div>
+      <div className={`absolute inset-0 prismatic-highlight transition-opacity duration-500 ${isHovering ? 'opacity-100' : 'opacity-70'} z-0 rounded-xl`}></div>
+      <div className="relative z-10">
+        {children}
+      </div>
+    </div>
+  );
+})
+PrismaticCard.displayName = "PrismaticCard"
+
 export { 
   Card, 
   CardHeader, 
@@ -372,5 +542,7 @@ export {
   IridescentCard,
   FloatingCard,
   CosmicCard,
+  GradientCard,
+  AuroraCard,
   PrismaticCard
 }

@@ -1,200 +1,409 @@
+
 import React, { useState } from 'react';
 import { useHealth } from '@/contexts/HealthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Scale, User2, GripVertical, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Slider } from '@/components/ui/slider';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { toast } from '@/hooks/use-toast';
+import { Ruler, TrendingUp, Scale, BarChart, PlusCircle, Heart } from 'lucide-react';
+import { format } from 'date-fns';
 
 const BodyMeasurements: React.FC = () => {
-  const { userProfile, bodyMeasurements, addBodyMeasurement, getLatestMeasurement, calculateBMI } = useHealth();
-  const [weight, setWeight] = useState('');
-  const [bodyFat, setBodyFat] = useState('');
-  const [muscleMass, setMuscleMass] = useState('');
-  const [notes, setNotes] = useState('');
-  const latestMeasurement = getLatestMeasurement();
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const { userProfile, calculateBMI } = useHealth();
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [measurements, setMeasurements] = useState(() => {
+    const saved = localStorage.getItem('bodyMeasurements');
+    return saved ? JSON.parse(saved) : [];
+  });
+  
+  const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [weight, setWeight] = useState(userProfile?.weight || 70);
+  const [waist, setWaist] = useState(80);
+  const [chest, setChest] = useState(90);
+  const [hips, setHips] = useState(95);
+  const [bodyFat, setBodyFat] = useState(20);
+  
+  // Get the last 10 measurements for the chart
+  const measurementHistory = measurements
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(-10)
+    .map(record => ({
+      date: format(new Date(record.date), 'MM/dd'),
+      weight: record.weight,
+      waist: record.waist,
+      bodyFat: record.bodyFat,
+    }));
+  
+  const handleAddMeasurement = () => {
     const newMeasurement = {
-      weight: parseFloat(weight),
-      bodyFat: parseFloat(bodyFat),
-      muscleMass: parseFloat(muscleMass),
-      date: new Date().toISOString().split('T')[0],
-      notes
+      id: crypto.randomUUID(),
+      date,
+      weight,
+      waist,
+      chest,
+      hips,
+      bodyFat
     };
-
-    addBodyMeasurement(newMeasurement);
-
-    // Reset form
-    setWeight('');
-    setBodyFat('');
-    setMuscleMass('');
-    setNotes('');
+    
+    const updatedMeasurements = [...measurements, newMeasurement];
+    setMeasurements(updatedMeasurements);
+    localStorage.setItem('bodyMeasurements', JSON.stringify(updatedMeasurements));
+    
+    toast({
+      title: "Measurements recorded",
+      description: `Your body measurements have been saved.`,
+    });
+    
+    setShowAddForm(false);
+  };
+  
+  const bmi = calculateBMI();
+  
+  const getBMICategory = (bmi) => {
+    if (bmi < 18.5) return { category: 'Underweight', color: 'text-blue-500' };
+    if (bmi < 25) return { category: 'Normal', color: 'text-green-500' };
+    if (bmi < 30) return { category: 'Overweight', color: 'text-yellow-500' };
+    return { category: 'Obese', color: 'text-red-500' };
   };
 
-  const currentBMI = userProfile?.weight && userProfile?.height 
-    ? calculateBMI(userProfile.weight, userProfile.height)
-    : null;
+  const bmiInfo = bmi ? getBMICategory(bmi) : { category: 'Unknown', color: 'text-gray-500' };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center gap-4">
-        <Scale className="h-8 w-8 text-gray-700 dark:text-gray-300" />
-        <div>
-          <h1 className="text-2xl font-bold">Body Measurements</h1>
-          <p className="text-gray-500 dark:text-gray-400">Track your body composition over time</p>
-        </div>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-gray-800">Body Measurements</h1>
+        <Button 
+          onClick={() => setShowAddForm(!showAddForm)}
+          className="flex items-center gap-2 bg-health-primary hover:bg-health-primary/90"
+        >
+          <PlusCircle className="h-4 w-4" />
+          Record Measurements
+        </Button>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User2 className="h-5 w-5 text-blue-500" />
-            Current Stats
-          </CardTitle>
-          <CardDescription>Your most recent body measurements</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <p className="text-gray-600 dark:text-gray-400">Weight</p>
-              <p className="text-lg font-semibold">{latestMeasurement?.weight || userProfile?.weight || 'N/A'} kg</p>
-            </div>
-            <div>
-              <p className="text-gray-600 dark:text-gray-400">Body Fat</p>
-              <p className="text-lg font-semibold">{latestMeasurement?.bodyFat || 'N/A'} %</p>
-            </div>
-            <div>
-              <p className="text-gray-600 dark:text-gray-400">Muscle Mass</p>
-              <p className="text-lg font-semibold">{latestMeasurement?.muscleMass || 'N/A'} kg</p>
-            </div>
-             <div>
-              <p className="text-gray-600 dark:text-gray-400">BMI</p>
-              <p className="text-lg font-semibold">
-                {currentBMI ? currentBMI.toFixed(2) : 'N/A'}
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <GripVertical className="h-5 w-5 text-green-500" />
-            Add New Measurement
-          </CardTitle>
-          <CardDescription>Enter your latest body measurements</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="weight">Weight (kg)</Label>
-                <Input
-                  type="number"
-                  id="weight"
-                  value={weight}
-                  onChange={(e) => setWeight(e.target.value)}
-                  placeholder="Enter weight in kg"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="bodyFat">Body Fat (%)</Label>
-                <Input
-                  type="number"
-                  id="bodyFat"
-                  value={bodyFat}
-                  onChange={(e) => setBodyFat(e.target.value)}
-                  placeholder="Enter body fat percentage"
-                />
-              </div>
-              <div>
-                <Label htmlFor="muscleMass">Muscle Mass (kg)</Label>
-                <Input
-                  type="number"
-                  id="muscleMass"
-                  value={muscleMass}
-                  onChange={(e) => setMuscleMass(e.target.value)}
-                  placeholder="Enter muscle mass in kg"
-                />
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="notes">Notes</Label>
-              <Textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Any additional notes about this measurement"
-              />
-            </div>
-            <Button type="submit">Add Measurement</Button>
-          </form>
-        </CardContent>
-      </Card>
-
-      {bodyMeasurements.length > 0 ? (
+      
+      {showAddForm && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-purple-500" />
-              Measurement History
-            </CardTitle>
-            <CardDescription>Your past body measurements</CardDescription>
+            <CardTitle>Record Body Measurements</CardTitle>
+            <CardDescription>Track your physical changes over time</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead>
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Weight (kg)
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Body Fat (%)
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Muscle Mass (kg)
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Notes
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {bodyMeasurements.map((measurement) => (
-                    <tr key={measurement.id}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {new Date(measurement.date).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">{measurement.weight}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{measurement.bodyFat}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{measurement.muscleMass}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{measurement.notes}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card>
-          <CardContent className="py-8 flex flex-col items-center justify-center">
-            <AlertTriangle className="h-10 w-10 text-yellow-500 mb-4" />
-            <h2 className="text-lg font-semibold text-center">No measurements recorded yet.</h2>
-            <p className="text-gray-500 dark:text-gray-400 text-center">Start tracking your body composition by adding your first measurement above.</p>
+            <form className="space-y-4">
+              <div>
+                <Label htmlFor="date">Date</Label>
+                <Input 
+                  id="date" 
+                  type="date" 
+                  value={date} 
+                  onChange={(e) => setDate(e.target.value)} 
+                />
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label htmlFor="weight">Weight (kg)</Label>
+                    <span className="text-sm font-medium">{weight} kg</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Scale className="mr-2 h-4 w-4 text-health-primary" />
+                    <Slider
+                      id="weight"
+                      min={30}
+                      max={200}
+                      step={0.5}
+                      value={[weight]}
+                      onValueChange={(value) => setWeight(value[0])}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label htmlFor="bodyFat">Body Fat %</Label>
+                    <span className="text-sm font-medium">{bodyFat}%</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Heart className="mr-2 h-4 w-4 text-red-500" />
+                    <Slider
+                      id="bodyFat"
+                      min={3}
+                      max={50}
+                      step={0.5}
+                      value={[bodyFat]}
+                      onValueChange={(value) => setBodyFat(value[0])}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label htmlFor="waist">Waist (cm)</Label>
+                    <span className="text-sm font-medium">{waist} cm</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Ruler className="mr-2 h-4 w-4 text-indigo-500" />
+                    <Slider
+                      id="waist"
+                      min={50}
+                      max={150}
+                      step={0.5}
+                      value={[waist]}
+                      onValueChange={(value) => setWaist(value[0])}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label htmlFor="chest">Chest (cm)</Label>
+                    <span className="text-sm font-medium">{chest} cm</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Ruler className="mr-2 h-4 w-4 text-indigo-500" />
+                    <Slider
+                      id="chest"
+                      min={50}
+                      max={150}
+                      step={0.5}
+                      value={[chest]}
+                      onValueChange={(value) => setChest(value[0])}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label htmlFor="hips">Hips (cm)</Label>
+                    <span className="text-sm font-medium">{hips} cm</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Ruler className="mr-2 h-4 w-4 text-indigo-500" />
+                    <Slider
+                      id="hips"
+                      min={50}
+                      max={150}
+                      step={0.5}
+                      value={[hips]}
+                      onValueChange={(value) => setHips(value[0])}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <Button 
+                type="button" 
+                onClick={handleAddMeasurement}
+                className="w-full bg-health-primary hover:bg-health-primary/90"
+              >
+                Save Measurements
+              </Button>
+            </form>
           </CardContent>
         </Card>
       )}
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center">
+              <BarChart className="mr-2 h-5 w-5 text-health-primary" />
+              BMI
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-health-primary">
+              {bmi ? bmi.toFixed(1) : 'N/A'}
+            </div>
+            <p className={`text-sm ${bmiInfo.color} font-medium mt-1`}>
+              {bmiInfo.category}
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              Based on your height and weight
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center">
+              <TrendingUp className="mr-2 h-5 w-5 text-health-secondary" />
+              Weight Trend
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-health-secondary">
+              {measurements.length > 1 
+                ? `${(measurements[measurements.length-1]?.weight - measurements[measurements.length-2]?.weight).toFixed(1)} kg` 
+                : 'N/A'}
+            </div>
+            <p className="text-sm text-gray-500 mt-1">
+              {measurements.length > 1 
+                ? measurements[measurements.length-1]?.weight - measurements[measurements.length-2]?.weight > 0
+                  ? 'Gaining'
+                  : 'Losing'
+                : 'Start tracking to see trends'}
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center">
+              <Heart className="mr-2 h-5 w-5 text-red-500" />
+              Body Fat
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-red-500">
+              {measurements.length > 0 ? `${measurements[measurements.length-1]?.bodyFat}%` : 'N/A'}
+            </div>
+            <p className="text-sm text-gray-500 mt-1">
+              {measurements.length > 0 
+                ? measurements[measurements.length-1]?.bodyFat < 25 
+                  ? 'Healthy range'
+                  : 'Above recommended range'
+                : 'No data recorded'}
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center">
+              <Ruler className="mr-2 h-5 w-5 text-indigo-500" />
+              Waist-Height Ratio
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {userProfile && measurements.length > 0 ? (
+              <div className="text-3xl font-bold text-indigo-500">
+                {(measurements[measurements.length-1]?.waist / userProfile.height).toFixed(2)}
+              </div>
+            ) : (
+              <div className="text-3xl font-bold text-gray-300">N/A</div>
+            )}
+            <p className="text-sm text-gray-500 mt-1">
+              {userProfile && measurements.length > 0 
+                ? (measurements[measurements.length-1]?.waist / userProfile.height) < 0.5
+                  ? 'Healthy ratio'
+                  : 'Above recommended ratio'
+                : 'No data available'}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Measurement Trends</CardTitle>
+          <CardDescription>Track your body composition changes over time</CardDescription>
+        </CardHeader>
+        <CardContent className="h-96">
+          {measurementHistory.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={measurementHistory}
+                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis yAxisId="left" />
+                <YAxis yAxisId="right" orientation="right" />
+                <Tooltip />
+                <Legend />
+                <Area 
+                  yAxisId="left"
+                  type="monotone" 
+                  dataKey="weight" 
+                  name="Weight (kg)"
+                  stroke="#4FD1C5" 
+                  fill="#4FD1C5" 
+                  fillOpacity={0.3}
+                />
+                <Area 
+                  yAxisId="right"
+                  type="monotone" 
+                  dataKey="waist" 
+                  name="Waist (cm)"
+                  stroke="#9b87f5" 
+                  fill="#9b87f5" 
+                  fillOpacity={0.3}
+                />
+                <Area 
+                  yAxisId="right"
+                  type="monotone" 
+                  dataKey="bodyFat" 
+                  name="Body Fat (%)"
+                  stroke="#F56565" 
+                  fill="#F56565" 
+                  fillOpacity={0.3}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="text-center py-20 text-gray-500">
+              <Scale className="mx-auto h-16 w-16 opacity-20 mb-4" />
+              <h3 className="text-lg font-medium mb-2">No measurement data recorded yet</h3>
+              <p className="max-w-sm mx-auto">
+                Start tracking your body measurements to see your trends and progress over time.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Measurement History</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {measurements.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-3 px-4">Date</th>
+                    <th className="text-right py-3 px-4">Weight (kg)</th>
+                    <th className="text-right py-3 px-4">Body Fat (%)</th>
+                    <th className="text-right py-3 px-4">Waist (cm)</th>
+                    <th className="text-right py-3 px-4">Chest (cm)</th>
+                    <th className="text-right py-3 px-4">Hips (cm)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...measurements]
+                    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                    .map((record) => (
+                      <tr key={record.id} className="border-b hover:bg-gray-50">
+                        <td className="py-3 px-4">{format(new Date(record.date), 'MMM dd, yyyy')}</td>
+                        <td className="text-right py-3 px-4">{record.weight}</td>
+                        <td className="text-right py-3 px-4">{record.bodyFat}%</td>
+                        <td className="text-right py-3 px-4">{record.waist}</td>
+                        <td className="text-right py-3 px-4">{record.chest}</td>
+                        <td className="text-right py-3 px-4">{record.hips}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              No measurement records found
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

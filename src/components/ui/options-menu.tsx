@@ -13,8 +13,7 @@ import {
   Eye,
   Scale,
   Lock,
-  HelpCircle,
-  Star
+  HelpCircle
 } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import {
@@ -144,14 +143,6 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ userLoggedIn = false }) => {
                     >
                       <div className="w-4 h-4 rounded-full bg-gradient-to-r from-sky-500 to-green-500 mr-2" />
                       <span>Ocean</span>
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuItem 
-                      onClick={() => setColorTheme('cosmic-nebula')}
-                      className={`cursor-pointer ${colorTheme === 'cosmic-nebula' ? 'bg-cosmic-nebula/20' : 'hover:bg-cosmic-nebula/10'}`}
-                    >
-                      <div className="w-4 h-4 rounded-full bg-gradient-to-r from-cosmic-nebula to-cosmic-highlight mr-2 animate-pulse-soft" />
-                      <span>Cosmic Nebula</span>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                 </DropdownMenuSubContent>

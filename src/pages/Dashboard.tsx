@@ -1,319 +1,255 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  BarChart3, 
-  Target, 
-  Brain,
-  Trophy,
-  TrendingUp,
-  Sparkles,
-  Gauge,
-  Activity,
-  Zap,
-  Crown,
-  Star,
-  Rocket,
-  Award,
-  Calendar,
-  Clock,
-  Shield
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import ResponsiveContainer from '@/components/layout/ResponsiveContainer';
-import { useViewport } from '@/hooks';
-import RevolutionaryDashboard from '@/components/dashboard/RevolutionaryDashboard';
-import AnalyticsDashboard from '@/components/common/AnalyticsDashboard';
-import AIInsightsPanel from '@/components/dashboard/AIInsightsPanel';
-import AdvancedMetrics from '@/components/dashboard/AdvancedMetrics';
-import HealthTrends from '@/components/dashboard/HealthTrends';
-import PersonalizedGoals from '@/components/dashboard/PersonalizedGoals';
-import SmartHealthAssistant from '@/components/dashboard/SmartHealthAssistant';
+
+import React, { useState, useEffect } from 'react';
 import { useHealth } from '@/contexts/HealthContext';
-import { useTheme } from '@/contexts/ThemeContext';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Activity, 
+  Target, 
+  TrendingUp, 
+  Calendar, 
+  Award,
+  Heart,
+  Zap,
+  Users,
+  Camera,
+  Plus,
+  BarChart3,
+  Clock,
+  Flame
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
+import GlassCard from '@/components/ui/glass-card';
 
 const Dashboard: React.FC = () => {
-  const { userProfile } = useHealth();
-  const { theme, colorTheme } = useTheme();
-  const navigate = useNavigate();
-  const { isMobile, isTablet } = useViewport();
-  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'ai-coach' | 'goals' | 'trends'>('overview');
+  const { userProfile, dailyGoals, todayData } = useHealth();
+  const [streak, setStreak] = useState(7);
+  const [weeklyProgress, setWeeklyProgress] = useState(68);
 
-  const handleGetStarted = useCallback(() => {
-    setActiveTab('goals');
-  }, []);
+  const quickActions = [
+    { icon: Camera, label: 'Scan Food', color: 'from-blue-500 to-cyan-500', action: () => {} },
+    { icon: Plus, label: 'Log Meal', color: 'from-green-500 to-emerald-500', action: () => {} },
+    { icon: Activity, label: 'Add Exercise', color: 'from-purple-500 to-pink-500', action: () => {} },
+    { icon: Users, label: 'Community', color: 'from-orange-500 to-red-500', action: () => {} }
+  ];
 
-  const handleTabChange = useCallback((value: any) => {
-    setActiveTab(value);
-  }, []);
-
-  const tabConfig = useMemo(() => [
-    {
-      value: 'overview',
-      label: 'Smart Overview',
-      icon: Gauge,
-      color: 'from-emerald-500 to-teal-600',
-      description: 'Intelligent health dashboard with real-time insights',
-      bgGradient: 'from-emerald-500/20 via-teal-500/10 to-cyan-500/20'
+  const healthMetrics = [
+    { 
+      title: 'Calories', 
+      current: todayData?.calories || 0, 
+      goal: dailyGoals.calories, 
+      unit: 'kcal',
+      icon: Flame,
+      color: 'text-orange-500'
     },
-    {
-      value: 'analytics',
-      label: 'Deep Analytics',
-      icon: BarChart3,
-      color: 'from-blue-500 to-indigo-600',
-      description: 'Advanced performance metrics and data analysis',
-      bgGradient: 'from-blue-500/20 via-indigo-500/10 to-purple-500/20'
+    { 
+      title: 'Steps', 
+      current: 8420, 
+      goal: 10000, 
+      unit: 'steps',
+      icon: Activity,
+      color: 'text-blue-500'
     },
-    {
-      value: 'ai-coach',
-      label: 'AI Health Coach',
-      icon: Brain,
-      color: 'from-purple-500 to-pink-600',
-      description: 'Personalized AI-powered health recommendations',
-      bgGradient: 'from-purple-500/20 via-pink-500/10 to-rose-500/20'
+    { 
+      title: 'Water', 
+      current: todayData?.water || 0, 
+      goal: dailyGoals.water, 
+      unit: 'ml',
+      icon: Heart,
+      color: 'text-cyan-500'
     },
-    {
-      value: 'goals',
-      label: 'Goal Mastery',
-      icon: Trophy,
-      color: 'from-amber-500 to-orange-600',
-      description: 'Achievement tracking and milestone management',
-      bgGradient: 'from-amber-500/20 via-orange-500/10 to-red-500/20'
-    },
-    {
-      value: 'trends',
-      label: 'Health Evolution',
-      icon: TrendingUp,
-      color: 'from-rose-500 to-pink-600',
-      description: 'Long-term patterns and trend visualization',
-      bgGradient: 'from-rose-500/20 via-pink-500/10 to-purple-500/20'
+    { 
+      title: 'Sleep', 
+      current: 7.5, 
+      goal: 8, 
+      unit: 'hrs',
+      icon: Clock,
+      color: 'text-purple-500'
     }
-  ], []);
+  ];
 
-  const getWelcomeMessage = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 17) return 'Good Afternoon';
-    return 'Good Evening';
-  };
-
-  const getMotivationalMessage = () => {
-    const messages = [
-      "Your health transformation journey begins here",
-      "Data-driven wellness for extraordinary results",
-      "Unlock your potential with intelligent insights",
-      "Every metric tells your unique wellness story",
-      "Advanced analytics for peak performance"
-    ];
-    return messages[new Date().getDate() % messages.length];
-  };
-
-  const currentTab = tabConfig.find(tab => tab.value === activeTab);
+  const achievements = [
+    { title: '7-Day Streak', description: 'Logged meals consistently', earned: true },
+    { title: 'Hydration Hero', description: 'Met water goals 5 times', earned: true },
+    { title: 'Early Bird', description: 'Logged breakfast before 9 AM', earned: false },
+    { title: 'Goal Crusher', description: 'Hit all daily targets', earned: false }
+  ];
 
   return (
-    <div className={cn(
-      "min-h-screen relative overflow-hidden",
-      "bg-gradient-to-br from-slate-900 via-gray-900 to-black"
-    )}>
-      {/* Enhanced Background Effects */}
-      <div className="fixed inset-0 -z-10">
-        <div className={cn(
-          "absolute inset-0 bg-gradient-to-br transition-all duration-1000",
-          `${currentTab?.bgGradient || 'from-slate-900/80 to-gray-900/80'}`
-        )}></div>
-        
-        <div className={cn(
-          "absolute rounded-full blur-3xl animate-pulse opacity-30 transition-all duration-1000",
-          isMobile ? "top-10 right-10 w-40 h-40" : "top-20 right-20 w-96 h-96",
-          activeTab === 'overview' && "bg-gradient-to-br from-emerald-400/60 to-teal-500/60",
-          activeTab === 'analytics' && "bg-gradient-to-br from-blue-400/60 to-indigo-500/60",
-          activeTab === 'ai-coach' && "bg-gradient-to-br from-purple-400/60 to-pink-500/60",
-          activeTab === 'goals' && "bg-gradient-to-br from-amber-400/60 to-orange-500/60",
-          activeTab === 'trends' && "bg-gradient-to-br from-rose-400/60 to-pink-500/60"
-        )}></div>
-        
-        <div className={cn(
-          "absolute rounded-full blur-3xl animate-pulse delay-1000 opacity-25 transition-all duration-1000",
-          isMobile ? "bottom-10 left-10 w-48 h-48" : "bottom-20 left-20 w-[32rem] h-[32rem]",
-          activeTab === 'overview' && "bg-gradient-to-tr from-teal-400/60 to-emerald-500/60",
-          activeTab === 'analytics' && "bg-gradient-to-tr from-indigo-400/60 to-blue-500/60",
-          activeTab === 'ai-coach' && "bg-gradient-to-tr from-pink-400/60 to-purple-500/60",
-          activeTab === 'goals' && "bg-gradient-to-tr from-orange-400/60 to-amber-500/60",
-          activeTab === 'trends' && "bg-gradient-to-tr from-pink-400/60 to-rose-500/60"
-        )}></div>
-
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+    <div className="space-y-8 p-6">
+      {/* Welcome Section */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        <div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Welcome back, {userProfile?.name || 'Champion'}! 🌟
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-2 text-lg">
+            You're on a {streak}-day streak! Keep up the amazing work.
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <Badge variant="secondary" className="px-4 py-2 text-sm">
+            <TrendingUp className="w-4 h-4 mr-2" />
+            {weeklyProgress}% Weekly Goal
+          </Badge>
+          <Button variant="glass-primary" size="lg" className="gap-2">
+            <Award className="w-5 h-5" />
+            View Achievements
+          </Button>
+        </div>
       </div>
 
-      <ResponsiveContainer maxWidth="7xl" padding={isMobile ? "sm" : "lg"} className="relative z-10">
-        <div className="space-y-8 md:space-y-12">
-          {/* Revolutionary Header Section */}
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-gray-900/40 to-black/60 backdrop-blur-3xl rounded-3xl border border-white/10 shadow-2xl"></div>
-            <div className="relative p-8 md:p-12">
-              <div className="flex items-center justify-between flex-wrap gap-6">
-                <div className="space-y-6">
-                  <div className="flex items-center gap-6">
-                    <div className="relative group">
-                      <div className={cn(
-                        "w-28 h-28 rounded-3xl flex items-center justify-center shadow-2xl transition-all duration-500 group-hover:scale-110",
-                        `bg-gradient-to-br ${currentTab?.color || 'from-slate-500 to-gray-600'}`
-                      )}>
-                        <currentTab.icon className="w-14 h-14 text-white" />
-                      </div>
-                      <div className="absolute -top-3 -right-3 w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center animate-pulse shadow-xl">
-                        <Crown className="w-6 h-6 text-white" />
-                      </div>
-                      <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/20 to-transparent scale-125 animate-pulse opacity-40"></div>
-                      <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/15 to-transparent scale-150 animate-pulse delay-500 opacity-30"></div>
+      {/* Quick Actions */}
+      <GlassCard variant="premium" className="p-6">
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <Zap className="w-5 h-5 text-yellow-500" />
+          Quick Actions
+        </h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {quickActions.map((action, index) => (
+            <button
+              key={index}
+              onClick={action.action}
+              className={cn(
+                "group relative p-6 rounded-2xl border border-white/20 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-xl",
+                "bg-gradient-to-br", action.color, "text-white"
+              )}
+            >
+              <action.icon className="w-8 h-8 mb-3 group-hover:scale-110 transition-transform" />
+              <p className="font-semibold text-sm">{action.label}</p>
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity" />
+            </button>
+          ))}
+        </div>
+      </GlassCard>
+
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="nutrition">Nutrition</TabsTrigger>
+          <TabsTrigger value="fitness">Fitness</TabsTrigger>
+          <TabsTrigger value="insights">Insights</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6">
+          {/* Health Metrics Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {healthMetrics.map((metric, index) => {
+              const percentage = Math.min((metric.current / metric.goal) * 100, 100);
+              return (
+                <GlassCard key={index} variant="premium" className="p-6 hover:scale-105 transition-transform">
+                  <div className="flex items-center justify-between mb-4">
+                    <metric.icon className={cn("w-6 h-6", metric.color)} />
+                    <Badge variant="outline" className="text-xs">
+                      {percentage.toFixed(0)}%
+                    </Badge>
+                  </div>
+                  <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                    {metric.title}
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-bold">{metric.current}</span>
+                      <span className="text-sm text-gray-500">/ {metric.goal} {metric.unit}</span>
                     </div>
-                    <div>
-                      <h1 className="text-5xl md:text-7xl lg:text-8xl font-black bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent mb-4">
-                        {getWelcomeMessage()}, {userProfile?.name || 'Champion'}
-                      </h1>
-                      <p className="text-2xl md:text-3xl text-gray-300 font-bold mb-4">
-                        {getMotivationalMessage()}
-                      </p>
-                      <div className="flex items-center gap-4">
-                        <div className="px-6 py-3 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-2xl border border-emerald-400/30 backdrop-blur-xl">
-                          <div className="flex items-center gap-3 text-emerald-300">
-                            <Zap className="w-5 h-5" />
-                            <span className="font-bold">Real-time Processing</span>
-                          </div>
-                        </div>
-                        <div className="px-6 py-3 bg-gradient-to-r from-blue-500/30 to-indigo-500/30 rounded-2xl border border-blue-400/30 backdrop-blur-xl">
-                          <div className="flex items-center gap-3 text-blue-300">
-                            <Star className="w-5 h-5" />
-                            <span className="font-bold">AI Powered</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    <Progress value={percentage} className="h-2" />
                   </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className="px-8 py-5 bg-gradient-to-r from-white to-gray-100 rounded-2xl text-black font-bold shadow-2xl border border-white/20">
-                    <div className="flex items-center gap-3">
-                      <Shield className="w-7 h-7" />
-                      <div>
-                        <div className="text-sm opacity-80">VitalitySync</div>
-                        <div className="text-xl">Elite Dashboard</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="px-6 py-4 bg-black/60 rounded-xl border border-gray-700/50 backdrop-blur-xl">
-                    <div className="flex items-center gap-3 text-gray-300">
-                      <Clock className="w-6 h-6" />
-                      <span className="font-bold">{new Date().toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-8 p-8 bg-gradient-to-r from-black/40 via-gray-900/60 to-black/40 rounded-3xl border border-white/20 backdrop-blur-xl shadow-inner">
-                <div className="flex items-center gap-6">
-                  <div className={cn(
-                    "w-20 h-20 rounded-3xl flex items-center justify-center shadow-xl",
-                    `bg-gradient-to-br ${currentTab?.color || 'from-slate-500 to-gray-600'}`
-                  )}>
-                    <Rocket className="w-10 h-10 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-3xl font-black text-white mb-3">
-                      Revolutionary Health Intelligence Platform
-                    </h3>
-                    <p className="text-gray-300 text-lg leading-relaxed">
-                      {currentTab?.description} - Experience next-generation health monitoring with advanced AI algorithms, real-time data processing, and personalized insights that adapt to your unique wellness journey.
-                    </p>
-                  </div>
-                  <div className="hidden md:flex items-center gap-6">
-                    <div className="text-right">
-                      <div className="text-sm text-gray-400">Active Module</div>
-                      <div className="font-bold text-xl text-white">{currentTab?.label}</div>
-                    </div>
-                    <Award className="w-10 h-10 text-amber-400" />
-                  </div>
-                </div>
-              </div>
-            </div>
+                </GlassCard>
+              );
+            })}
           </div>
 
-          {/* Enhanced Tab Navigation */}
-          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <div className="relative mb-12">
-              <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-gray-900/60 to-black/80 backdrop-blur-3xl rounded-3xl border border-white/20 shadow-2xl"></div>
-              <div className="relative p-6 md:p-10">
-                <TabsList className={cn(
-                  "grid w-full bg-transparent gap-4",
-                  isMobile ? "grid-cols-2 p-4" : "grid-cols-5 p-6",
-                  "min-h-[80px]"
-                )}>
-                  {tabConfig.slice(0, isMobile ? 2 : 5).map((tab) => (
-                    <TabsTrigger 
-                      key={tab.value} 
-                      value={tab.value} 
-                      className={cn(
-                        "relative flex items-center gap-4 transition-all duration-700 font-bold text-base overflow-hidden group border-2 border-transparent",
-                        "hover:scale-105 hover:shadow-2xl",
-                        isMobile ? "p-4 rounded-2xl min-h-[60px]" : "p-6 rounded-3xl min-h-[70px]",
-                        activeTab === tab.value && [
-                          `bg-gradient-to-br ${tab.color} text-white shadow-2xl scale-105 border-white/30`
-                        ],
-                        activeTab !== tab.value && [
-                          "bg-gradient-to-br from-gray-800/80 to-gray-900/80 text-gray-300",
-                          "hover:from-gray-700/80 hover:to-gray-800/80 hover:text-white"
-                        ]
-                      )}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 -skew-x-12 animate-pulse"></div>
-                      
-                      <tab.icon className={cn("relative z-10", isMobile ? "w-6 h-6" : "w-7 h-7")} />
-                      {!isMobile && <span className="relative z-10 text-lg">{tab.label}</span>}
-                      
-                      {activeTab === tab.value && (
-                        <Sparkles className="w-6 h-6 text-white/90 animate-pulse relative z-10 ml-auto" />
-                      )}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-                
-                {!isMobile && (
-                  <div className="relative mt-8 text-center">
-                    <p className="text-lg text-gray-300 font-semibold bg-black/40 rounded-full px-8 py-4 inline-block backdrop-blur-xl border border-white/20 shadow-lg">
-                      {currentTab?.description}
-                    </p>
-                  </div>
-                )}
+          {/* Weekly Overview */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <GlassCard variant="premium" className="p-6">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-blue-500" />
+                Weekly Progress
+              </h3>
+              <div className="space-y-4">
+                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => {
+                  const completed = index < 5;
+                  return (
+                    <div key={day} className="flex items-center gap-4">
+                      <span className="w-8 text-sm font-medium">{day}</span>
+                      <div className="flex-1 flex gap-2">
+                        {['Nutrition', 'Exercise', 'Sleep'].map((category) => (
+                          <div 
+                            key={category}
+                            className={cn(
+                              "h-3 rounded-full flex-1",
+                              completed 
+                                ? "bg-gradient-to-r from-green-400 to-emerald-500" 
+                                : "bg-gray-200 dark:bg-gray-700"
+                            )}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            </div>
+            </GlassCard>
 
-            {/* Tab Content */}
-            <div className="mt-10">
-              <TabsContent value="overview" className="space-y-8 animate-fade-in">
-                <RevolutionaryDashboard />
-              </TabsContent>
+            <GlassCard variant="premium" className="p-6">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Award className="w-5 h-5 text-purple-500" />
+                Recent Achievements
+              </h3>
+              <div className="space-y-3">
+                {achievements.map((achievement, index) => (
+                  <div 
+                    key={index}
+                    className={cn(
+                      "flex items-center gap-3 p-3 rounded-xl border transition-all",
+                      achievement.earned 
+                        ? "bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200 dark:border-yellow-700" 
+                        : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                    )}
+                  >
+                    <div className={cn(
+                      "w-10 h-10 rounded-full flex items-center justify-center",
+                      achievement.earned 
+                        ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-white" 
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-400"
+                    )}>
+                      <Award className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm">{achievement.title}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">{achievement.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </GlassCard>
+          </div>
+        </TabsContent>
 
-              <TabsContent value="analytics" className="space-y-8 animate-fade-in">
-                <AnalyticsDashboard />
-                <AdvancedMetrics />
-              </TabsContent>
+        <TabsContent value="nutrition">
+          <GlassCard variant="premium" className="p-6">
+            <h3 className="text-xl font-semibold mb-4">Nutrition Overview</h3>
+            <p className="text-gray-600 dark:text-gray-400">Advanced nutrition tracking coming soon...</p>
+          </GlassCard>
+        </TabsContent>
 
-              <TabsContent value="ai-coach" className="space-y-8 animate-fade-in">
-                <SmartHealthAssistant />
-              </TabsContent>
+        <TabsContent value="fitness">
+          <GlassCard variant="premium" className="p-6">
+            <h3 className="text-xl font-semibold mb-4">Fitness Tracking</h3>
+            <p className="text-gray-600 dark:text-gray-400">Comprehensive fitness analytics coming soon...</p>
+          </GlassCard>
+        </TabsContent>
 
-              <TabsContent value="goals" className="space-y-8 animate-fade-in">
-                <PersonalizedGoals />
-              </TabsContent>
-
-              <TabsContent value="trends" className="space-y-8 animate-fade-in">
-                <HealthTrends />
-              </TabsContent>
-            </div>
-          </Tabs>
-        </div>
-      </ResponsiveContainer>
+        <TabsContent value="insights">
+          <GlassCard variant="premium" className="p-6">
+            <h3 className="text-xl font-semibold mb-4">Health Insights</h3>
+            <p className="text-gray-600 dark:text-gray-400">AI-powered health insights coming soon...</p>
+          </GlassCard>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

@@ -7,74 +7,80 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
+
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
+
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 16 100% 66%;
+
+    --primary: 174 83% 56%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
+
+    --secondary: 262 85% 74%;
     --secondary-foreground: 222.2 47.4% 11.2%;
+
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
+
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
+
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
+
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 215 20.2% 65.1%;
-    --radius: 0.75rem;
+    --ring: 222.2 84% 4.9%;
 
-    /* Enhanced Vibrant Theme Colors */
-    --vibrant-orange: 255, 107, 53;
-    --vibrant-amber: 255, 140, 66;
-    --vibrant-coral: 255, 89, 94;
-    --vibrant-teal: 79, 195, 247;
-    --vibrant-emerald: 52, 168, 83;
-    --vibrant-purple: 156, 39, 176;
+    --radius: 0.5rem;
 
-    /* Sidebar Colors */
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 222.2 84% 4.9%;
-    --sidebar-primary: 16 100% 66%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 210 40% 96.1%;
-    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
-    --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 215 20.2% 65.1%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
+
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
+
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 16 100% 66%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217.2 32.6% 17.5%;
+
+    --primary: 174 83% 56%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 262 85% 74%;
     --secondary-foreground: 210 40% 98%;
+
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
+
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
+
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
+
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 16 100% 66%;
-
-    /* Sidebar Colors */
-    --sidebar-background: 222.2 84% 4.9%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 16 100% 66%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 217.2 32.6% 17.5%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217.2 32.6% 17.5%;
-    --sidebar-ring: 16 100% 66%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -85,282 +91,13 @@
 
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
-    font-family: 'Poppins', system-ui, sans-serif;
-    background: linear-gradient(135deg, 
-      rgba(255, 247, 237, 1) 0%, 
-      rgba(255, 251, 247, 1) 25%,
-      rgba(255, 245, 235, 1) 50%,
-      rgba(254, 243, 239, 1) 75%,
-      rgba(255, 248, 240, 1) 100%
-    );
-  }
-
-  .dark body {
-    background: linear-gradient(135deg, 
-      rgba(20, 20, 30, 1) 0%, 
-      rgba(25, 25, 35, 1) 25%,
-      rgba(30, 25, 40, 1) 50%,
-      rgba(25, 30, 35, 1) 75%,
-      rgba(20, 25, 30, 1) 100%
-    );
-  }
-
-  html {
-    scroll-behavior: smooth;
   }
 }
 
-@layer utilities {
-  /* Enhanced Glass Effects with Vibrant Orange Theme */
-  .glass-card {
-    @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-orange-200/30 dark:border-orange-700/30;
-    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3), 0 4px 16px rgba(255, 140, 66, 0.2);
-  }
-
-  .frosted-glass {
-    @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-3xl border border-orange-200/40 dark:border-orange-700/30;
-    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3), 0 4px 16px rgba(255, 140, 66, 0.2);
-  }
-
-  .neo-glass {
-    @apply bg-gradient-to-br from-white/80 to-orange-50/40 dark:from-slate-900/80 dark:to-slate-800/50 backdrop-blur-2xl border border-orange-200/50 dark:border-orange-700/30;
-    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3), 0 4px 16px rgba(255, 140, 66, 0.2);
-  }
-
-  .ultra-glass {
-    @apply bg-gradient-to-br from-white/70 to-orange-50/30 dark:from-slate-900/70 dark:to-slate-800/40 backdrop-blur-3xl border border-orange-200/40 dark:border-orange-700/40;
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.6), 0 0 60px rgba(255, 140, 66, 0.3);
-  }
-
-  .iridescent-glass {
-    @apply bg-gradient-to-br from-white/60 via-orange-50/40 to-amber-50/50 dark:from-slate-900/60 dark:via-orange-950/15 dark:to-amber-950/15 backdrop-blur-3xl border border-orange-200/30 dark:border-orange-700/30;
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.6), 0 0 60px rgba(255, 140, 66, 0.3);
-  }
-
-  .vibrant-glass {
-    @apply bg-gradient-to-br from-orange-50/80 via-amber-50/60 to-orange-100/30 dark:from-orange-950/80 dark:via-amber-950/60 dark:to-orange-900/30 backdrop-blur-3xl border border-orange-300/40 dark:border-orange-600/40;
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.6), 0 0 60px rgba(255, 140, 66, 0.3);
-  }
-
-  /* Shadow classes */
-  .shadow-vibrant {
-    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3), 0 4px 16px rgba(255, 140, 66, 0.2);
-  }
-
-  .shadow-vibrant-glow {
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.6), 0 0 60px rgba(255, 140, 66, 0.3);
-  }
-
-  /* Vibrant Button Styles */
-  .btn-primary {
-    @apply bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:via-amber-600 hover:to-orange-700 text-white font-semibold px-6 py-3 rounded-2xl transition-all duration-500 hover:scale-105;
-    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3), 0 4px 16px rgba(255, 140, 66, 0.2);
-  }
-
-  .btn-primary:hover {
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.6), 0 0 60px rgba(255, 140, 66, 0.3);
-  }
-
-  .btn-secondary {
-    @apply bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-700 border border-orange-200/60 dark:border-orange-700/60 text-orange-700 dark:text-orange-300 font-semibold px-6 py-3 rounded-2xl shadow-lg transition-all duration-500 hover:scale-105 backdrop-blur-xl;
-  }
-
-  .btn-secondary:hover {
-    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3), 0 4px 16px rgba(255, 140, 66, 0.2);
-  }
-
-  /* Enhanced Card Styles with Vibrant Theme */
-  .card-vibrant {
-    @apply bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-orange-200/50 dark:border-orange-700/50 rounded-3xl transition-all duration-500 hover:scale-[1.02];
-    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3), 0 4px 16px rgba(255, 140, 66, 0.2);
-  }
-
-  .card-vibrant:hover {
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.6), 0 0 60px rgba(255, 140, 66, 0.3);
-  }
+.nutrition-card {
+  @apply rounded-xl p-4 mb-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow;
 }
 
-/* Enhanced Vibrant Animations */
-@keyframes vibrant-pulse {
-  0%, 100% {
-    opacity: 0.8;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.4;
-    transform: scale(1.4);
-  }
-}
-
-@keyframes energy-flow {
-  0% {
-    transform: translateX(-100%) rotate(0deg);
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(100%) rotate(360deg);
-    opacity: 0;
-  }
-}
-
-@keyframes bounce-glow {
-  0%, 100% {
-    transform: translateY(0);
-    box-shadow: 0 0 15px rgba(var(--vibrant-orange), 0.3);
-  }
-  50% {
-    transform: translateY(-10px);
-    box-shadow: 0 0 30px rgba(var(--vibrant-orange), 0.6);
-  }
-}
-
-.animate-vibrant-pulse {
-  animation: vibrant-pulse 10s ease-in-out infinite;
-}
-
-.animate-energy-flow {
-  animation: energy-flow 3s linear infinite;
-}
-
-.animate-bounce-glow {
-  animation: bounce-glow 2s ease-in-out infinite;
-}
-
-/* Enhanced Star Field Effects */
-.stars-small, .stars-medium, .stars-large {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.stars-small {
-  background-image: radial-gradient(1px 1px at 25px 35px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)),
-                    radial-gradient(1px 1px at 45px 75px, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0)),
-                    radial-gradient(1px 1px at 65px 165px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)),
-                    radial-gradient(1px 1px at 95px 45px, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0)),
-                    radial-gradient(1px 1px at 135px 85px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)),
-                    radial-gradient(1px 1px at 165px 125px, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
-  background-repeat: repeat;
-  background-size: 220px 220px;
-  animation: star-twinkle 5s ease-in-out infinite;
-}
-
-.stars-medium {
-  background-image: radial-gradient(2px 2px at 110px 55px, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0)),
-                    radial-gradient(2px 2px at 155px 155px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)),
-                    radial-gradient(2px 2px at 25px 125px, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0)),
-                    radial-gradient(2px 2px at 175px 95px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
-  background-repeat: repeat;
-  background-size: 320px 320px;
-  animation: star-twinkle 7s ease-in-out infinite alternate;
-}
-
-.stars-large {
-  background-image: radial-gradient(3px 3px at 125px 45px, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0)),
-                    radial-gradient(3px 3px at 45px 65px, rgba(251, 191, 36, 0.9), rgba(251, 191, 36, 0)),
-                    radial-gradient(3px 3px at 205px 155px, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0)),
-                    radial-gradient(3px 3px at 255px 55px, rgba(6, 182, 212, 0.9), rgba(6, 182, 212, 0));
-  background-repeat: repeat;
-  background-size: 420px 420px;
-  animation: star-twinkle 9s ease-in-out infinite alternate-reverse;
-}
-
-/* Enhanced Text Effects with Vibrant Theme */
-.text-glow {
-  text-shadow: 0 0 15px rgba(var(--vibrant-orange), 0.8), 0 0 30px rgba(var(--vibrant-orange), 0.4);
-}
-
-.text-vibrant {
-  background: linear-gradient(to right, rgb(var(--vibrant-orange)), rgb(var(--vibrant-teal)));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.text-energy {
-  background: linear-gradient(to right, rgb(var(--vibrant-orange)), rgb(var(--vibrant-amber)));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* Enhanced Scrollbar with Vibrant Theme */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(var(--vibrant-orange), 0.1);
-  border-radius: 12px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(var(--vibrant-orange), 0.6);
-  border-radius: 12px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(var(--vibrant-orange), 0.9);
-}
-
-.scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(var(--vibrant-orange), 0.6) rgba(var(--vibrant-deep), 0.1);
-}
-
-/* Enhanced Focus and Selection with Vibrant Theme */
-::selection {
-  background-color: rgba(var(--vibrant-orange), 0.4);
-  color: white;
-}
-
-*:focus-visible {
-  outline: 2px solid rgba(var(--vibrant-orange), 0.7);
-  outline-offset: 3px;
-  border-radius: 8px;
-}
-
-/* Enhanced Animations for Better UX */
-@keyframes pulse-soft {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-.animate-pulse-soft {
-  animation: pulse-soft 4s ease-in-out infinite;
-}
-
-/* Accessibility Enhancements */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .glass-card,
-  .frosted-glass,
-  .neo-glass,
-  .ultra-glass,
-  .iridescent-glass {
-    @apply bg-white dark:bg-slate-900 border-2 border-gray-800 dark:border-gray-200;
-  }
+.nutrition-bar {
+  @apply h-2 rounded-full my-1;
 }

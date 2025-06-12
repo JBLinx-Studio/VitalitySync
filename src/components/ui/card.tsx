@@ -123,7 +123,7 @@ const NeoCard = React.forwardRef<
 ))
 NeoCard.displayName = "NeoCard"
 
-// Ultra-enhanced card with advanced effects and animations
+// New ultramodern card with advanced effects
 const UltraCard = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -131,61 +131,13 @@ const UltraCard = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "rounded-lg ultra-glass shadow-glow transition-all duration-500 hover:shadow-highlight relative overflow-hidden card-3d-effect",
+      "rounded-lg ultra-glass shadow-glow transition-all duration-300 hover:shadow-highlight relative overflow-hidden",
       className
     )}
     {...props}
-  >
-    <span className="absolute inset-0 bg-gradient-to-br from-transparent to-white/5 dark:from-transparent dark:to-white/10"></span>
-    <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-gradient-radial from-health-primary/20 to-transparent blur-2xl transform transition-all duration-700 ease-out group-hover:translate-x-10"></div>
-    <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-gradient-radial from-health-secondary/20 to-transparent blur-2xl transform transition-all duration-700 ease-out group-hover:translate-x-10"></div>
-    {props.children}
-  </div>
+  />
 ))
 UltraCard.displayName = "UltraCard"
-
-// New iridescent glass effect card
-const IridescentCard = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg iridescent-glass shadow-rainbow transition-all duration-500 hover:shadow-highlight relative overflow-hidden",
-      className
-    )}
-    {...props}
-  >
-    <div className="absolute inset-0 bg-gradient-to-br from-transparent to-white/5 dark:from-transparent dark:to-white/10 z-0"></div>
-    <div className="absolute inset-0 iridescent-shimmer z-0"></div>
-    <div className="relative z-10">
-      {props.children}
-    </div>
-  </div>
-))
-IridescentCard.displayName = "IridescentCard"
-
-// New floating card with parallax effect
-const FloatingCard = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg float-card shadow-soft transition-all duration-500 hover:shadow-highlight relative overflow-hidden animate-float-slow",
-      className
-    )}
-    {...props}
-  >
-    <div className="absolute inset-0 bg-gradient-to-tr from-health-primary/10 to-health-secondary/10 z-0"></div>
-    <div className="relative z-10">
-      {props.children}
-    </div>
-  </div>
-))
-FloatingCard.displayName = "FloatingCard"
 
 export { 
   Card, 
@@ -197,7 +149,5 @@ export {
   GlassCard,
   FrostedCard,
   NeoCard,
-  UltraCard,
-  IridescentCard,
-  FloatingCard
+  UltraCard
 }

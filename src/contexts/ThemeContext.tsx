@@ -3,8 +3,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 
 type Theme = 'light' | 'dark';
 type MeasurementSystem = 'metric' | 'imperial';
-type ColorTheme = 'teal-purple' | 'blue-pink' | 'green-yellow' | 'sunset' | 'ocean';
-type GlassEffect = 'standard' | 'frosted' | 'neo' | 'ultra' | 'iridescent';
+type ColorTheme = 'teal-purple' | 'blue-pink' | 'green-yellow';
+type GlassEffect = 'standard' | 'frosted' | 'neo' | 'ultra';
 type AnimationLevel = 'minimal' | 'moderate' | 'full';
 
 interface ThemeContextType {
@@ -23,10 +23,6 @@ interface ThemeContextType {
   setAnimationLevel: (level: AnimationLevel) => void;
   enableParticles: boolean;
   setEnableParticles: (enabled: boolean) => void;
-  enableBlur: boolean;
-  setEnableBlur: (enabled: boolean) => void;
-  cardStyle: string;
-  setCardStyle: (style: string) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -66,25 +62,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const savedParticles = localStorage.getItem('vitality-particles');
     return savedParticles !== 'false'; // Default to true
   });
-  
-  const [enableBlur, setEnableBlur] = useState(() => {
-    const savedBlur = localStorage.getItem('vitality-enable-blur');
-    return savedBlur !== 'false'; // Default to true
-  });
-  
-  const [cardStyle, setCardStyle] = useState(() => {
-    const savedCardStyle = localStorage.getItem('vitality-card-style');
-    return savedCardStyle || 'standard'; // Default to standard
-  });
 
-  // Apply theme with enhanced transition
+  // Apply theme
   useEffect(() => {
     localStorage.setItem('vitality-theme', theme);
     document.documentElement.classList.remove('light', 'dark');
     document.documentElement.classList.add(theme);
 
     // Apply smooth transition effect when switching themes
-    document.documentElement.style.transition = 'background-color 0.7s ease, color 0.7s ease';
+    document.documentElement.style.transition = 'background-color 0.5s ease, color 0.5s ease';
   }, [theme]);
 
   // Apply measurement system
@@ -92,7 +78,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('vitality-measurement', measurementSystem);
   }, [measurementSystem]);
 
-  // Apply color theme with enhanced effects
+  // Apply color theme
   useEffect(() => {
     localStorage.setItem('vitality-color-theme', colorTheme);
     
@@ -114,18 +100,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         document.documentElement.style.setProperty('--primary', '158 64% 40%');
         document.documentElement.style.setProperty('--secondary', '43 96% 56%');
         break;
-      case 'sunset':
-        primaryColor = '#F97316'; // orange-500
-        secondaryColor = '#EC4899'; // pink-500
-        document.documentElement.style.setProperty('--primary', '24 95% 53%');
-        document.documentElement.style.setProperty('--secondary', '330 86% 62%');
-        break;
-      case 'ocean':
-        primaryColor = '#0EA5E9'; // sky-500
-        secondaryColor = '#10B981'; // green-500
-        document.documentElement.style.setProperty('--primary', '199 89% 48%');
-        document.documentElement.style.setProperty('--secondary', '158 64% 40%');
-        break;
       default: // teal-purple
         primaryColor = '#4FD1C5'; // health-primary
         secondaryColor = '#9b87f5'; // health-secondary
@@ -144,38 +118,23 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         bg.setAttribute('style', `
           background-image: radial-gradient(circle at top right, ${primaryColor}33, transparent 70%),
           radial-gradient(circle at bottom left, ${secondaryColor}33, transparent 70%),
-          linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(245, 245, 255, 0.98));
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.92), rgba(245, 245, 255, 0.96));
         `);
       } else {
         bg.setAttribute('style', `
           background-image: radial-gradient(circle at top right, ${primaryColor}33, transparent 70%),
           radial-gradient(circle at bottom left, ${secondaryColor}33, transparent 70%),
-          linear-gradient(to bottom, rgba(15, 15, 25, 0.97), rgba(10, 10, 20, 0.98));
+          linear-gradient(to bottom, rgba(15, 15, 25, 0.95), rgba(10, 10, 20, 0.98));
         `);
       }
     }
     
-    // Update particle colors with enhanced visuals
+    // Update particle colors
     document.documentElement.style.setProperty('--particle-primary', primaryColor);
     document.documentElement.style.setProperty('--particle-secondary', secondaryColor);
-    
-    // Update all existing particles to match new theme
-    document.querySelectorAll('.bg-particle').forEach((particle: Element) => {
-      (particle as HTMLElement).style.background = `linear-gradient(135deg, ${primaryColor}AA, ${secondaryColor}AA)`;
-    });
-    
-    document.querySelectorAll('.firefly').forEach((firefly: Element) => {
-      if (theme === 'dark') {
-        (firefly as HTMLElement).style.backgroundColor = primaryColor;
-        (firefly as HTMLElement).style.boxShadow = `0 0 15px 2px ${primaryColor}CC`;
-      } else {
-        (firefly as HTMLElement).style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-        (firefly as HTMLElement).style.boxShadow = '0 0 15px 2px rgba(255, 255, 255, 0.8)';
-      }
-    });
   }, [colorTheme, theme]);
 
-  // Apply reduced motion preference with enhanced logic
+  // Apply reduced motion preference
   useEffect(() => {
     localStorage.setItem('vitality-reduced-motion', String(isReducedMotion));
     
@@ -183,57 +142,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       document.documentElement.classList.add('reduced-motion');
       
       // Remove any existing particles and animations
-      document.querySelectorAll('.bg-particle, .firefly, .interactive-orb, .bg-orb, .animated-orb').forEach(el => {
+      document.querySelectorAll('.bg-particle, .firefly, .interactive-orb, .bg-orb').forEach(el => {
         el.remove();
-      });
-      
-      // Disable animations
-      document.querySelectorAll('.animate-float, .animate-float-slow, .animate-float-slower, .animate-pulse, .animate-pulse-soft').forEach(el => {
-        el.classList.remove('animate-float', 'animate-float-slow', 'animate-float-slower', 'animate-pulse', 'animate-pulse-soft');
       });
     } else {
       document.documentElement.classList.remove('reduced-motion');
     }
   }, [isReducedMotion]);
 
-  // Apply glass effect styles with enhanced settings
+  // Apply glass effect styles
   useEffect(() => {
     localStorage.setItem('vitality-glass-effect', glassEffect);
     document.documentElement.setAttribute('data-glass', glassEffect);
-    
-    // Adjust backdrop filter blur based on glass effect
-    let blurAmount = '12px';
-    
-    switch (glassEffect) {
-      case 'frosted':
-        blurAmount = '16px';
-        break;
-      case 'neo':
-        blurAmount = '10px';
-        break;
-      case 'ultra':
-        blurAmount = '20px';
-        break;
-      case 'iridescent':
-        blurAmount = '16px';
-        break;
-      default:
-        blurAmount = '12px';
-    }
-    
-    // Update backdrop blur for all glass elements if blur is enabled
-    if (enableBlur) {
-      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass').forEach((el: Element) => {
-        (el as HTMLElement).style.backdropFilter = `blur(${blurAmount})`;
-      });
-    } else {
-      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass').forEach((el: Element) => {
-        (el as HTMLElement).style.backdropFilter = 'none';
-      });
-    }
-  }, [glassEffect, enableBlur]);
+  }, [glassEffect]);
 
-  // Apply animation level with enhanced settings
+  // Apply animation level
   useEffect(() => {
     localStorage.setItem('vitality-animation-level', animationLevel);
     document.documentElement.setAttribute('data-animation', animationLevel);
@@ -243,66 +166,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     
     // Add the appropriate animation level class
     document.documentElement.classList.add(`animation-${animationLevel}`);
-    
-    // Adjust animation intensities based on level
-    if (animationLevel === 'minimal') {
-      // Reduce or disable most animations
-      document.querySelectorAll('.animate-float, .animate-float-slow, .animate-float-slower').forEach(el => {
-        el.classList.remove('animate-float', 'animate-float-slow', 'animate-float-slower');
-      });
-    } else if (animationLevel === 'full' && !isReducedMotion) {
-      // Enhance animations for full experience
-      document.querySelectorAll('.card-3d-effect').forEach(el => {
-        el.classList.add('tilt-card');
-      });
-    }
-  }, [animationLevel, isReducedMotion]);
+  }, [animationLevel]);
 
-  // Manage particles with enhanced settings
+  // Manage particles
   useEffect(() => {
     localStorage.setItem('vitality-particles', String(enableParticles));
+    
     // Particles are managed in the Layout component
   }, [enableParticles]);
-  
-  // Manage blur effect
-  useEffect(() => {
-    localStorage.setItem('vitality-enable-blur', String(enableBlur));
-    
-    if (!enableBlur) {
-      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass').forEach((el: Element) => {
-        (el as HTMLElement).style.backdropFilter = 'none';
-      });
-    } else {
-      // Re-apply the appropriate blur based on glass effect
-      let blurAmount = '12px';
-      
-      switch (glassEffect) {
-        case 'frosted':
-          blurAmount = '16px';
-          break;
-        case 'neo':
-          blurAmount = '10px';
-          break;
-        case 'ultra':
-          blurAmount = '20px';
-          break;
-        case 'iridescent':
-          blurAmount = '16px';
-          break;
-        default:
-          blurAmount = '12px';
-      }
-      
-      document.querySelectorAll('.glass-card, .frosted-glass, .neo-glass, .ultra-glass, .iridescent-glass').forEach((el: Element) => {
-        (el as HTMLElement).style.backdropFilter = `blur(${blurAmount})`;
-      });
-    }
-  }, [enableBlur, glassEffect]);
-  
-  // Manage card style
-  useEffect(() => {
-    localStorage.setItem('vitality-card-style', cardStyle);
-  }, [cardStyle]);
 
   const toggleTheme = () => {
     setTheme(theme === 'light' ? 'dark' : 'light');
@@ -325,11 +196,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         animationLevel,
         setAnimationLevel,
         enableParticles,
-        setEnableParticles,
-        enableBlur,
-        setEnableBlur,
-        cardStyle,
-        setCardStyle
+        setEnableParticles
       }}
     >
       {children}

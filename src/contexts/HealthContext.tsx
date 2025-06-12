@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import type { 
   UserProfile,
@@ -11,7 +10,9 @@ import type {
   AddictionRecord,
   Achievement,
   Notification,
-  HealthContextType
+  HealthContextType,
+  WaterIntake,
+  BodyMeasurement
 } from '@/types/health';
 
 // Default goals and data
@@ -67,8 +68,8 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
   const [addictionRecords, setAddictionRecords] = useState<AddictionRecord[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [waterIntakes, setWaterIntakes] = useState<any[]>([]);
-  const [bodyMeasurements, setBodyMeasurements] = useState<any[]>([]);
+  const [waterIntakes, setWaterIntakes] = useState<WaterIntake[]>([]);
+  const [bodyMeasurements, setBodyMeasurements] = useState<BodyMeasurement[]>([]);
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -314,23 +315,14 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
     setAddictionRecords(prev => prev.filter(record => record.id !== id));
   };
 
-  const getUserAddictionGoals = () => {
-    const goals: { [key: string]: any } = {};
-    const types = [...new Set(addictionRecords.map(r => r.type))];
+  const getUserAddictionGoals = (): AddictionRecord[] => {
+    const uniqueTypes = [...new Set(addictionRecords.map(r => r.type))];
     
-    types.forEach(type => {
+    return uniqueTypes.map(type => {
       const typeRecords = addictionRecords.filter(r => r.type === type);
       const latestRecord = typeRecords[typeRecords.length - 1];
-      if (latestRecord?.goal) {
-        goals[type] = {
-          daily: latestRecord.goal,
-          target: latestRecord.goal,
-          timeframe: 30
-        };
-      }
-    });
-    
-    return goals;
+      return latestRecord;
+    }).filter(record => record && record.goal);
   };
 
   const updateAddictionGoal = (type: string, goal: number, unit: string) => {
@@ -414,6 +406,8 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
   const value: HealthContextType = {
     userProfile,
     updateUserProfile,
+    dailyGoals,
+    todayData,
     foodItems,
     addFoodItem,
     deleteFoodItem,

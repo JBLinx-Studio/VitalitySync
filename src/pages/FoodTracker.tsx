@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,16 +15,71 @@ import {
   Zap,
   Star,
   Calendar,
-  BarChart3
+  BarChart3,
+  ChefHat,
+  BookOpen
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import GlassCard from '@/components/ui/glass-card';
 import { useHealth } from '@/contexts/HealthContext';
+import { Food, searchFoods } from '@/services/foodService';
+import FoodSearchResults from '@/components/FoodDiary/FoodSearchResults';
+import FoodEntryForm from '@/components/FoodDiary/FoodEntryForm';
+import BarcodeScanner from '@/components/BarcodeScanner';
 
 const FoodTracker: React.FC = () => {
-  const { dailyGoals, todayData } = useHealth();
+  const { dailyGoals, todayData, addFoodItem } = useHealth();
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Food[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [selectedFood, setSelectedFood] = useState<Food | null>(null);
+  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [selectedMeal, setSelectedMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snacks'>('breakfast');
+
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return;
+    
+    setIsSearching(true);
+    try {
+      const results = await searchFoods(searchQuery);
+      setSearchResults(results);
+    } catch (error) {
+      console.error('Search failed:', error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleSelectFood = (food: Food) => {
+    setSelectedFood(food);
+  };
+
+  const handleAddFood = (foodData: any) => {
+    addFoodItem({
+      ...foodData,
+      id: Date.now().toString(),
+      date: new Date().toISOString().split('T')[0],
+      quantity: 1
+    });
+    setSelectedFood(null);
+    setSearchResults([]);
+    setSearchQuery('');
+  };
+
+  const handleBarcodeResult = (product: any) => {
+    // Convert barcode result to food format and add
+    handleAddFood({
+      name: product.name,
+      servingSize: product.servingSize,
+      calories: product.calories,
+      protein: product.nutrition.protein,
+      carbs: product.nutrition.carbs,
+      fat: product.nutrition.fat,
+      meal: selectedMeal
+    });
+    setShowBarcodeScanner(false);
+  };
 
   const macroData = [
     { 
@@ -81,7 +135,12 @@ const FoodTracker: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="glass" size="lg" className="gap-2">
+          <Button 
+            variant="glass" 
+            size="lg" 
+            className="gap-2"
+            onClick={() => setShowBarcodeScanner(true)}
+          >
             <Camera className="w-5 h-5" />
             Scan Barcode
           </Button>
@@ -164,10 +223,11 @@ const FoodTracker: React.FC = () => {
       </GlassCard>
 
       <Tabs defaultValue="log" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 mb-6">
+        <TabsList className="grid w-full grid-cols-5 mb-6">
           <TabsTrigger value="log">Log Food</TabsTrigger>
+          <TabsTrigger value="search">Search Foods</TabsTrigger>
+          <TabsTrigger value="recipes">Recipes</TabsTrigger>
           <TabsTrigger value="meals">Meals</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
           <TabsTrigger value="insights">Insights</TabsTrigger>
         </TabsList>
 
@@ -229,6 +289,77 @@ const FoodTracker: React.FC = () => {
           </GlassCard>
         </TabsContent>
 
+        <TabsContent value="search" className="space-y-6">
+          <GlassCard variant="premium" className="p-6">
+            <div className="flex gap-4 mb-6">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Input
+                  placeholder="Search USDA food database (e.g., 'chicken breast', 'apple')..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  className="pl-10 h-12"
+                />
+              </div>
+              <Button 
+                onClick={handleSearch}
+                disabled={isSearching || !searchQuery.trim()}
+                className="gap-2 px-8"
+              >
+                <Search className="w-5 h-5" />
+                {isSearching ? 'Searching...' : 'Search'}
+              </Button>
+            </div>
+
+            {selectedFood ? (
+              <FoodEntryForm
+                food={selectedFood}
+                onAddFood={handleAddFood}
+                onCancel={() => setSelectedFood(null)}
+              />
+            ) : (
+              <FoodSearchResults
+                results={searchResults}
+                isSearching={isSearching}
+                onSelectFood={handleSelectFood}
+              />
+            )}
+          </GlassCard>
+        </TabsContent>
+
+        <TabsContent value="recipes" className="space-y-6">
+          <GlassCard variant="premium" className="p-6">
+            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <ChefHat className="w-5 h-5 text-green-500" />
+              Recipe & Diet Search
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <h4 className="font-medium">Find Recipes</h4>
+                <Input placeholder="Search for healthy recipes..." />
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm">Keto</Button>
+                  <Button variant="outline" size="sm">Vegan</Button>
+                  <Button variant="outline" size="sm">Low-carb</Button>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <h4 className="font-medium">Diet Plans</h4>
+                <Input placeholder="Search diet plans..." />
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm">Mediterranean</Button>
+                  <Button variant="outline" size="sm">Paleo</Button>
+                  <Button variant="outline" size="sm">DASH</Button>
+                </div>
+              </div>
+            </div>
+            <p className="text-sm text-gray-500 mt-4">
+              🔧 Recipe search integration coming soon with Spoonacular API
+            </p>
+          </GlassCard>
+        </TabsContent>
+
         <TabsContent value="meals" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {meals.map((meal) => (
@@ -247,20 +378,36 @@ const FoodTracker: React.FC = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="history">
-          <GlassCard variant="premium" className="p-6">
-            <h3 className="text-xl font-semibold mb-4">Food History</h3>
-            <p className="text-gray-600 dark:text-gray-400">Detailed food history tracking coming soon...</p>
-          </GlassCard>
-        </TabsContent>
-
         <TabsContent value="insights">
           <GlassCard variant="premium" className="p-6">
-            <h3 className="text-xl font-semibold mb-4">Nutrition Insights</h3>
-            <p className="text-gray-600 dark:text-gray-400">AI-powered nutrition insights coming soon...</p>
+            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-purple-500" />
+              Nutrition Insights
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl">
+                <h4 className="font-medium mb-2">Nutrient Analysis</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Track micronutrients, vitamins, and minerals in your diet
+                </p>
+              </div>
+              <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl">
+                <h4 className="font-medium mb-2">Meal Suggestions</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  AI-powered meal recommendations based on your goals
+                </p>
+              </div>
+            </div>
           </GlassCard>
         </TabsContent>
       </Tabs>
+
+      {/* Barcode Scanner Modal */}
+      <BarcodeScanner
+        isOpen={showBarcodeScanner}
+        onClose={() => setShowBarcodeScanner(false)}
+        onScanResult={handleBarcodeResult}
+      />
     </div>
   );
 };

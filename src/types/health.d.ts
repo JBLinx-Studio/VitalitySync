@@ -13,6 +13,8 @@ export interface UserProfile {
     calorieGoal?: number;
     exerciseGoal?: number;
     sleepGoal?: number;
+    targetDate?: string;
+    primaryGoal?: 'lose_weight' | 'gain_weight' | 'maintain_weight' | 'build_muscle' | 'improve_fitness';
   };
   preferences?: {
     units?: 'metric' | 'imperial';
@@ -20,6 +22,29 @@ export interface UserProfile {
   };
   avatar?: string;
   joinDate?: string;
+}
+
+export interface DailyGoals {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  water: number;
+  steps: number;
+  exercise: number;
+  sleep: number;
+}
+
+export interface TodayData {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  water: number;
+  steps: number;
+  exercise: number;
+  sleep: number;
+  lastUpdated: string;
 }
 
 export interface FoodItem {
@@ -56,7 +81,7 @@ export interface SleepRecord {
   id: string;
   date: string;
   bedtime: string;
-  wakeup_time: string;
+  wakeTime: string;
   duration: number; // in hours
   quality: 'poor' | 'fair' | 'good' | 'excellent';
   notes?: string;
@@ -121,6 +146,10 @@ export interface HealthContextType {
   // User Profile
   userProfile: UserProfile | null;
   updateUserProfile: (profile: Partial<UserProfile>) => void;
+  
+  // Daily tracking
+  dailyGoals: DailyGoals;
+  todayData: TodayData;
   
   // Food & Nutrition
   foodItems: FoodItem[];

@@ -11,20 +11,24 @@ import {
   Ruler, 
   Menu, 
   X,
+  Settings as SettingsIcon,
+  Sun,
   Award
 } from 'lucide-react';
 import { useHealth } from '@/contexts/HealthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 import NotificationsMenu from '../Notifications/NotificationsMenu';
 import { UltraCard } from '../ui/card';
 import UserAvatar from '../ui/user-avatar';
-import OptionsMenu from '../ui/options-menu';
 
 const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { userProfile } = useHealth();
+  const { userProfile, getUnreadNotificationsCount } = useHealth();
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const [animatedElements, setAnimatedElements] = useState<HTMLElement[]>([]);
 
   const handleScroll = useCallback(() => {
     if (window.scrollY > 10) {
@@ -64,7 +68,7 @@ const Header: React.FC = () => {
     <header 
       className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled 
-          ? 'py-2 bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg shadow-lg' 
+          ? 'py-2 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-md' 
           : 'py-4 bg-transparent'
       }`}
     >
@@ -75,7 +79,7 @@ const Header: React.FC = () => {
             to="/" 
             className="flex items-center space-x-2"
           >
-            <UltraCard className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-health-primary to-health-secondary shadow-glow">
+            <UltraCard className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-health-primary to-health-secondary">
               <span className="text-white font-bold text-xl">V</span>
             </UltraCard>
             <span className="text-xl font-display font-bold bg-gradient-to-r from-health-primary to-health-secondary bg-clip-text text-transparent">
@@ -84,12 +88,12 @@ const Header: React.FC = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center space-x-1 px-3 py-2 rounded-full transition-all duration-200 hover:bg-health-primary/10 ${isActive(item.path)}`}
+                className={`flex items-center space-x-1 transition-colors duration-200 ${isActive(item.path)}`}
               >
                 {item.icon}
                 <span>{item.label}</span>
@@ -99,24 +103,42 @@ const Header: React.FC = () => {
 
           {/* Right side - Actions */}
           <div className="flex items-center space-x-3">
-            {/* Options Menu (includes Theme Toggle) */}
-            <OptionsMenu userLoggedIn={!!userProfile} />
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-5 h-5" />
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
+            </button>
 
             {/* Notifications */}
             <div className="hidden sm:block">
               <NotificationsMenu />
             </div>
 
-            {/* Profile */}
+            {/* Settings & Profile */}
             {userProfile ? (
-              <Link to="/profile" className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-health-primary to-health-secondary rounded-full opacity-25 group-hover:opacity-50 blur transition duration-300"></div>
-                <UserAvatar userProfile={userProfile} />
-              </Link>
+              <div className="flex items-center space-x-3">
+                <Link 
+                  to="/settings"
+                  className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <SettingsIcon className="w-5 h-5" />
+                </Link>
+                <Link to="/profile">
+                  <UserAvatar userProfile={userProfile} />
+                </Link>
+              </div>
             ) : (
               <Link to="/profile">
                 <Button 
-                  className="bg-gradient-to-r from-health-primary to-health-secondary hover:shadow-glow transition-all text-white"
+                  size="sm"
+                  className="bg-gradient-to-r from-health-primary to-health-secondary hover:shadow-md transition-shadow text-white"
                 >
                   Get Started
                 </Button>
@@ -124,10 +146,8 @@ const Header: React.FC = () => {
             )}
 
             {/* Mobile Menu Button */}
-            <Button 
-              variant="outline"
-              size="icon"
-              className="md:hidden border-health-primary/20 hover:border-health-primary/40 hover:bg-health-primary/10"
+            <button 
+              className="p-2 rounded-lg md:hidden bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? (
@@ -135,7 +155,7 @@ const Header: React.FC = () => {
               ) : (
                 <Menu className="w-6 h-6" />
               )}
-            </Button>
+            </button>
           </div>
         </div>
       </div>
@@ -147,21 +167,21 @@ const Header: React.FC = () => {
         } transition-transform duration-300 md:hidden`}
       >
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)}></div>
-        <div className="absolute right-0 top-0 bottom-0 w-3/4 max-w-sm bg-gradient-to-br from-white/95 to-gray-100/95 dark:from-gray-900/95 dark:to-gray-950/95 backdrop-blur-lg shadow-xl flex flex-col">
+        <div className="absolute right-0 top-0 bottom-0 w-3/4 max-w-sm bg-white dark:bg-gray-900 shadow-xl flex flex-col">
           <div className="p-5 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
             <span className="text-lg font-medium">Menu</span>
             <button onClick={() => setMobileMenuOpen(false)}>
               <X className="w-6 h-6 text-gray-500" />
             </button>
           </div>
-          <nav className="flex-1 overflow-y-auto p-5 space-y-2">
+          <nav className="flex-1 overflow-y-auto p-5 space-y-6">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center space-x-3 p-3 rounded-xl ${
+                className={`flex items-center space-x-3 p-3 rounded-lg ${
                   location.pathname === item.path 
-                    ? 'bg-gradient-to-r from-health-primary/20 to-health-secondary/20 text-health-primary font-medium' 
+                    ? 'bg-health-primary/10 text-health-primary' 
                     : 'hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
@@ -173,7 +193,7 @@ const Header: React.FC = () => {
             <div className="border-t border-gray-200 dark:border-gray-800 pt-5 mt-5">
               <Link
                 to="/profile"
-                className="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <User className="w-5 h-5" />
@@ -181,10 +201,10 @@ const Header: React.FC = () => {
               </Link>
               <Link
                 to="/settings"
-                className="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <User className="w-5 h-5" />
+                <SettingsIcon className="w-5 h-5" />
                 <span>Settings</span>
               </Link>
             </div>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { 
@@ -17,11 +18,9 @@ import {
   Monitor,
   MousePointer,
   Eye,
-  Sparkles,
-  Layers,
-  Star
+  Sparkles
 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, GlassCard, FrostedCard, NeoCard } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -39,40 +38,8 @@ const Settings = () => {
     colorTheme,
     setColorTheme,
     isReducedMotion,
-    setIsReducedMotion,
-    glassEffect,
-    setGlassEffect,
-    animationLevel,
-    setAnimationLevel,
-    enableParticles,
-    setEnableParticles
+    setIsReducedMotion
   } = useTheme();
-
-  // Function to render the appropriate card based on the selected glass effect
-  const renderGlassEffectPreview = (effectName: string) => {
-    switch (effectName) {
-      case 'standard':
-        return (
-          <GlassCard className="p-4 h-20 flex items-center justify-center">
-            <span className="text-sm font-medium">Standard Glass</span>
-          </GlassCard>
-        );
-      case 'frosted':
-        return (
-          <FrostedCard className="p-4 h-20 flex items-center justify-center">
-            <span className="text-sm font-medium">Frosted Glass</span>
-          </FrostedCard>
-        );
-      case 'neo':
-        return (
-          <NeoCard className="p-4 h-20 flex items-center justify-center">
-            <span className="text-sm font-medium">Neo Glass</span>
-          </NeoCard>
-        );
-      default:
-        return null;
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -88,10 +55,6 @@ const Settings = () => {
           <TabsTrigger value="appearance" className="btn-shine">
             <Palette className="h-4 w-4 mr-2" />
             <span className="hidden sm:inline">Appearance</span>
-          </TabsTrigger>
-          <TabsTrigger value="effects" className="btn-shine">
-            <Sparkles className="h-4 w-4 mr-2" />
-            <span className="hidden sm:inline">Effects</span>
           </TabsTrigger>
           <TabsTrigger value="units" className="btn-shine">
             <Scale className="h-4 w-4 mr-2" />
@@ -109,10 +72,14 @@ const Settings = () => {
             <Monitor className="h-4 w-4 mr-2" />
             <span className="hidden sm:inline">Advanced</span>
           </TabsTrigger>
+          <TabsTrigger value="help" className="hidden md:inline-flex btn-shine">
+            <CircleHelp className="h-4 w-4 mr-2" />
+            <span className="hidden sm:inline">Help</span>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="appearance" className="space-y-6">
-          <GlassCard className="interactive-card glow-border">
+          <Card className="glass-effect interactive-card">
             <CardHeader>
               <CardTitle>Theme</CardTitle>
               <CardDescription>
@@ -146,38 +113,38 @@ const Settings = () => {
                 <h3 className="text-sm font-medium mb-3">Color Theme</h3>
                 <div className="grid grid-cols-3 gap-3">
                   <div 
-                    className={`p-3 rounded-lg cursor-pointer transition-all glass-effect ${
+                    className={`p-3 rounded-lg cursor-pointer transition-all hover-lift ${
                       colorTheme === 'teal-purple' 
                         ? 'ring-2 ring-health-primary ring-offset-2 dark:ring-offset-gray-900' 
                         : 'border border-gray-200 dark:border-gray-700'
-                    } ${!isReducedMotion ? 'hover-lift' : ''}`}
+                    }`}
                     onClick={() => setColorTheme('teal-purple')}
                   >
-                    <div className="bg-gradient-to-r from-health-primary to-health-secondary h-14 rounded-md mb-2 shimmer-effect"></div>
+                    <div className="bg-gradient-to-r from-health-primary to-health-secondary h-14 rounded-md mb-2"></div>
                     <span className="text-xs font-medium">Teal/Purple</span>
                   </div>
                   
                   <div 
-                    className={`p-3 rounded-lg cursor-pointer transition-all glass-effect ${
+                    className={`p-3 rounded-lg cursor-pointer transition-all hover-lift ${
                       colorTheme === 'blue-pink' 
                         ? 'ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-900' 
                         : 'border border-gray-200 dark:border-gray-700'
-                    } ${!isReducedMotion ? 'hover-lift' : ''}`}
+                    }`}
                     onClick={() => setColorTheme('blue-pink')}
                   >
-                    <div className="bg-gradient-to-r from-blue-500 to-pink-500 h-14 rounded-md mb-2 shimmer-effect"></div>
+                    <div className="bg-gradient-to-r from-blue-500 to-pink-500 h-14 rounded-md mb-2"></div>
                     <span className="text-xs font-medium">Blue/Pink</span>
                   </div>
                   
                   <div 
-                    className={`p-3 rounded-lg cursor-pointer transition-all glass-effect ${
+                    className={`p-3 rounded-lg cursor-pointer transition-all hover-lift ${
                       colorTheme === 'green-yellow' 
                         ? 'ring-2 ring-green-500 ring-offset-2 dark:ring-offset-gray-900' 
                         : 'border border-gray-200 dark:border-gray-700'
-                    } ${!isReducedMotion ? 'hover-lift' : ''}`}
+                    }`}
                     onClick={() => setColorTheme('green-yellow')}
                   >
-                    <div className="bg-gradient-to-r from-green-500 to-yellow-500 h-14 rounded-md mb-2 shimmer-effect"></div>
+                    <div className="bg-gradient-to-r from-green-500 to-yellow-500 h-14 rounded-md mb-2"></div>
                     <span className="text-xs font-medium">Green/Yellow</span>
                   </div>
                 </div>
@@ -201,9 +168,9 @@ const Settings = () => {
                 />
               </div>
             </CardContent>
-          </GlassCard>
+          </Card>
 
-          <GlassCard className="interactive-card">
+          <Card className="glass-effect interactive-card">
             <CardHeader>
               <CardTitle>Display</CardTitle>
               <CardDescription>
@@ -269,131 +236,11 @@ const Settings = () => {
                 </select>
               </div>
             </CardContent>
-          </GlassCard>
+          </Card>
         </TabsContent>
 
-        <TabsContent value="effects" className="space-y-6">
-          <GlassCard className="interactive-card">
-            <CardHeader>
-              <CardTitle>Visual Effects</CardTitle>
-              <CardDescription>
-                Customize the app's visual appearance
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <h3 className="text-sm font-medium mb-3">Glass Effect Style</h3>
-                <div className="grid grid-cols-3 gap-3">
-                  <div 
-                    className={`cursor-pointer transition-all ${
-                      glassEffect === 'standard' 
-                        ? 'ring-2 ring-health-primary ring-offset-2 dark:ring-offset-gray-900 rounded-lg' 
-                        : ''
-                    }`}
-                    onClick={() => setGlassEffect('standard')}
-                  >
-                    {renderGlassEffectPreview('standard')}
-                  </div>
-                  <div 
-                    className={`cursor-pointer transition-all ${
-                      glassEffect === 'frosted' 
-                        ? 'ring-2 ring-health-primary ring-offset-2 dark:ring-offset-gray-900 rounded-lg' 
-                        : ''
-                    }`}
-                    onClick={() => setGlassEffect('frosted')}
-                  >
-                    {renderGlassEffectPreview('frosted')}
-                  </div>
-                  <div 
-                    className={`cursor-pointer transition-all ${
-                      glassEffect === 'neo' 
-                        ? 'ring-2 ring-health-primary ring-offset-2 dark:ring-offset-gray-900 rounded-lg' 
-                        : ''
-                    }`}
-                    onClick={() => setGlassEffect('neo')}
-                  >
-                    {renderGlassEffectPreview('neo')}
-                  </div>
-                </div>
-              </div>
-              
-              <Separator />
-              
-              <div>
-                <h3 className="text-sm font-medium mb-3">Animation Level</h3>
-                <RadioGroup 
-                  value={animationLevel} 
-                  onValueChange={(value) => setAnimationLevel(value as 'minimal' | 'moderate' | 'full')}
-                  className="space-y-2"
-                >
-                  <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <RadioGroupItem value="minimal" id="animation-minimal" className="text-health-primary" />
-                    <Label htmlFor="animation-minimal" className="flex items-center gap-2 cursor-pointer">
-                      <div>
-                        <span className="font-medium">Minimal</span>
-                        <p className="text-xs text-muted-foreground">Essential animations only</p>
-                      </div>
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <RadioGroupItem value="moderate" id="animation-moderate" className="text-health-secondary" />
-                    <Label htmlFor="animation-moderate" className="flex items-center gap-2 cursor-pointer">
-                      <div>
-                        <span className="font-medium">Moderate</span>
-                        <p className="text-xs text-muted-foreground">Balanced animations</p>
-                      </div>
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <RadioGroupItem value="full" id="animation-full" className="text-amber-500" />
-                    <Label htmlFor="animation-full" className="flex items-center gap-2 cursor-pointer">
-                      <div>
-                        <span className="font-medium">Full</span>
-                        <p className="text-xs text-muted-foreground">Rich, immersive animations</p>
-                      </div>
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
-              
-              <Separator />
-              
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <Star className="h-5 w-5 text-yellow-500" />
-                  <div className="flex flex-col">
-                    <span className="font-medium">Background Particles</span>
-                    <span className="text-xs text-muted-foreground">
-                      Enable floating particles in the background
-                    </span>
-                  </div>
-                </div>
-                <Switch 
-                  checked={enableParticles} 
-                  onCheckedChange={() => setEnableParticles(!enableParticles)}
-                />
-              </div>
-              
-              <Separator />
-              
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <Layers className="h-5 w-5 text-health-primary" />
-                  <div className="flex flex-col">
-                    <span className="font-medium">Interactive Elements</span>
-                    <span className="text-xs text-muted-foreground">
-                      Elements respond to mouse/touch interactions
-                    </span>
-                  </div>
-                </div>
-                <Switch defaultChecked={true} className="data-[state=checked]:bg-health-primary" />
-              </div>
-            </CardContent>
-          </GlassCard>
-        </TabsContent>
-        
         <TabsContent value="units" className="space-y-6">
-          <GlassCard className="interactive-card">
+          <Card className="glass-effect interactive-card">
             <CardHeader>
               <CardTitle>Measurement Units</CardTitle>
               <CardDescription>
@@ -428,7 +275,7 @@ const Settings = () => {
                 </div>
               </RadioGroup>
             </CardContent>
-          </GlassCard>
+          </Card>
 
           <Card className="glass-effect interactive-card">
             <CardHeader>

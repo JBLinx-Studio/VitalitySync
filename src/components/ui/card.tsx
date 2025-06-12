@@ -1,4 +1,3 @@
-
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
@@ -77,61 +76,4 @@ const CardFooter = React.forwardRef<
 ))
 CardFooter.displayName = "CardFooter"
 
-// Enhanced glass card variants
-const GlassCard = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg glass-card shadow-soft transition-all duration-300 hover:shadow-md",
-      className
-    )}
-    {...props}
-  />
-))
-GlassCard.displayName = "GlassCard"
-
-const FrostedCard = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg frosted-glass shadow-soft transition-all duration-300 hover:shadow-md",
-      className
-    )}
-    {...props}
-  />
-))
-FrostedCard.displayName = "FrostedCard"
-
-const NeoCard = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg neo-glass shadow-soft transition-all duration-300 hover:shadow-md",
-      className
-    )}
-    {...props}
-  />
-))
-NeoCard.displayName = "NeoCard"
-
-export { 
-  Card, 
-  CardHeader, 
-  CardFooter, 
-  CardTitle, 
-  CardDescription, 
-  CardContent,
-  GlassCard,
-  FrostedCard,
-  NeoCard
-}
-
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }

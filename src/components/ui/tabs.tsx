@@ -64,9 +64,11 @@ const TabsContent = React.forwardRef<
     )}
     {...props}
   >
-    <div className="bg-black/20 backdrop-blur-xl rounded-3xl border border-white/20 p-8 shadow-2xl relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-transparent rounded-full blur-3xl"></div>
-      <div className="relative z-10">
+    {/* Single gradient background with glossy overlay */}
+    <div className="relative bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 dark:from-slate-800 dark:via-purple-800 dark:to-slate-800 rounded-3xl overflow-hidden">
+      <div className="absolute inset-0 bg-white/10 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-3xl"></div>
+      
+      <div className="relative p-8">
         {props.children}
       </div>
     </div>

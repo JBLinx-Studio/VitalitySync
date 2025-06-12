@@ -5,19 +5,14 @@
   <meta charset="utf-8">
   <title>Health & Fitness Tracker</title>
   <script type="text/javascript">
-    // Single Page Apps for GitHub Pages
-    // MIT License
-    // https://github.com/rafgraph/spa-github-pages
-    var pathSegmentsToKeep = 1;
-
+    // Redirect to the main page with the current path as a hash
+    var segmentCount = 1;
+    var repoName = "Health-and-Fitness-Webapp";
     var l = window.location;
-    l.replace(
-      l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-      l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
-      l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
-      (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-      l.hash
-    );
+    var redirectPath = l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + 
+      '/' + repoName + '/#' + l.pathname.slice(segmentCount + repoName.length + 1);
+    
+    window.location.href = redirectPath;
   </script>
 </head>
 <body>

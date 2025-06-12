@@ -24,6 +24,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const appRef = useRef<HTMLDivElement>(null);
   const mainContentRef = useRef<HTMLDivElement>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
 
   // Determine if we're on the home page, considering GitHub Pages base path
   const isHomePage = location.pathname === "/" || 
@@ -49,6 +51,21 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   }, [location.pathname, isReducedMotion]);
 
+  // Update viewport dimensions on resize
+  useEffect(() => {
+    const handleResize = () => {
+      setViewportHeight(window.innerHeight);
+      setViewportWidth(window.innerWidth);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initialize on mount
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   // Choose background effect based on route
   const getBackgroundEffect = (): VisualEffectType => {
     const pathWithoutBase = location.pathname.replace('/Health-and-Fitness-Webapp', '');
@@ -62,7 +79,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
     
     if (pathWithoutBase.includes('/food')) {
-      return 'gradient';
+      return 'aurora';
     }
     
     if (pathWithoutBase.includes('/sleep')) {
@@ -70,7 +87,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
     
     if (pathWithoutBase.includes('/mental')) {
-      return 'atmosphere';
+      return 'cosmic';
     }
     
     return 'particles';
@@ -84,7 +101,14 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       return `${baseClasses}`;
     }
     
-    return `${baseClasses} py-8 mb-6`;
+    // Adjust padding for different screen sizes
+    if (viewportWidth < 640) { // Mobile
+      return `${baseClasses} py-4 mb-4`;
+    } else if (viewportWidth < 1024) { // Tablet
+      return `${baseClasses} py-6 mb-6`;
+    } else { // Desktop
+      return `${baseClasses} py-8 mb-6`;
+    }
   };
 
   // Get the appropriate card class based on the glass effect
@@ -102,6 +126,17 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         return "cosmic-glass";
       default:
         return "glass-card";
+    }
+  };
+
+  // Adjust padding based on viewport size
+  const getCardPadding = () => {
+    if (viewportWidth < 640) { // Mobile
+      return "p-3 md:p-4";
+    } else if (viewportWidth < 1024) { // Tablet
+      return "p-4 md:p-5";
+    } else { // Desktop
+      return "p-4 md:p-6 lg:p-8";
     }
   };
 
@@ -146,7 +181,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       >
         {/* Conditional wrapper for non-home pages */}
         {!isHomePage ? (
-          <UltraCard className={`p-4 md:p-6 lg:p-8 shadow-cosmic relative overflow-hidden ${getCardClass()} border-cosmic-nebula/20`}>
+          <UltraCard className={`${getCardPadding()} shadow-cosmic relative overflow-hidden ${getCardClass()} border-cosmic-nebula/20`}>
             <div className="absolute inset-0 premium-nebula opacity-10"></div>
             <div className="absolute top-0 right-0 w-40 h-40 bg-cosmic-highlight/10 rounded-full blur-xl animate-pulse-soft"></div>
             <div className="absolute bottom-0 left-0 w-60 h-60 bg-cosmic-nebula/10 rounded-full blur-xl animate-pulse-soft"></div>

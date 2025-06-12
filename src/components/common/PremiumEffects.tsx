@@ -1,13 +1,31 @@
 
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { VisualEffectProps } from '@/types';
 
-// This wrapper component imports from the UI component
-const PremiumEffects: React.FC<VisualEffectProps> = (props) => {
-  // Import the actual component dynamically to avoid circular dependencies
-  const PremiumEffectsUI = require('@/components/ui/PremiumEffects').default;
+// Use lazy loading for better performance
+const VisualEffectsUI = lazy(() => import('@/components/ui/VisualEffects'));
+
+const PremiumEffects: React.FC<VisualEffectProps> = ({ 
+  type = 'cosmic',
+  density = 'medium',
+  speed = 'medium',
+  interactive = true,
+  color,
+  className
+}) => {
+  // Ensure we're only passing allowed types to VisualEffectsUI
+  const safeType = type === 'matrix' ? 'cosmic' : type;
   
-  return <PremiumEffectsUI {...props} />;
+  return (
+    <Suspense fallback={<div className="w-full h-full"></div>}>
+      <VisualEffectsUI 
+        type={safeType} 
+        density={density} 
+        speed={speed} 
+        interactive={interactive} 
+      />
+    </Suspense>
+  );
 };
 
 export default PremiumEffects;

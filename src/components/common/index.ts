@@ -4,5 +4,5 @@ export { default as UserAvatar } from './UserAvatar';
 export { default as OptionsMenu } from './OptionsMenu';
 export { default as PremiumEffects } from './PremiumEffects';
 
-// Add type exports for better type safety
-export type { UserAvatarProps } from './UserAvatar';
+// Export types if needed in the future - currently not exported from UserAvatar
+// export type { UserAvatarProps } from './UserAvatar';

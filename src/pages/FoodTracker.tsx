@@ -1,445 +1,266 @@
 
-import React, { useState, useEffect } from 'react';
-import { useHealth } from '@/contexts/HealthContext';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { searchFoods, Food, extractNutrients } from '@/services/foodService';
-import { Utensils, Search, Plus, Minus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { 
+  Camera, 
+  Search, 
+  Plus, 
+  Utensils, 
+  Clock,
+  TrendingUp,
+  Zap,
+  Star,
+  Calendar,
+  BarChart3
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import GlassCard from '@/components/ui/glass-card';
+import { useHealth } from '@/contexts/HealthContext';
 
 const FoodTracker: React.FC = () => {
+  const { dailyGoals, todayData } = useHealth();
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<Food[]>([]);
-  const [selectedFood, setSelectedFood] = useState<Food | null>(null);
-  const [selectedMeal, setSelectedMeal] = useState('breakfast');
-  const [servingSize, setServingSize] = useState('1');
-  const [isSearching, setIsSearching] = useState(false);
-  
-  const { 
-    addFoodItem, 
-    getTodaysFoodItems, 
-    getNutritionSummary,
-    dailyGoals,
-    updateWaterIntake,
-    getTodaysWaterIntake
-  } = useHealth();
-  
-  const [waterAmount, setWaterAmount] = useState(250);
-  const waterIntake = getTodaysWaterIntake();
-  const todaysFoodItems = getTodaysFoodItems();
-  const nutritionSummary = getNutritionSummary();
+  const [selectedMeal, setSelectedMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snacks'>('breakfast');
 
-  const handleSearch = async () => {
-    if (searchQuery.trim() === '') return;
-    
-    setIsSearching(true);
-    try {
-      const results = await searchFoods(searchQuery);
-      setSearchResults(results);
-    } catch (error) {
-      console.error('Error searching foods:', error);
-    } finally {
-      setIsSearching(false);
+  const macroData = [
+    { 
+      name: 'Protein', 
+      current: todayData?.protein || 0, 
+      goal: dailyGoals.protein, 
+      color: 'from-blue-500 to-cyan-500',
+      unit: 'g'
+    },
+    { 
+      name: 'Carbs', 
+      current: todayData?.carbs || 0, 
+      goal: dailyGoals.carbs, 
+      color: 'from-green-500 to-emerald-500',
+      unit: 'g'
+    },
+    { 
+      name: 'Fat', 
+      current: todayData?.fat || 0, 
+      goal: dailyGoals.fat, 
+      color: 'from-purple-500 to-pink-500',
+      unit: 'g'
     }
-  };
+  ];
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
+  const recentFoods = [
+    { name: 'Greek Yogurt', calories: 150, protein: 15, brand: 'Chobani' },
+    { name: 'Banana', calories: 105, protein: 1, brand: 'Fresh' },
+    { name: 'Oatmeal', calories: 154, protein: 5, brand: 'Quaker' },
+    { name: 'Chicken Breast', calories: 231, protein: 43, brand: 'Organic' }
+  ];
 
-  const handleSelectFood = (food: Food) => {
-    setSelectedFood(food);
-    setServingSize('1');
-  };
+  const meals = [
+    { id: 'breakfast', name: 'Breakfast', icon: '🌅', foods: 2, calories: 420 },
+    { id: 'lunch', name: 'Lunch', icon: '☀️', foods: 3, calories: 650 },
+    { id: 'dinner', name: 'Dinner', icon: '🌙', foods: 1, calories: 380 },
+    { id: 'snacks', name: 'Snacks', icon: '🍎', foods: 2, calories: 200 }
+  ];
 
-  const handleAddFood = () => {
-    if (!selectedFood) return;
-    
-    const today = new Date().toISOString().split('T')[0];
-    const nutrients = extractNutrients(selectedFood);
-    const servingSizeNum = parseFloat(servingSize);
-    
-    if (isNaN(servingSizeNum) || servingSizeNum <= 0) {
-      alert('Please enter a valid serving size');
-      return;
-    }
-    
-    const foodItem = {
-      id: crypto.randomUUID(),
-      name: selectedFood.description,
-      servingSize: `${servingSizeNum} ${nutrients.servingSizeUnit}`,
-      calories: Math.round(nutrients.calories * servingSizeNum),
-      protein: Math.round(nutrients.protein * servingSizeNum * 10) / 10,
-      carbs: Math.round(nutrients.carbs * servingSizeNum * 10) / 10,
-      fat: Math.round(nutrients.fat * servingSizeNum * 10) / 10,
-      meal: selectedMeal,
-      date: today
-    };
-    
-    addFoodItem(foodItem);
-    setSelectedFood(null);
-    setSearchResults([]);
-    setSearchQuery('');
-  };
-
-  const handleAddWater = () => {
-    if (waterAmount > 0) {
-      updateWaterIntake(waterAmount);
-    }
-  };
-  
-  // Group food items by meal
-  const foodByMeal = {
-    breakfast: todaysFoodItems.filter(item => item.meal === 'breakfast'),
-    lunch: todaysFoodItems.filter(item => item.meal === 'lunch'),
-    dinner: todaysFoodItems.filter(item => item.meal === 'dinner'),
-    snacks: todaysFoodItems.filter(item => item.meal === 'snacks')
-  };
+  const currentCalories = todayData?.calories || 0;
+  const calorieProgress = (currentCalories / dailyGoals.calories) * 100;
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-gray-800">Food & Nutrition</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Utensils className="mr-2 h-5 w-5 text-health-primary" />
-              Food Diary
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="diary">
-              <TabsList className="mb-4">
-                <TabsTrigger value="diary">Food Diary</TabsTrigger>
-                <TabsTrigger value="search">Add Food</TabsTrigger>
-                <TabsTrigger value="water">Water</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="diary" className="space-y-4">
-                {Object.entries(foodByMeal).map(([meal, items]) => (
-                  <div key={meal} className="space-y-2">
-                    <h3 className="font-medium capitalize text-lg">{meal}</h3>
-                    {items.length > 0 ? (
-                      <div className="space-y-2">
-                        {items.map(item => (
-                          <div key={item.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                            <div>
-                              <div className="font-medium">{item.name}</div>
-                              <div className="text-sm text-gray-500">{item.servingSize}</div>
-                            </div>
-                            <div className="text-right">
-                              <div className="font-medium">{item.calories} kcal</div>
-                              <div className="text-xs text-gray-500">
-                                P: {item.protein}g | C: {item.carbs}g | F: {item.fat}g
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-gray-500 text-sm italic">No foods added</div>
-                    )}
-                  </div>
-                ))}
-                
-                <div className="mt-6 pt-4 border-t">
-                  <h3 className="font-medium text-lg">Daily Totals</h3>
-                  <div className="grid grid-cols-4 gap-2 mt-2">
-                    <div className="bg-gray-100 p-3 rounded-lg text-center">
-                      <div className="text-sm text-gray-600">Calories</div>
-                      <div className="font-bold">{nutritionSummary.totalCalories}</div>
-                      <div className="text-xs text-gray-500">/ {dailyGoals.calories}</div>
-                    </div>
-                    <div className="bg-health-protein bg-opacity-10 p-3 rounded-lg text-center">
-                      <div className="text-sm text-gray-600">Protein</div>
-                      <div className="font-bold">{nutritionSummary.totalProtein}g</div>
-                      <div className="text-xs text-gray-500">/ {dailyGoals.protein}g</div>
-                    </div>
-                    <div className="bg-health-carbs bg-opacity-10 p-3 rounded-lg text-center">
-                      <div className="text-sm text-gray-600">Carbs</div>
-                      <div className="font-bold">{nutritionSummary.totalCarbs}g</div>
-                      <div className="text-xs text-gray-500">/ {dailyGoals.carbs}g</div>
-                    </div>
-                    <div className="bg-health-fat bg-opacity-10 p-3 rounded-lg text-center">
-                      <div className="text-sm text-gray-600">Fat</div>
-                      <div className="font-bold">{nutritionSummary.totalFat}g</div>
-                      <div className="text-xs text-gray-500">/ {dailyGoals.fat}g</div>
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="search">
-                <div className="space-y-4">
-                  <div className="flex">
-                    <Input
-                      placeholder="Search for foods..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      className="flex-1 mr-2"
-                    />
-                    <Button onClick={handleSearch} disabled={isSearching}>
-                      <Search className="h-4 w-4 mr-2" />
-                      {isSearching ? 'Searching...' : 'Search'}
-                    </Button>
-                  </div>
-                  
-                  {searchResults.length > 0 && !selectedFood && (
-                    <div className="mt-4">
-                      <h3 className="font-medium mb-2">Search Results</h3>
-                      <div className="max-h-80 overflow-y-auto space-y-2">
-                        {searchResults.map((food) => (
-                          <div
-                            key={food.fdcId}
-                            onClick={() => handleSelectFood(food)}
-                            className="p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
-                          >
-                            <div className="font-medium">{food.description}</div>
-                            <div className="text-sm text-gray-500">
-                              {food.brandName ? `${food.brandName}` : 'Generic'}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {selectedFood && (
-                    <div className="border p-4 rounded-lg mt-4">
-                      <h3 className="font-medium text-lg mb-3">{selectedFood.description}</h3>
-                      
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor="meal">Meal</Label>
-                            <Select
-                              value={selectedMeal}
-                              onValueChange={setSelectedMeal}
-                            >
-                              <SelectTrigger id="meal">
-                                <SelectValue placeholder="Select meal" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="breakfast">Breakfast</SelectItem>
-                                <SelectItem value="lunch">Lunch</SelectItem>
-                                <SelectItem value="dinner">Dinner</SelectItem>
-                                <SelectItem value="snacks">Snacks</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          
-                          <div>
-                            <Label htmlFor="servingSize">Servings</Label>
-                            <Input
-                              id="servingSize"
-                              type="number"
-                              min="0.25"
-                              step="0.25"
-                              value={servingSize}
-                              onChange={(e) => setServingSize(e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="pt-2">
-                          <h4 className="text-sm font-medium mb-2">Nutrition (per serving)</h4>
-                          <div className="grid grid-cols-4 gap-2">
-                            {(() => {
-                              const nutrients = extractNutrients(selectedFood);
-                              const servingSizeNum = parseFloat(servingSize) || 0;
-                              
-                              return (
-                                <>
-                                  <div className="bg-gray-100 p-2 rounded text-center">
-                                    <div className="text-xs text-gray-600">Calories</div>
-                                    <div className="font-bold">{Math.round(nutrients.calories * servingSizeNum)}</div>
-                                  </div>
-                                  <div className="bg-health-protein bg-opacity-10 p-2 rounded text-center">
-                                    <div className="text-xs text-gray-600">Protein</div>
-                                    <div className="font-bold">
-                                      {Math.round(nutrients.protein * servingSizeNum * 10) / 10}g
-                                    </div>
-                                  </div>
-                                  <div className="bg-health-carbs bg-opacity-10 p-2 rounded text-center">
-                                    <div className="text-xs text-gray-600">Carbs</div>
-                                    <div className="font-bold">
-                                      {Math.round(nutrients.carbs * servingSizeNum * 10) / 10}g
-                                    </div>
-                                  </div>
-                                  <div className="bg-health-fat bg-opacity-10 p-2 rounded text-center">
-                                    <div className="text-xs text-gray-600">Fat</div>
-                                    <div className="font-bold">
-                                      {Math.round(nutrients.fat * servingSizeNum * 10) / 10}g
-                                    </div>
-                                  </div>
-                                </>
-                              );
-                            })()}
-                          </div>
-                        </div>
-                        
-                        <div className="flex justify-end space-x-2 pt-2">
-                          <Button variant="outline" onClick={() => setSelectedFood(null)}>
-                            Cancel
-                          </Button>
-                          <Button onClick={handleAddFood}>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add to Diary
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="water">
-                <div className="space-y-4">
-                  <div className="bg-health-water bg-opacity-10 p-4 rounded-lg">
-                    <h3 className="font-medium mb-2">Water Intake</h3>
-                    <div className="mb-4">
-                      <div className="flex justify-between mb-1">
-                        <span>Today's intake</span>
-                        <span className="font-medium">{waterIntake}ml / {dailyGoals.water}ml</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div 
-                          className="bg-health-water h-2.5 rounded-full" 
-                          style={{ width: `${Math.min((waterIntake / dailyGoals.water) * 100, 100)}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-2 flex-1">
-                        <Button 
-                          variant="outline" 
-                          size="icon"
-                          onClick={() => setWaterAmount(Math.max(50, waterAmount - 50))}
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <Input
-                          type="number"
-                          value={waterAmount}
-                          onChange={(e) => setWaterAmount(parseInt(e.target.value) || 0)}
-                          className="text-center"
-                        />
-                        <Button 
-                          variant="outline" 
-                          size="icon"
-                          onClick={() => setWaterAmount(waterAmount + 50)}
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <div className="text-gray-500 text-sm mr-3">ml</div>
-                      <Button onClick={handleAddWater}>Add Water</Button>
-                    </div>
-                    
-                    <div className="flex justify-between mt-4">
-                      <Button variant="ghost" onClick={() => updateWaterIntake(250)}>+ 250ml</Button>
-                      <Button variant="ghost" onClick={() => updateWaterIntake(500)}>+ 500ml</Button>
-                      <Button variant="ghost" onClick={() => updateWaterIntake(1000)}>+ 1000ml</Button>
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Nutrition Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium">Calories</span>
-                  <span className="text-sm text-gray-500">
-                    {nutritionSummary.totalCalories} / {dailyGoals.calories}
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-health-primary h-2 rounded-full" 
-                    style={{ width: `${Math.min((nutritionSummary.totalCalories / dailyGoals.calories) * 100, 100)}%` }}
-                  ></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium">Protein</span>
-                  <span className="text-sm text-gray-500">
-                    {nutritionSummary.totalProtein}g / {dailyGoals.protein}g
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-health-protein h-2 rounded-full" 
-                    style={{ width: `${Math.min((nutritionSummary.totalProtein / dailyGoals.protein) * 100, 100)}%` }}
-                  ></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium">Carbohydrates</span>
-                  <span className="text-sm text-gray-500">
-                    {nutritionSummary.totalCarbs}g / {dailyGoals.carbs}g
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-health-carbs h-2 rounded-full" 
-                    style={{ width: `${Math.min((nutritionSummary.totalCarbs / dailyGoals.carbs) * 100, 100)}%` }}
-                  ></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium">Fat</span>
-                  <span className="text-sm text-gray-500">
-                    {nutritionSummary.totalFat}g / {dailyGoals.fat}g
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-health-fat h-2 rounded-full" 
-                    style={{ width: `${Math.min((nutritionSummary.totalFat / dailyGoals.fat) * 100, 100)}%` }}
-                  ></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium">Water</span>
-                  <span className="text-sm text-gray-500">
-                    {waterIntake}ml / {dailyGoals.water}ml
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-health-water h-2 rounded-full" 
-                    style={{ width: `${Math.min((waterIntake / dailyGoals.water) * 100, 100)}%` }}
-                  ></div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+    <div className="space-y-8 p-6">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        <div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Food Tracker 🍽️
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-2 text-lg">
+            Track your nutrition with precision and ease
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <Button variant="glass" size="lg" className="gap-2">
+            <Camera className="w-5 h-5" />
+            Scan Barcode
+          </Button>
+          <Button variant="glass-primary" size="lg" className="gap-2">
+            <Plus className="w-5 h-5" />
+            Add Food
+          </Button>
+        </div>
       </div>
+
+      {/* Daily Summary */}
+      <GlassCard variant="premium" className="p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Calories */}
+          <div className="lg:col-span-1">
+            <div className="text-center">
+              <div className="relative w-32 h-32 mx-auto mb-4">
+                <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
+                  <path
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none"
+                    stroke="rgba(156, 163, 175, 0.3)"
+                    strokeWidth="3"
+                  />
+                  <path
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none"
+                    stroke="url(#calorieGradient)"
+                    strokeWidth="3"
+                    strokeDasharray={`${calorieProgress}, 100`}
+                    strokeLinecap="round"
+                  />
+                  <defs>
+                    <linearGradient id="calorieGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#f97316" />
+                      <stop offset="100%" stopColor="#ef4444" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-2xl font-bold">{currentCalories}</span>
+                  <span className="text-xs text-gray-500">/ {dailyGoals.calories}</span>
+                </div>
+              </div>
+              <h3 className="font-semibold text-lg">Calories</h3>
+              <p className="text-sm text-gray-500">{(100 - calorieProgress).toFixed(0)}% remaining</p>
+            </div>
+          </div>
+
+          {/* Macros */}
+          <div className="lg:col-span-3">
+            <h3 className="font-semibold text-lg mb-4">Macronutrients</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {macroData.map((macro, index) => {
+                const percentage = Math.min((macro.current / macro.goal) * 100, 100);
+                return (
+                  <div key={index} className="p-4 rounded-xl bg-white/50 dark:bg-gray-800/50 border border-white/20">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium">{macro.name}</span>
+                      <Badge variant="outline" className="text-xs">
+                        {percentage.toFixed(0)}%
+                      </Badge>
+                    </div>
+                    <div className="flex items-baseline gap-2 mb-3">
+                      <span className="text-xl font-bold">{macro.current}{macro.unit}</span>
+                      <span className="text-sm text-gray-500">/ {macro.goal}{macro.unit}</span>
+                    </div>
+                    <div className="relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div 
+                        className={cn("h-full bg-gradient-to-r transition-all duration-500", macro.color)}
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </GlassCard>
+
+      <Tabs defaultValue="log" className="w-full">
+        <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsTrigger value="log">Log Food</TabsTrigger>
+          <TabsTrigger value="meals">Meals</TabsTrigger>
+          <TabsTrigger value="history">History</TabsTrigger>
+          <TabsTrigger value="insights">Insights</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="log" className="space-y-6">
+          {/* Search Bar */}
+          <GlassCard variant="premium" className="p-6">
+            <div className="flex gap-4 mb-6">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Input
+                  placeholder="Search for foods, brands, or scan barcode..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 h-12"
+                />
+              </div>
+              <Button variant="glass" size="lg" className="gap-2 px-8">
+                <Camera className="w-5 h-5" />
+                Scan
+              </Button>
+            </div>
+
+            {/* Quick Add Buttons */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              {['Water', 'Coffee', 'Apple', 'Bread'].map((item) => (
+                <Button key={item} variant="outline" className="h-12 gap-2">
+                  <Plus className="w-4 h-4" />
+                  {item}
+                </Button>
+              ))}
+            </div>
+          </GlassCard>
+
+          {/* Recent Foods */}
+          <GlassCard variant="premium" className="p-6">
+            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <Clock className="w-5 h-5 text-blue-500" />
+              Recent Foods
+            </h3>
+            <div className="grid gap-3">
+              {recentFoods.map((food, index) => (
+                <div key={index} className="flex items-center justify-between p-4 rounded-xl bg-white/50 dark:bg-gray-800/50 border border-white/20 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all cursor-pointer">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white font-bold">
+                      {food.name.charAt(0)}
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">{food.name}</h4>
+                      <p className="text-sm text-gray-500">{food.brand}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold">{food.calories} cal</p>
+                    <p className="text-sm text-gray-500">{food.protein}g protein</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </GlassCard>
+        </TabsContent>
+
+        <TabsContent value="meals" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {meals.map((meal) => (
+              <GlassCard key={meal.id} variant="premium" className="p-6 hover:scale-105 transition-transform cursor-pointer">
+                <div className="text-center">
+                  <div className="text-4xl mb-3">{meal.icon}</div>
+                  <h3 className="font-semibold text-lg mb-2">{meal.name}</h3>
+                  <div className="space-y-1">
+                    <p className="text-2xl font-bold">{meal.calories}</p>
+                    <p className="text-sm text-gray-500">calories</p>
+                    <p className="text-xs text-gray-400">{meal.foods} foods logged</p>
+                  </div>
+                </div>
+              </GlassCard>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="history">
+          <GlassCard variant="premium" className="p-6">
+            <h3 className="text-xl font-semibold mb-4">Food History</h3>
+            <p className="text-gray-600 dark:text-gray-400">Detailed food history tracking coming soon...</p>
+          </GlassCard>
+        </TabsContent>
+
+        <TabsContent value="insights">
+          <GlassCard variant="premium" className="p-6">
+            <h3 className="text-xl font-semibold mb-4">Nutrition Insights</h3>
+            <p className="text-gray-600 dark:text-gray-400">AI-powered nutrition insights coming soon...</p>
+          </GlassCard>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

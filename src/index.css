@@ -7,80 +7,74 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 174 83% 56%;
+    --primary: 265 84% 58%;
     --primary-foreground: 210 40% 98%;
-
-    --secondary: 262 85% 74%;
+    --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
+    --ring: 215 20.2% 65.1%;
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Cosmic Theme Colors */
+    --cosmic-nebula: 124, 58, 237;
+    --cosmic-highlight: 6, 182, 212;
+    --cosmic-star: 251, 191, 36;
+    --cosmic-accent: 236, 72, 153;
+    --cosmic-deep: 15, 23, 42;
+    --cosmic-space: 30, 41, 59;
+
+    /* Sidebar Colors */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222.2 84% 4.9%;
+    --sidebar-primary: 265 84% 58%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 215 20.2% 65.1%;
   }
 
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
-
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
-
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-
-    --primary: 174 83% 56%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 262 85% 74%;
+    --primary: 265 84% 58%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
-
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
-
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --ring: 265 84% 58%;
+
+    /* Sidebar Colors */
+    --sidebar-background: 222.2 84% 4.9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 265 84% 58%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 265 84% 58%;
   }
 }
 
@@ -91,13 +85,204 @@
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-.nutrition-card {
-  @apply rounded-xl p-4 mb-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow;
+/* Cosmic theme glass effects */
+.glass-card {
+  @apply bg-white/70 dark:bg-cosmic-deep/70 backdrop-blur-md border border-white/20 dark:border-cosmic-nebula/20 shadow-md;
 }
 
-.nutrition-bar {
-  @apply h-2 rounded-full my-1;
+.frosted-glass {
+  @apply bg-white/50 dark:bg-cosmic-deep/60 backdrop-blur-xl border border-white/30 dark:border-cosmic-nebula/20 shadow-lg;
+}
+
+.neo-glass {
+  @apply bg-gradient-to-br from-white/70 to-white/30 dark:from-cosmic-deep/70 dark:to-cosmic-space/40 backdrop-blur-md border border-white/40 dark:border-cosmic-nebula/20 shadow-lg;
+}
+
+.ultra-glass {
+  @apply bg-gradient-to-br from-white/60 to-white/20 dark:from-cosmic-deep/60 dark:to-cosmic-space/30 backdrop-blur-2xl border border-white/30 dark:border-cosmic-nebula/30 shadow-xl;
+}
+
+.iridescent-glass {
+  @apply bg-gradient-to-br from-white/50 via-white/30 to-white/40 dark:from-cosmic-deep/50 dark:via-cosmic-nebula/10 dark:to-cosmic-highlight/10 backdrop-blur-xl border border-white/20 dark:border-cosmic-nebula/20 shadow-xl;
+}
+
+.cosmic-glass {
+  @apply bg-gradient-to-br from-cosmic-deep/70 via-cosmic-space/50 to-cosmic-nebula/20 backdrop-blur-xl border border-cosmic-nebula/30 shadow-cosmic;
+}
+
+/* Cosmic animations */
+@keyframes cosmic-pulse {
+  0%, 100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.3);
+  }
+}
+
+@keyframes nebula-drift {
+  0% {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.2;
+  }
+  33% {
+    transform: rotate(120deg) scale(1.2);
+    opacity: 0.3;
+  }
+  66% {
+    transform: rotate(240deg) scale(0.9);
+    opacity: 0.1;
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+    opacity: 0.2;
+  }
+}
+
+@keyframes star-twinkle {
+  0%, 100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes spin-slow {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes spin-reverse-slow {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(-360deg);
+  }
+}
+
+.animate-cosmic-pulse {
+  animation: cosmic-pulse 8s ease-in-out infinite;
+}
+
+.animate-nebula-drift {
+  animation: nebula-drift 30s linear infinite;
+}
+
+.animate-star-twinkle {
+  animation: star-twinkle 3s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+.animate-spin-reverse-slow {
+  animation: spin-reverse-slow 15s linear infinite;
+}
+
+/* Star field effects */
+.stars-small, .stars-medium, .stars-large {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.stars-small {
+  background-image: radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0)),
+                    radial-gradient(1px 1px at 40px 70px, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0)),
+                    radial-gradient(1px 1px at 50px 160px, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0)),
+                    radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)),
+                    radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0)),
+                    radial-gradient(1px 1px at 160px 120px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
+
+.stars-medium {
+  background-image: radial-gradient(2px 2px at 100px 50px, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0)),
+                    radial-gradient(2px 2px at 150px 150px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)),
+                    radial-gradient(2px 2px at 20px 120px, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0)),
+                    radial-gradient(2px 2px at 170px 90px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
+  background-repeat: repeat;
+  background-size: 300px 300px;
+  animation: star-twinkle 5s ease-in-out infinite alternate;
+}
+
+.stars-large {
+  background-image: radial-gradient(3px 3px at 120px 40px, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0)),
+                    radial-gradient(3px 3px at 40px 60px, rgba(251, 191, 36, 0.8), rgba(251, 191, 36, 0)),
+                    radial-gradient(3px 3px at 200px 150px, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0)),
+                    radial-gradient(3px 3px at 250px 50px, rgba(6, 182, 212, 0.8), rgba(6, 182, 212, 0));
+  background-repeat: repeat;
+  background-size: 400px 400px;
+  animation: star-twinkle 7s ease-in-out infinite alternate-reverse;
+}
+
+/* Cosmic text effects */
+.text-glow {
+  text-shadow: 0 0 10px rgba(var(--cosmic-nebula), 0.7);
+}
+
+.text-cosmic {
+  background: linear-gradient(to right, rgb(var(--cosmic-nebula)), rgb(var(--cosmic-highlight)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-stellar {
+  background: linear-gradient(to right, rgb(var(--cosmic-highlight)), rgb(var(--cosmic-star)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(var(--cosmic-deep), 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(var(--cosmic-nebula), 0.5);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--cosmic-nebula), 0.8);
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+/* Focus and selection styles */
+::selection {
+  background-color: rgba(var(--cosmic-nebula), 0.3);
+  color: white;
+}
+
+*:focus-visible {
+  outline: 2px solid rgba(var(--cosmic-nebula), 0.6);
+  outline-offset: 2px;
 }

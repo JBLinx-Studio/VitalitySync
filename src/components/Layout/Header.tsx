@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { User, Activity, Utensils, BarChart, Moon, Brain, Ruler } from 'lucide-react';
+import { User, Activity, Utensils, BarChart, Moon, Brain } from 'lucide-react';
 import { useHealth } from '@/contexts/HealthContext';
 
 const Header: React.FC = () => {
@@ -22,7 +22,6 @@ const Header: React.FC = () => {
           <NavLink to="/exercise" icon={<Activity className="h-5 w-5" />} label="Exercise" />
           <NavLink to="/sleep" icon={<Moon className="h-5 w-5" />} label="Sleep" />
           <NavLink to="/mental" icon={<Brain className="h-5 w-5" />} label="Mental" />
-          <NavLink to="/body" icon={<Ruler className="h-5 w-5" />} label="Body" />
           <NavLink to="/profile" icon={<User className="h-5 w-5" />} label="Profile" />
         </nav>
       </div>

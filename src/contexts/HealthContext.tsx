@@ -54,37 +54,6 @@ export interface MoodRecord {
   activities: string[];
 }
 
-export interface AddictionRecord {
-  id: string;
-  type: string;
-  amount: number;
-  craving: number;
-  date: string;
-  notes?: string;
-}
-
-export interface AddictionGoal {
-  daily: number;
-  target: number;
-  timeframe: number;
-}
-
-export interface Notification {
-  id: string;
-  type: string;
-  message: string;
-  date: string;
-  read: boolean;
-}
-
-export interface Achievement {
-  id: string;
-  name: string;
-  description: string;
-  date: string;
-  type: string;
-}
-
 export interface HealthContextType {
   userProfile: UserProfile | null;
   foodItems: NutritionItem[];
@@ -92,9 +61,6 @@ export interface HealthContextType {
   waterIntake: WaterIntake[];
   sleepRecords: SleepRecord[];
   moodRecords: MoodRecord[];
-  addictionRecords: AddictionRecord[];
-  notifications: Notification[];
-  achievements: Achievement[];
   dailyGoals: {
     calories: number;
     protein: number;
@@ -109,12 +75,6 @@ export interface HealthContextType {
   updateWaterIntake: (amount: number) => void;
   addSleepRecord: (record: SleepRecord) => void;
   addMoodRecord: (record: MoodRecord) => void;
-  addAddictionRecord: (record: AddictionRecord) => void;
-  getUserAddictionGoals: () => Record<string, AddictionGoal>;
-  updateAddictionGoal: (type: string, goal: AddictionGoal) => void;
-  addNotification: (notification: Omit<Notification, 'id' | 'read'>) => void;
-  markNotificationAsRead: (id: string) => void;
-  addAchievement: (achievement: Omit<Achievement, 'id' | 'date'>) => void;
   getTodaysFoodItems: () => NutritionItem[];
   getTodaysExerciseItems: () => ExerciseItem[];
   getTodaysWaterIntake: () => number;
@@ -142,12 +102,6 @@ export interface HealthContextType {
     averageStressLevel: number;
     predominantMood: string;
   };
-  getAddictionSummary: (type: string) => {
-    averageDaily: number;
-    totalToday: number;
-    streakDays: number;
-  };
-  getUnreadNotificationsCount: () => number;
   resetDailyData: () => void;
 }
 
@@ -158,13 +112,6 @@ const defaultGoals = {
   fat: 70, // grams
   water: 2500, // ml
   sleep: 8, // hours
-};
-
-const defaultAddictionGoals: Record<string, AddictionGoal> = {
-  smoking: { daily: 10, target: 0, timeframe: 30 },
-  alcohol: { daily: 2, target: 0, timeframe: 30 },
-  caffeine: { daily: 3, target: 1, timeframe: 30 },
-  other: { daily: 5, target: 0, timeframe: 30 }
 };
 
 const HealthContext = createContext<HealthContextType | undefined>(undefined);
@@ -200,26 +147,6 @@ export const HealthProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return saved ? JSON.parse(saved) : [];
   });
   
-  const [addictionRecords, setAddictionRecords] = useState<AddictionRecord[]>(() => {
-    const saved = localStorage.getItem('addictionRecords');
-    return saved ? JSON.parse(saved) : [];
-  });
-  
-  const [addictionGoals, setAddictionGoals] = useState<Record<string, AddictionGoal>>(() => {
-    const saved = localStorage.getItem('addictionGoals');
-    return saved ? JSON.parse(saved) : defaultAddictionGoals;
-  });
-  
-  const [notifications, setNotifications] = useState<Notification[]>(() => {
-    const saved = localStorage.getItem('notifications');
-    return saved ? JSON.parse(saved) : [];
-  });
-  
-  const [achievements, setAchievements] = useState<Achievement[]>(() => {
-    const saved = localStorage.getItem('achievements');
-    return saved ? JSON.parse(saved) : [];
-  });
-  
   const [dailyGoals, setDailyGoals] = useState(() => {
     const saved = localStorage.getItem('dailyGoals');
     return saved ? JSON.parse(saved) : defaultGoals;
@@ -233,24 +160,8 @@ export const HealthProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     localStorage.setItem('waterIntake', JSON.stringify(waterIntake));
     localStorage.setItem('sleepRecords', JSON.stringify(sleepRecords));
     localStorage.setItem('moodRecords', JSON.stringify(moodRecords));
-    localStorage.setItem('addictionRecords', JSON.stringify(addictionRecords));
-    localStorage.setItem('addictionGoals', JSON.stringify(addictionGoals));
-    localStorage.setItem('notifications', JSON.stringify(notifications));
-    localStorage.setItem('achievements', JSON.stringify(achievements));
     localStorage.setItem('dailyGoals', JSON.stringify(dailyGoals));
-  }, [
-    userProfile, 
-    foodItems, 
-    exerciseItems, 
-    waterIntake, 
-    sleepRecords, 
-    moodRecords, 
-    dailyGoals, 
-    addictionRecords, 
-    addictionGoals,
-    notifications,
-    achievements
-  ]);
+  }, [userProfile, foodItems, exerciseItems, waterIntake, sleepRecords, moodRecords, dailyGoals]);
 
   const updateUserProfile = (profile: UserProfile) => {
     setUserProfile(profile);
@@ -293,155 +204,6 @@ export const HealthProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const addMoodRecord = (record: MoodRecord) => {
     setMoodRecords(current => [...current, { ...record, id: crypto.randomUUID() }]);
-  };
-
-  const addAddictionRecord = (record: AddictionRecord) => {
-    setAddictionRecords(current => [...current, { ...record, id: record.id || crypto.randomUUID() }]);
-    
-    // Add notification
-    addNotification({
-      type: 'addiction',
-      message: `You logged ${record.amount} ${record.type} usage with craving level ${record.craving}/10`,
-      date: new Date().toISOString()
-    });
-    
-    // Check for achievements
-    const today = new Date().toISOString().split('T')[0];
-    const todayRecords = addictionRecords.filter(r => 
-      r.type === record.type && r.date.startsWith(today)
-    );
-    
-    const todayTotal = todayRecords.reduce((sum, r) => sum + r.amount, 0) + record.amount;
-    const goal = addictionGoals[record.type]?.daily || 10;
-    
-    if (todayTotal <= goal) {
-      // Check if we already have this achievement for today
-      const existingAchievement = achievements.find(a => 
-        a.type === 'addiction_daily' && 
-        a.name === `${record.type}_daily_goal` &&
-        a.date.startsWith(today)
-      );
-      
-      if (!existingAchievement) {
-        addAchievement({
-          name: `${record.type}_daily_goal`,
-          description: `Stayed under your daily ${record.type} goal`,
-          type: 'addiction_daily'
-        });
-      }
-    }
-  };
-
-  const getUserAddictionGoals = () => {
-    return addictionGoals;
-  };
-  
-  const updateAddictionGoal = (type: string, goal: AddictionGoal) => {
-    setAddictionGoals(current => ({
-      ...current,
-      [type]: goal
-    }));
-    
-    addNotification({
-      type: 'goal',
-      message: `Your ${type} goal has been updated to ${goal.daily} per day`,
-      date: new Date().toISOString()
-    });
-  };
-  
-  const addNotification = (notification: Omit<Notification, 'id' | 'read'>) => {
-    setNotifications(current => [
-      { 
-        ...notification, 
-        id: crypto.randomUUID(), 
-        read: false 
-      }, 
-      ...current
-    ]);
-  };
-  
-  const markNotificationAsRead = (id: string) => {
-    setNotifications(current => 
-      current.map(notification => 
-        notification.id === id ? { ...notification, read: true } : notification
-      )
-    );
-  };
-  
-  const addAchievement = (achievement: Omit<Achievement, 'id' | 'date'>) => {
-    const newAchievement = {
-      ...achievement,
-      id: crypto.randomUUID(),
-      date: new Date().toISOString()
-    };
-    
-    setAchievements(current => [newAchievement, ...current]);
-    
-    addNotification({
-      type: 'achievement',
-      message: `🏆 Achievement unlocked: ${achievement.description}`,
-      date: new Date().toISOString()
-    });
-  };
-  
-  const getUnreadNotificationsCount = () => {
-    return notifications.filter(notification => !notification.read).length;
-  };
-  
-  const getAddictionSummary = (type: string) => {
-    const today = new Date().toISOString().split('T')[0];
-    const todayRecords = addictionRecords.filter(record => 
-      record.type === type && record.date.startsWith(today)
-    );
-    
-    const totalToday = todayRecords.reduce((sum, record) => sum + record.amount, 0);
-    
-    // Calculate average daily for past week
-    let totalPastWeek = 0;
-    const daysWithData = new Set();
-    const now = new Date();
-    const oneWeekAgo = new Date(now);
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    
-    addictionRecords.forEach(record => {
-      if (record.type === type) {
-        const recordDate = new Date(record.date);
-        if (recordDate >= oneWeekAgo && recordDate < now) {
-          totalPastWeek += record.amount;
-          daysWithData.add(record.date.split('T')[0]);
-        }
-      }
-    });
-    
-    // Calculate streak
-    let streakDays = 0;
-    const goal = addictionGoals[type]?.daily || 10;
-    
-    for (let i = 0; i < 100; i++) { // Check up to 100 days back
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
-      
-      const dayRecords = addictionRecords.filter(
-        record => record.type === type && record.date.startsWith(dateStr)
-      );
-      
-      const dayTotal = dayRecords.reduce((sum, record) => sum + record.amount, 0);
-      
-      if (dayTotal <= goal) {
-        streakDays++;
-      } else if (dayRecords.length > 0) { // Only break streak if we have data for that day
-        break;
-      } else if (i > 0) { // Don't break streak for today if no data
-        break;
-      }
-    }
-    
-    return {
-      averageDaily: daysWithData.size > 0 ? totalPastWeek / daysWithData.size : 0,
-      totalToday,
-      streakDays
-    };
   };
 
   const getTodaysFoodItems = () => {
@@ -614,9 +376,6 @@ export const HealthProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     waterIntake,
     sleepRecords,
     moodRecords,
-    addictionRecords,
-    notifications,
-    achievements,
     dailyGoals,
     updateUserProfile,
     addFoodItem,
@@ -624,12 +383,6 @@ export const HealthProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     updateWaterIntake,
     addSleepRecord,
     addMoodRecord,
-    addAddictionRecord,
-    getUserAddictionGoals,
-    updateAddictionGoal,
-    addNotification,
-    markNotificationAsRead,
-    addAchievement,
     getTodaysFoodItems,
     getTodaysExerciseItems,
     getTodaysWaterIntake,
@@ -643,8 +396,6 @@ export const HealthProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     getExerciseSummary,
     getSleepSummary,
     getMoodSummary,
-    getAddictionSummary,
-    getUnreadNotificationsCount,
     resetDailyData,
   };
 

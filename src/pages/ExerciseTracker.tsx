@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,21 +6,53 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, Dumbbell, Flame, ListChecks, NotebookPen, Plus, Timer, Clock } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Calendar, Dumbbell, Flame, ListChecks, NotebookPen, Plus, Timer, Clock, Search, Zap } from 'lucide-react';
 import { useHealth } from '@/contexts/HealthContext';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import GlassCard from '@/components/ui/glass-card';
+import { exercises, searchExercises, calculateCaloriesBurned } from '@/services/exerciseService';
+import ExerciseEntryForm from '@/components/Exercise/ExerciseEntryForm';
 
 const ExerciseTracker: React.FC = () => {
-  const { exerciseItems, addExerciseItem, getExerciseSummary } = useHealth();
+  const { exerciseItems, addExerciseItem, getExerciseSummary, userProfile } = useHealth();
   
   const [exerciseName, setExerciseName] = useState('');
   const [exerciseType, setExerciseType] = useState('cardio');
   const [duration, setDuration] = useState('');
   const [caloriesBurned, setCaloriesBurned] = useState('');
   const [notes, setNotes] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState(exercises);
+  const [selectedExercise, setSelectedExercise] = useState<any>(null);
+
+  const handleSearch = () => {
+    const results = searchExercises(searchQuery);
+    setSearchResults(results);
+  };
+
+  const handleSelectExercise = (exercise: any) => {
+    setSelectedExercise(exercise);
+  };
+
+  const handleAddExercise = (exerciseData: any) => {
+    addExerciseItem(exerciseData);
+    setSelectedExercise(null);
+    setSearchResults(exercises);
+    setSearchQuery('');
+  };
+
+  const handleDurationChange = (newDuration: string) => {
+    setDuration(newDuration);
+    
+    // Auto-calculate calories if we have selected exercise and user weight
+    if (selectedExercise && userProfile?.weight && newDuration) {
+      const calories = calculateCaloriesBurned(selectedExercise.met, userProfile.weight, parseInt(newDuration));
+      setCaloriesBurned(Math.round(calories).toString());
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +73,7 @@ const ExerciseTracker: React.FC = () => {
     setDuration('');
     setCaloriesBurned('');
     setNotes('');
+    setSelectedExercise(null);
   };
 
   const summary = getExerciseSummary();
@@ -119,95 +153,187 @@ const ExerciseTracker: React.FC = () => {
 
           {/* Exercise Entry Form */}
           <div className="lg:col-span-2 space-y-6">
-            <GlassCard variant="premium">
-              <CardHeader>
-                <CardTitle className="flex items-center text-gray-900 dark:text-gray-100">
-                  <Dumbbell className="mr-2 h-6 w-6 text-orange-500" />
-                  Log Your Exercise
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div>
-                    <Label htmlFor="exerciseName" className="text-gray-700 dark:text-gray-300 font-medium">
-                      Exercise Name
-                    </Label>
-                    <Input
-                      id="exerciseName"
-                      type="text"
-                      value={exerciseName}
-                      onChange={(e) => setExerciseName(e.target.value)}
-                      className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60"
-                    />
-                  </div>
+            <Tabs defaultValue="search" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="search">Search & Log</TabsTrigger>
+                <TabsTrigger value="manual">Manual Entry</TabsTrigger>
+              </TabsList>
 
-                  <div>
-                    <Label className="text-gray-700 dark:text-gray-300 font-medium">Exercise Type</Label>
-                    <Select value={exerciseType} onValueChange={(value) => setExerciseType(value)}>
-                      <SelectTrigger className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border-gray-200/60 dark:border-gray-700/60">
-                        {exerciseTypes.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+              <TabsContent value="search">
+                {selectedExercise ? (
+                  <ExerciseEntryForm
+                    exercise={selectedExercise}
+                    onAddExercise={handleAddExercise}
+                    onCancel={() => setSelectedExercise(null)}
+                  />
+                ) : (
+                  <GlassCard variant="premium">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-gray-900 dark:text-gray-100">
+                        <Search className="mr-2 h-6 w-6 text-blue-500" />
+                        Exercise Database
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        <div className="flex gap-4">
+                          <div className="flex-1 relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                            <Input
+                              placeholder="Search exercises (e.g., 'running', 'yoga')..."
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
+                              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                              className="pl-10"
+                            />
+                          </div>
+                          <Button onClick={handleSearch} className="gap-2">
+                            <Search className="w-4 h-4" />
+                            Search
+                          </Button>
+                        </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="duration" className="text-gray-700 dark:text-gray-300 font-medium">
-                        Duration (minutes)
-                      </Label>
-                      <Input
-                        id="duration"
-                        type="number"
-                        value={duration}
-                        onChange={(e) => setDuration(e.target.value)}
-                        className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60"
-                      />
-                    </div>
+                        <div className="max-h-96 overflow-y-auto space-y-2">
+                          {searchResults.map((exercise) => (
+                            <div
+                              key={exercise.id}
+                              onClick={() => handleSelectExercise(exercise)}
+                              className={cn(
+                                "p-4 rounded-xl cursor-pointer transition-all border",
+                                "hover:border-orange-300 hover:bg-orange-50 dark:hover:bg-orange-900/20",
+                                "border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-slate-700/50"
+                              )}
+                            >
+                              <div className="flex justify-between items-center">
+                                <div>
+                                  <h4 className="font-medium">{exercise.name}</h4>
+                                  <p className="text-sm text-gray-500">
+                                    MET: {exercise.met}
+                                    {userProfile?.weight && (
+                                      <span className="text-orange-600 font-medium ml-2">
+                                        ~{Math.round(calculateCaloriesBurned(exercise.met, userProfile.weight, 30))} cal/30min
+                                      </span>
+                                    )}
+                                  </p>
+                                </div>
+                                <Badge variant="outline" className="text-xs">
+                                  <Zap className="w-3 h-3 mr-1" />
+                                  {exercise.met}
+                                </Badge>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
 
-                    <div>
-                      <Label htmlFor="caloriesBurned" className="text-gray-700 dark:text-gray-300 font-medium">
-                        Calories Burned
-                      </Label>
-                      <Input
-                        id="caloriesBurned"
-                        type="number"
-                        value={caloriesBurned}
-                        onChange={(e) => setCaloriesBurned(e.target.value)}
-                        className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60"
-                      />
-                    </div>
-                  </div>
+                        {userProfile?.weight && (
+                          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                            <p className="text-sm text-blue-700 dark:text-blue-300">
+                              💡 Calories are calculated based on your weight ({userProfile.weight}kg)
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </GlassCard>
+                )}
+              </TabsContent>
 
-                  <div>
-                    <Label htmlFor="notes" className="text-gray-700 dark:text-gray-300 font-medium">
-                      Exercise Notes (Optional)
-                    </Label>
-                    <Textarea
-                      id="notes"
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      placeholder="How did the exercise feel? Any challenges or achievements..."
-                      className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60"
-                      rows={3}
-                    />
-                  </div>
+              <TabsContent value="manual">
+                <GlassCard variant="premium">
+                  <CardHeader>
+                    <CardTitle className="flex items-center text-gray-900 dark:text-gray-100">
+                      <Dumbbell className="mr-2 h-6 w-6 text-orange-500" />
+                      Manual Exercise Entry
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                      <div>
+                        <Label htmlFor="exerciseName" className="text-gray-700 dark:text-gray-300 font-medium">
+                          Exercise Name
+                        </Label>
+                        <Input
+                          id="exerciseName"
+                          type="text"
+                          value={exerciseName}
+                          onChange={(e) => setExerciseName(e.target.value)}
+                          className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60"
+                          required
+                        />
+                      </div>
 
-                  <Button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-lime-500 hover:shadow-xl transition-all duration-300 text-white border-0 hover:scale-[1.02]"
-                  >
-                    Log Exercise
-                  </Button>
-                </form>
-              </CardContent>
-            </GlassCard>
+                      <div>
+                        <Label className="text-gray-700 dark:text-gray-300 font-medium">Exercise Type</Label>
+                        <Select value={exerciseType} onValueChange={(value) => setExerciseType(value)}>
+                          <SelectTrigger className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border-gray-200/60 dark:border-gray-700/60">
+                            {exerciseTypes.map((type) => (
+                              <SelectItem key={type.value} value={type.value}>
+                                {type.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="duration" className="text-gray-700 dark:text-gray-300 font-medium">
+                            Duration (minutes)
+                          </Label>
+                          <Input
+                            id="duration"
+                            type="number"
+                            value={duration}
+                            onChange={(e) => handleDurationChange(e.target.value)}
+                            className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="caloriesBurned" className="text-gray-700 dark:text-gray-300 font-medium">
+                            Calories Burned
+                          </Label>
+                          <Input
+                            id="caloriesBurned"
+                            type="number"
+                            value={caloriesBurned}
+                            onChange={(e) => setCaloriesBurned(e.target.value)}
+                            className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="notes" className="text-gray-700 dark:text-gray-300 font-medium">
+                          Exercise Notes (Optional)
+                        </Label>
+                        <Textarea
+                          id="notes"
+                          value={notes}
+                          onChange={(e) => setNotes(e.target.value)}
+                          placeholder="How did the exercise feel? Any challenges or achievements..."
+                          className="mt-2 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60"
+                          rows={3}
+                        />
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-lime-500 hover:shadow-xl transition-all duration-300 text-white border-0 hover:scale-[1.02]"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Log Exercise
+                      </Button>
+                    </form>
+                  </CardContent>
+                </GlassCard>
+              </TabsContent>
+            </Tabs>
           </div>
 
           {/* Recent Exercise Records */}
@@ -235,15 +361,9 @@ const ExerciseTracker: React.FC = () => {
                         </span>
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                        <div>
-                          Type: {exercise.type}
-                        </div>
-                        <div>
-                          Duration: {exercise.duration} minutes
-                        </div>
-                        <div>
-                          Calories Burned: <p className="font-semibold">{exercise.calories_burned} cal</p>
-                        </div>
+                        <div>Type: {exercise.type}</div>
+                        <div>Duration: {exercise.duration} minutes</div>
+                        <div>Calories: <span className="font-semibold">{exercise.calories_burned} cal</span></div>
                         {exercise.notes && (
                           <p className="text-sm mt-2 text-gray-700 dark:text-gray-300 italic">
                             "{exercise.notes}"

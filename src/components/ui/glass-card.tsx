@@ -8,6 +8,7 @@ interface GlassCardProps {
   variant?: 'default' | 'premium' | 'cosmic' | 'minimal';
   size?: 'sm' | 'md' | 'lg' | 'xl';
   hover?: boolean;
+  onClick?: () => void;
 }
 
 const GlassCard: React.FC<GlassCardProps> = ({
@@ -15,7 +16,8 @@ const GlassCard: React.FC<GlassCardProps> = ({
   className = '',
   variant = 'default',
   size = 'md',
-  hover = true
+  hover = true,
+  onClick
 }) => {
   const variants = {
     default: 'bg-white/10 dark:bg-slate-900/10 backdrop-blur-xl border border-white/20 dark:border-slate-700/20',
@@ -32,15 +34,20 @@ const GlassCard: React.FC<GlassCardProps> = ({
   };
 
   const hoverEffect = hover ? 'hover:shadow-2xl hover:scale-[1.02] transition-all duration-300' : '';
+  const clickableEffect = onClick ? 'cursor-pointer active:scale-[0.98]' : '';
 
   return (
-    <div className={cn(
-      variants[variant],
-      sizes[size],
-      hoverEffect,
-      'relative overflow-hidden shadow-xl',
-      className
-    )}>
+    <div 
+      className={cn(
+        variants[variant],
+        sizes[size],
+        hoverEffect,
+        clickableEffect,
+        'relative overflow-hidden shadow-xl',
+        className
+      )}
+      onClick={onClick}
+    >
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
       <div className="relative z-10">
         {children}

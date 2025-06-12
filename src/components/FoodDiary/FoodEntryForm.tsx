@@ -1,190 +1,141 @@
 
 import React, { useState, useEffect } from 'react';
-import { Food, extractNutrients, calculateNutrientsByWeight, calculateNutrientsByServings } from '@/services/foodService';
-import { Card } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { Utensils, Plus, X } from 'lucide-react';
+import { Food, extractNutrients, calculateNutrientsByWeight } from '@/services/foodService';
 
 interface FoodEntryFormProps {
   food: Food;
-  onAddFood: (foodData: {
-    name: string;
-    servingSize: string;
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-    meal: string;
-  }) => void;
+  onAddFood: (foodData: any) => void;
   onCancel: () => void;
 }
 
 const FoodEntryForm: React.FC<FoodEntryFormProps> = ({ food, onAddFood, onCancel }) => {
-  const [selectedMeal, setSelectedMeal] = useState('breakfast');
-  const [servingSize, setServingSize] = useState('1');
-  const [gramAmount, setGramAmount] = useState('100');
-  const [measurementType, setMeasurementType] = useState<'servings' | 'grams'>('servings');
-  const [nutrients, setNutrients] = useState({
-    calories: 0,
-    protein: 0,
-    fat: 0,
-    carbs: 0,
-    fiber: 0,
-    sugar: 0,
-    sodium: 0
-  });
+  const [quantity, setQuantity] = useState('1');
+  const [mealType, setMealType] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
+  const [weightInGrams, setWeightInGrams] = useState('100');
   
   const baseNutrients = extractNutrients(food);
+  const calculatedNutrients = calculateNutrientsByWeight(baseNutrients, parseInt(weightInGrams) || 100);
   
-  useEffect(() => {
-    if (measurementType === 'servings') {
-      const servingNum = parseFloat(servingSize) || 0;
-      const calculatedNutrients = calculateNutrientsByServings(baseNutrients, servingNum);
-      setNutrients(calculatedNutrients);
-    } else {
-      const grams = parseFloat(gramAmount) || 0;
-      const calculatedNutrients = calculateNutrientsByWeight(baseNutrients, grams);
-      setNutrients(calculatedNutrients);
-    }
-  }, [servingSize, gramAmount, measurementType, food]);
-  
-  const handleAddFood = () => {
-    const amount = measurementType === 'servings' 
-      ? `${servingSize} ${baseNutrients.servingSizeUnit}`
-      : `${gramAmount}g`;
-      
-    onAddFood({
-      name: food.description,
-      servingSize: amount,
-      calories: nutrients.calories,
-      protein: nutrients.protein,
-      carbs: nutrients.carbs,
-      fat: nutrients.fat,
-      meal: selectedMeal
-    });
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const foodData = {
+      name: food.description || 'Unknown Food',
+      calories: calculatedNutrients.calories,
+      protein: calculatedNutrients.protein,
+      carbs: calculatedNutrients.carbs,
+      fat: calculatedNutrients.fat,
+      fiber: calculatedNutrients.fiber || 0,
+      serving_size: `${weightInGrams}g`,
+      meal_type: mealType,
+      quantity: parseInt(quantity) || 1,
+      date: new Date().toISOString().split('T')[0],
+      brandName: food.brandName
+    };
+    
+    onAddFood(foodData);
   };
-  
+
   return (
-    <Card className="border p-4 rounded-lg shadow-card bg-gradient-card">
-      <div className="flex justify-between items-center mb-3">
-        <h3 className="font-medium text-lg flex items-center">
-          <Utensils className="mr-2 h-5 w-5 text-health-primary" />
-          {food.description}
-        </h3>
-        <Button variant="ghost" size="sm" onClick={onCancel}>
-          <X className="h-4 w-4" />
-        </Button>
-      </div>
-      
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="meal">Meal</Label>
-          <Select value={selectedMeal} onValueChange={setSelectedMeal}>
-            <SelectTrigger id="meal" className="bg-white">
-              <SelectValue placeholder="Select meal" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="breakfast">Breakfast</SelectItem>
-              <SelectItem value="lunch">Lunch</SelectItem>
-              <SelectItem value="dinner">Dinner</SelectItem>
-              <SelectItem value="snacks">Snacks</SelectItem>
-            </SelectContent>
-          </Select>
+    <Card className="w-full max-w-2xl mx-auto bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border border-white/20">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Utensils className="h-5 w-5 text-green-500" />
+            Add to Food Diary
+          </CardTitle>
+          <Button variant="ghost" size="sm" onClick={onCancel}>
+            <X className="h-4 w-4" />
+          </Button>
         </div>
-        
-        <Tabs defaultValue="servings" onValueChange={(val) => setMeasurementType(val as 'servings' | 'grams')}>
-          <TabsList className="grid grid-cols-2 w-full">
-            <TabsTrigger value="servings">Servings</TabsTrigger>
-            <TabsTrigger value="grams">Grams</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="servings" className="pt-4">
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {/* Food Info */}
+        <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
+          <h3 className="font-semibold text-lg mb-2">{food.description}</h3>
+          {food.brandName && (
+            <Badge variant="outline" className="mb-2">{food.brandName}</Badge>
+          )}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
-              <Label htmlFor="servingSize">Number of Servings</Label>
-              <div className="flex items-center">
-                <Input
-                  id="servingSize"
-                  type="number"
-                  min="0.25"
-                  step="0.25"
-                  value={servingSize}
-                  onChange={(e) => setServingSize(e.target.value)}
-                  className="bg-white"
-                />
-                <span className="ml-2 text-gray-500">{baseNutrients.servingSizeUnit}</span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                1 serving = {baseNutrients.servingSize}{baseNutrients.servingSizeUnit}
-              </p>
+              <span className="text-gray-600 dark:text-gray-400">Calories:</span>
+              <span className="ml-1 font-semibold">{calculatedNutrients.calories}</span>
             </div>
-          </TabsContent>
-          
-          <TabsContent value="grams" className="pt-4">
             <div>
-              <Label htmlFor="gramAmount">Amount in Grams</Label>
-              <div className="flex items-center">
-                <Input
-                  id="gramAmount"
-                  type="number"
-                  min="1"
-                  step="1"
-                  value={gramAmount}
-                  onChange={(e) => setGramAmount(e.target.value)}
-                  className="bg-white"
-                />
-                <span className="ml-2 text-gray-500">g</span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Values are calculated per 100g by default
-              </p>
+              <span className="text-gray-600 dark:text-gray-400">Protein:</span>
+              <span className="ml-1 font-semibold">{calculatedNutrients.protein}g</span>
             </div>
-          </TabsContent>
-        </Tabs>
-        
-        <div className="pt-2">
-          <h4 className="text-sm font-medium mb-2">Nutrition Information</h4>
-          <div className="grid grid-cols-3 gap-2">
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-2 rounded-lg text-center shadow-sm">
-              <div className="text-xs text-gray-600">Calories</div>
-              <div className="font-bold text-gray-800">{nutrients.calories}</div>
+            <div>
+              <span className="text-gray-600 dark:text-gray-400">Carbs:</span>
+              <span className="ml-1 font-semibold">{calculatedNutrients.carbs}g</span>
             </div>
-            <div className="bg-gradient-to-br from-health-protein/10 to-health-protein/20 p-2 rounded-lg text-center shadow-sm">
-              <div className="text-xs text-gray-600">Protein</div>
-              <div className="font-bold text-gray-800">{nutrients.protein}g</div>
-            </div>
-            <div className="bg-gradient-to-br from-health-carbs/10 to-health-carbs/20 p-2 rounded-lg text-center shadow-sm">
-              <div className="text-xs text-gray-600">Carbs</div>
-              <div className="font-bold text-gray-800">{nutrients.carbs}g</div>
-            </div>
-            <div className="bg-gradient-to-br from-health-fat/10 to-health-fat/20 p-2 rounded-lg text-center shadow-sm">
-              <div className="text-xs text-gray-600">Fat</div>
-              <div className="font-bold text-gray-800">{nutrients.fat}g</div>
-            </div>
-            <div className="bg-gradient-to-br from-health-fiber/10 to-health-fiber/20 p-2 rounded-lg text-center shadow-sm">
-              <div className="text-xs text-gray-600">Fiber</div>
-              <div className="font-bold text-gray-800">{nutrients.fiber}g</div>
-            </div>
-            <div className="bg-gradient-to-br from-health-sugar/10 to-health-sugar/20 p-2 rounded-lg text-center shadow-sm">
-              <div className="text-xs text-gray-600">Sugar</div>
-              <div className="font-bold text-gray-800">{nutrients.sugar}g</div>
+            <div>
+              <span className="text-gray-600 dark:text-gray-400">Fat:</span>
+              <span className="ml-1 font-semibold">{calculatedNutrients.fat}g</span>
             </div>
           </div>
         </div>
-        
-        <div className="flex justify-end space-x-2 pt-4">
-          <Button variant="outline" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button onClick={handleAddFood} className="bg-gradient-primary hover:shadow-highlight transition-shadow">
-            <Plus className="h-4 w-4 mr-2" />
-            Add to Diary
-          </Button>
-        </div>
-      </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="weight">Weight (grams)</Label>
+              <Input
+                id="weight"
+                type="number"
+                value={weightInGrams}
+                onChange={(e) => setWeightInGrams(e.target.value)}
+                min="1"
+                className="mt-1"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="quantity">Quantity</Label>
+              <Input
+                id="quantity"
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                min="1"
+                className="mt-1"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label>Meal Type</Label>
+            <Select value={mealType} onValueChange={(value: any) => setMealType(value)}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700">
+                <SelectItem value="breakfast">🌅 Breakfast</SelectItem>
+                <SelectItem value="lunch">☀️ Lunch</SelectItem>
+                <SelectItem value="dinner">🌙 Dinner</SelectItem>
+                <SelectItem value="snack">🍎 Snack</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button type="submit" className="flex-1 bg-green-600 hover:bg-green-700">
+              <Plus className="h-4 w-4 mr-2" />
+              Add to Diary
+            </Button>
+            <Button type="button" variant="outline" onClick={onCancel}>
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </CardContent>
     </Card>
   );
 };

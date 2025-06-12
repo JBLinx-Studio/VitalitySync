@@ -1,255 +1,234 @@
 
-import React, { useState, useEffect } from 'react';
-import { useHealth } from '@/contexts/HealthContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { 
-  Activity, 
+  BarChart3, 
   Target, 
-  TrendingUp, 
-  Calendar, 
-  Award,
-  Heart,
   Zap,
-  Users,
-  Camera,
-  Plus,
-  BarChart3,
-  Clock,
-  Flame
+  Brain,
+  Trophy,
+  TrendingUp,
+  Activity,
+  Heart,
+  Sparkles,
+  Crown,
+  Flame,
+  Shield,
+  Star,
+  Rocket
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import ResponsiveContainer from '@/components/layout/ResponsiveContainer';
+import { useViewport } from '@/hooks';
+import DashboardStats from '@/components/common/DashboardStats';
+import RecentActivity from '@/components/common/RecentActivity';
+import QuickActionsPanel from '@/components/common/QuickActionsPanel';
+import AnalyticsDashboard from '@/components/common/AnalyticsDashboard';
+import AIInsightsPanel from '@/components/dashboard/AIInsightsPanel';
+import AdvancedMetrics from '@/components/dashboard/AdvancedMetrics';
+import HealthTrends from '@/components/dashboard/HealthTrends';
+import PersonalizedGoals from '@/components/dashboard/PersonalizedGoals';
+import { useHealth } from '@/contexts/HealthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
-import GlassCard from '@/components/ui/glass-card';
 
 const Dashboard: React.FC = () => {
-  const { userProfile, dailyGoals, todayData } = useHealth();
-  const [streak, setStreak] = useState(7);
-  const [weeklyProgress, setWeeklyProgress] = useState(68);
+  const { userProfile } = useHealth();
+  const { theme, colorTheme } = useTheme();
+  const navigate = useNavigate();
+  const { isMobile, isTablet } = useViewport();
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'ai-insights' | 'goals' | 'trends'>('overview');
 
-  const quickActions = [
-    { icon: Camera, label: 'Scan Food', color: 'from-blue-500 to-cyan-500', action: () => {} },
-    { icon: Plus, label: 'Log Meal', color: 'from-green-500 to-emerald-500', action: () => {} },
-    { icon: Activity, label: 'Add Exercise', color: 'from-purple-500 to-pink-500', action: () => {} },
-    { icon: Users, label: 'Community', color: 'from-orange-500 to-red-500', action: () => {} }
-  ];
+  const handleGetStarted = useCallback(() => {
+    setActiveTab('goals');
+  }, []);
 
-  const healthMetrics = [
-    { 
-      title: 'Calories', 
-      current: todayData?.calories || 0, 
-      goal: dailyGoals.calories, 
-      unit: 'kcal',
-      icon: Flame,
-      color: 'text-orange-500'
+  const handleTabChange = useCallback((value: any) => {
+    setActiveTab(value);
+  }, []);
+
+  const tabConfig = useMemo(() => [
+    {
+      value: 'overview',
+      label: 'Overview',
+      icon: Target,
+      color: 'from-orange-500 to-amber-500',
+      description: 'Your health snapshot'
     },
-    { 
-      title: 'Steps', 
-      current: 8420, 
-      goal: 10000, 
-      unit: 'steps',
-      icon: Activity,
-      color: 'text-blue-500'
+    {
+      value: 'analytics',
+      label: 'Analytics',
+      icon: BarChart3,
+      color: 'from-blue-500 to-cyan-500',
+      description: 'Deep insights & trends'
     },
-    { 
-      title: 'Water', 
-      current: todayData?.water || 0, 
-      goal: dailyGoals.water, 
-      unit: 'ml',
-      icon: Heart,
-      color: 'text-cyan-500'
+    {
+      value: 'ai-insights',
+      label: 'AI Coach',
+      icon: Brain,
+      color: 'from-emerald-500 to-teal-500',
+      description: 'Personalized recommendations'
     },
-    { 
-      title: 'Sleep', 
-      current: 7.5, 
-      goal: 8, 
-      unit: 'hrs',
-      icon: Clock,
-      color: 'text-purple-500'
+    {
+      value: 'goals',
+      label: 'Goals',
+      icon: Trophy,
+      color: 'from-yellow-500 to-orange-500',
+      description: 'Achievement tracking'
+    },
+    {
+      value: 'trends',
+      label: 'Trends',
+      icon: TrendingUp,
+      color: 'from-purple-500 to-pink-500',
+      description: 'Health patterns'
     }
-  ];
+  ], []);
 
-  const achievements = [
-    { title: '7-Day Streak', description: 'Logged meals consistently', earned: true },
-    { title: 'Hydration Hero', description: 'Met water goals 5 times', earned: true },
-    { title: 'Early Bird', description: 'Logged breakfast before 9 AM', earned: false },
-    { title: 'Goal Crusher', description: 'Hit all daily targets', earned: false }
-  ];
+  const getWelcomeMessage = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
 
   return (
-    <div className="space-y-8 p-6">
-      {/* Welcome Section */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Welcome back, {userProfile?.name || 'Champion'}! 🌟
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300 mt-2 text-lg">
-            You're on a {streak}-day streak! Keep up the amazing work.
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <Badge variant="secondary" className="px-4 py-2 text-sm">
-            <TrendingUp className="w-4 h-4 mr-2" />
-            {weeklyProgress}% Weekly Goal
-          </Badge>
-          <Button variant="glass-primary" size="lg" className="gap-2">
-            <Award className="w-5 h-5" />
-            View Achievements
-          </Button>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50/50 via-amber-50/30 to-red-50/50 dark:from-orange-950/30 dark:via-amber-950/20 dark:to-red-950/30 relative overflow-hidden">
+      {/* Enhanced atmospheric background with vibrant orange theme */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-50/80 via-amber-50/60 to-red-100/80 dark:from-orange-950 dark:via-amber-950/95 dark:to-red-950/90"></div>
+        
+        {/* Floating orbs with vibrant orange theme */}
+        <div className={cn(
+          "absolute bg-gradient-to-br from-orange-400/12 via-amber-500/15 to-red-500/12 rounded-full blur-3xl animate-vibrant-pulse opacity-60",
+          isMobile ? "top-5 right-5 w-32 h-32" : "top-10 right-10 w-64 h-64"
+        )}></div>
+        <div className={cn(
+          "absolute bg-gradient-to-tr from-blue-400/10 via-cyan-500/12 to-teal-500/10 rounded-full blur-3xl animate-vibrant-pulse delay-1000 opacity-60",
+          isMobile ? "bottom-5 left-5 w-40 h-40" : "bottom-10 left-10 w-72 h-72"
+        )}></div>
+        <div className={cn(
+          "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-orange-300/8 via-amber-400/10 to-yellow-400/8 rounded-full blur-3xl animate-vibrant-pulse delay-500 opacity-50",
+          isMobile ? "w-36 h-36" : "w-80 h-80"
+        )}></div>
       </div>
 
-      {/* Quick Actions */}
-      <GlassCard variant="premium" className="p-6">
-        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <Zap className="w-5 h-5 text-yellow-500" />
-          Quick Actions
-        </h2>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {quickActions.map((action, index) => (
-            <button
-              key={index}
-              onClick={action.action}
-              className={cn(
-                "group relative p-6 rounded-2xl border border-white/20 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-xl",
-                "bg-gradient-to-br", action.color, "text-white"
-              )}
-            >
-              <action.icon className="w-8 h-8 mb-3 group-hover:scale-110 transition-transform" />
-              <p className="font-semibold text-sm">{action.label}</p>
-              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity" />
-            </button>
-          ))}
-        </div>
-      </GlassCard>
-
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 mb-6">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="nutrition">Nutrition</TabsTrigger>
-          <TabsTrigger value="fitness">Fitness</TabsTrigger>
-          <TabsTrigger value="insights">Insights</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-6">
-          {/* Health Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {healthMetrics.map((metric, index) => {
-              const percentage = Math.min((metric.current / metric.goal) * 100, 100);
-              return (
-                <GlassCard key={index} variant="premium" className="p-6 hover:scale-105 transition-transform">
-                  <div className="flex items-center justify-between mb-4">
-                    <metric.icon className={cn("w-6 h-6", metric.color)} />
-                    <Badge variant="outline" className="text-xs">
-                      {percentage.toFixed(0)}%
-                    </Badge>
-                  </div>
-                  <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                    {metric.title}
-                  </h3>
-                  <div className="space-y-3">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold">{metric.current}</span>
-                      <span className="text-sm text-gray-500">/ {metric.goal} {metric.unit}</span>
+      <ResponsiveContainer maxWidth="2xl" padding={isMobile ? "sm" : "lg"}>
+        <div className="space-y-8 md:space-y-12 relative z-10">
+          {/* Revolutionary Header Section with Vibrant Theme */}
+          <div className="text-center md:text-left space-y-6">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="w-16 h-16 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-vibrant animate-bounce-glow">
+                      <Crown className="w-8 h-8 text-white" />
                     </div>
-                    <Progress value={percentage} className="h-2" />
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center animate-pulse">
+                      <Star className="w-3 h-3 text-white" />
+                    </div>
                   </div>
-                </GlassCard>
-              );
-            })}
+                  <div>
+                    <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 bg-clip-text text-transparent mb-2 animate-fade-in">
+                      {getWelcomeMessage()}, {userProfile?.name || 'Champion'}! 🔥
+                    </h1>
+                    <p className="text-xl text-gray-600 dark:text-gray-300">
+                      Your premium health command center
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <div className="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl text-white font-bold shadow-vibrant hover:shadow-vibrant-glow transition-all duration-500 hover:scale-105">
+                  <div className="flex items-center gap-2">
+                    <Shield className="w-5 h-5" />
+                    <span>Premium Active</span>
+                  </div>
+                </div>
+                <div className="px-4 py-2 bg-orange-100 dark:bg-orange-900/30 rounded-xl border border-orange-200 dark:border-orange-700">
+                  <div className="flex items-center gap-2 text-orange-700 dark:text-orange-300">
+                    <Rocket className="w-4 h-4" />
+                    <span className="font-semibold">AI Powered</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Weekly Overview */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <GlassCard variant="premium" className="p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-blue-500" />
-                Weekly Progress
-              </h3>
-              <div className="space-y-4">
-                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => {
-                  const completed = index < 5;
-                  return (
-                    <div key={day} className="flex items-center gap-4">
-                      <span className="w-8 text-sm font-medium">{day}</span>
-                      <div className="flex-1 flex gap-2">
-                        {['Nutrition', 'Exercise', 'Sleep'].map((category) => (
-                          <div 
-                            key={category}
-                            className={cn(
-                              "h-3 rounded-full flex-1",
-                              completed 
-                                ? "bg-gradient-to-r from-green-400 to-emerald-500" 
-                                : "bg-gray-200 dark:bg-gray-700"
-                            )}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </GlassCard>
-
-            <GlassCard variant="premium" className="p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Award className="w-5 h-5 text-purple-500" />
-                Recent Achievements
-              </h3>
-              <div className="space-y-3">
-                {achievements.map((achievement, index) => (
-                  <div 
-                    key={index}
+          {/* Revolutionary Tab Navigation with Vibrant Theme */}
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+            <div className="relative">
+              <TabsList className={cn(
+                "grid w-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-3xl border border-orange-200/50 dark:border-orange-700/50 rounded-3xl p-3 shadow-vibrant",
+                isMobile ? "grid-cols-3" : "grid-cols-5"
+              )}>
+                {tabConfig.slice(0, isMobile ? 3 : 5).map((tab) => (
+                  <TabsTrigger 
+                    key={tab.value} 
+                    value={tab.value} 
                     className={cn(
-                      "flex items-center gap-3 p-3 rounded-xl border transition-all",
-                      achievement.earned 
-                        ? "bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200 dark:border-yellow-700" 
-                        : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                      "relative flex items-center gap-3 p-4 rounded-2xl transition-all duration-500 font-semibold data-[state=active]:text-white overflow-hidden group",
+                      activeTab === tab.value && `bg-gradient-to-r ${tab.color} shadow-vibrant scale-105`
                     )}
                   >
-                    <div className={cn(
-                      "w-10 h-10 rounded-full flex items-center justify-center",
-                      achievement.earned 
-                        ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-white" 
-                        : "bg-gray-200 dark:bg-gray-700 text-gray-400"
-                    )}>
-                      <Award className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm">{achievement.title}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">{achievement.description}</p>
-                    </div>
-                  </div>
+                    {/* Enhanced shimmer effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 -skew-x-12 group-hover:animate-energy-flow"></div>
+                    
+                    <tab.icon className={cn("w-5 h-5 relative z-10", isMobile && "w-4 h-4", activeTab === tab.value && "animate-bounce-glow")} />
+                    {!isMobile && <span className="relative z-10">{tab.label}</span>}
+                    
+                    {activeTab === tab.value && (
+                      <Sparkles className="w-3 h-3 text-white/80 animate-pulse relative z-10" />
+                    )}
+                  </TabsTrigger>
                 ))}
-              </div>
-            </GlassCard>
-          </div>
-        </TabsContent>
+              </TabsList>
+              
+              {/* Enhanced tab descriptions */}
+              {!isMobile && (
+                <div className="mt-4 text-center">
+                  <p className="text-sm text-orange-600 dark:text-orange-400 font-medium">
+                    {tabConfig.find(tab => tab.value === activeTab)?.description}
+                  </p>
+                </div>
+              )}
+            </div>
 
-        <TabsContent value="nutrition">
-          <GlassCard variant="premium" className="p-6">
-            <h3 className="text-xl font-semibold mb-4">Nutrition Overview</h3>
-            <p className="text-gray-600 dark:text-gray-400">Advanced nutrition tracking coming soon...</p>
-          </GlassCard>
-        </TabsContent>
+            {/* Tab Content with Enhanced Layouts */}
+            <div className="mt-8">
+              <TabsContent value="overview" className="space-y-8 animate-fade-in">
+                <DashboardStats />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <div className="lg:col-span-2">
+                    <RecentActivity onGetStarted={handleGetStarted} />
+                  </div>
+                  <div className="space-y-6">
+                    <QuickActionsPanel />
+                  </div>
+                </div>
+              </TabsContent>
 
-        <TabsContent value="fitness">
-          <GlassCard variant="premium" className="p-6">
-            <h3 className="text-xl font-semibold mb-4">Fitness Tracking</h3>
-            <p className="text-gray-600 dark:text-gray-400">Comprehensive fitness analytics coming soon...</p>
-          </GlassCard>
-        </TabsContent>
+              <TabsContent value="analytics" className="space-y-8 animate-fade-in">
+                <AnalyticsDashboard />
+                <AdvancedMetrics />
+              </TabsContent>
 
-        <TabsContent value="insights">
-          <GlassCard variant="premium" className="p-6">
-            <h3 className="text-xl font-semibold mb-4">Health Insights</h3>
-            <p className="text-gray-600 dark:text-gray-400">AI-powered health insights coming soon...</p>
-          </GlassCard>
-        </TabsContent>
-      </Tabs>
+              <TabsContent value="ai-insights" className="space-y-8 animate-fade-in">
+                <AIInsightsPanel />
+              </TabsContent>
+
+              <TabsContent value="goals" className="space-y-8 animate-fade-in">
+                <PersonalizedGoals />
+              </TabsContent>
+
+              <TabsContent value="trends" className="space-y-8 animate-fade-in">
+                <HealthTrends />
+              </TabsContent>
+            </div>
+          </Tabs>
+        </div>
+      </ResponsiveContainer>
     </div>
   );
 };

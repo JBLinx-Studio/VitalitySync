@@ -33,7 +33,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -91,10 +91,27 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight;
+    @apply tracking-tight font-medium;
+  }
+  
+  h1 {
+    @apply text-3xl font-bold bg-gradient-to-r from-health-primary to-health-secondary bg-clip-text text-transparent;
+  }
+  
+  h2 {
+    @apply text-2xl font-semibold;
+  }
+  
+  h3 {
+    @apply text-xl;
+  }
+  
+  button {
+    @apply transition-all duration-200;
   }
 }
 
@@ -118,6 +135,36 @@
   .animate-float-slower {
     animation: float 8s ease-in-out infinite;
   }
+  
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(155, 155, 155, 0.5);
+    border-radius: 20px;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-health-primary to-health-secondary bg-clip-text text-transparent;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-200 hover:-translate-y-1 hover:shadow-md;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
 }
 
 @keyframes float {
@@ -129,5 +176,16 @@
   }
   100% {
     transform: translateY(0px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

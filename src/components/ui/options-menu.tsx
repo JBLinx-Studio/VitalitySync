@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useMemo } from 'react';
 import {
   Moon,
   Sun,
@@ -7,13 +8,10 @@ import {
   User,
   Bell,
   Palette,
-  Languages,
-  Sparkles,
-  Eye,
-  Scale,
+  Zap,
   Lock,
   HelpCircle,
-  Star
+  Monitor,
 } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import {
@@ -44,13 +42,21 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ userLoggedIn = false }) => {
     toggleTheme, 
     setColorTheme, 
     colorTheme,
-    glassEffect,
-    setGlassEffect,
     enableParticles,
     setEnableParticles
   } = useTheme();
   const navigate = useNavigate();
-  const { isMobile, isTablet } = useViewport();
+  const { isMobile } = useViewport();
+  
+  // Memoize color themes for better performance
+  const colorThemes = useMemo(() => [
+    { key: 'teal-purple', colors: 'from-[#4FD1C5] to-[#9b87f5]', name: 'Teal-Purple' },
+    { key: 'blue-pink', colors: 'from-blue-500 to-pink-500', name: 'Blue-Pink' },
+    { key: 'green-yellow', colors: 'from-green-500 to-yellow-400', name: 'Green-Yellow' },
+    { key: 'sunset', colors: 'from-orange-500 to-pink-500', name: 'Sunset' },
+    { key: 'ocean', colors: 'from-sky-500 to-green-500', name: 'Ocean' },
+    { key: 'cosmic-nebula', colors: 'from-purple-600 to-blue-600', name: 'Cosmic' }
+  ], []);
   
   return (
     <DropdownMenu>
@@ -59,315 +65,173 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ userLoggedIn = false }) => {
           variant="outline" 
           size={isMobile ? "sm" : "icon"}
           className={cn(
-            "relative rounded-full bg-gradient-to-r from-cosmic-nebula/10 to-cosmic-highlight/10 border-cosmic-nebula/20 hover:border-cosmic-nebula/40 hover:bg-gradient-to-r hover:from-cosmic-nebula/20 hover:to-cosmic-highlight/20 transition-all shadow-cosmic",
-            isMobile ? "px-2" : ""
+            "relative rounded-2xl bg-white/40 dark:bg-slate-800/40 border-white/50 dark:border-slate-700/50 hover:bg-white/50 dark:hover:bg-slate-800/50 transition-all duration-300 hover:scale-105 backdrop-blur-xl shadow-xl hover:shadow-2xl active:scale-95",
+            isMobile ? "px-3 py-2" : "w-10 h-10"
           )}
+          aria-label="Settings and options"
         >
           <Settings className={cn(
-            `${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} transition-transform hover:rotate-45 duration-300`,
+            "text-gray-700 dark:text-gray-300 transition-transform hover:rotate-90 duration-500",
             isMobile ? "h-4 w-4" : "h-5 w-5"
           )} />
-          {isMobile && <span className="ml-1 text-xs">Settings</span>}
-          <span className="sr-only">Options</span>
-          <span className={cn(
-            "absolute rounded-full bg-cosmic-nebula animate-pulse",
-            isMobile ? "-top-0.5 -right-0.5 w-2 h-2" : "-top-1 -right-1 w-3 h-3"
-          )}></span>
+          {isMobile && <span className="ml-1.5 text-xs font-medium">Settings</span>}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         className={cn(
-          "backdrop-blur-lg bg-white/90 dark:bg-cosmic-deep/90 border-cosmic-nebula/20 shadow-cosmic rounded-xl border-[1.5px]",
+          "backdrop-blur-3xl bg-white/95 dark:bg-slate-900/95 border-white/50 dark:border-slate-700/50 shadow-2xl rounded-2xl border-2",
           isMobile ? "w-56 mr-1" : "w-64 mr-2"
         )}
         sideOffset={8}
         align="end"
       >
         <div className={cn(
-          "flex items-center justify-between bg-gradient-to-r from-cosmic-nebula/5 to-cosmic-highlight/5 border-b border-cosmic-nebula/10 dark:border-cosmic-nebula/20 rounded-t-xl",
-          isMobile ? "px-2 py-2" : "px-2 py-3"
+          "flex items-center justify-between bg-gradient-to-r from-emerald-500/10 to-blue-500/10 border-b border-white/20 dark:border-slate-700/20 rounded-t-2xl",
+          isMobile ? "px-3 py-2" : "px-4 py-3"
         )}>
           <DropdownMenuLabel className={cn(
-            "flex items-center font-semibold",
-            isMobile ? "text-base" : "text-lg"
+            "flex items-center font-bold text-transparent bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text",
+            isMobile ? "text-sm" : "text-base"
           )}>
             <Settings className={cn(
-              "mr-2 text-cosmic-nebula",
+              "mr-2 text-emerald-500",
               isMobile ? "h-4 w-4" : "h-5 w-5"
             )} />
-            Options
+            Settings
           </DropdownMenuLabel>
-          <span className={cn(
-            "text-muted-foreground mr-1",
-            isMobile ? "text-xs" : "text-xs"
-          )}>v1.2.0</span>
         </div>
         
         <div className={cn(
-          "py-2 scrollbar-thin",
-          isMobile ? "max-h-[60vh]" : "max-h-[calc(100vh-120px)]",
+          "py-2",
+          isMobile ? "max-h-[70vh]" : "max-h-[80vh]",
           "overflow-y-auto"
         )}>
-          {/* Appearance section */}
+          {/* Enhanced theme toggle */}
           <DropdownMenuGroup>
+            <DropdownMenuItem 
+              onClick={toggleTheme}
+              className="cursor-pointer hover:bg-emerald-500/10 rounded-xl mx-2 my-1 px-3 py-2 transition-colors duration-200"
+            >
+              {theme === 'dark' ? (
+                <>
+                  <Sun className={cn(
+                    "mr-3 text-amber-500",
+                    isMobile ? "h-4 w-4" : "h-4 w-4"
+                  )} />
+                  <span className={isMobile ? "text-sm" : ""}>Light Mode</span>
+                </>
+              ) : (
+                <>
+                  <Moon className={cn(
+                    "mr-3 text-slate-600",
+                    isMobile ? "h-4 w-4" : "h-4 w-4"
+                  )} />
+                  <span className={isMobile ? "text-sm" : ""}>Dark Mode</span>
+                </>
+              )}
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+
+          <DropdownMenuSeparator className="my-2" />
+
+          {/* Enhanced appearance submenu */}
+          {!isMobile ? (
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger className="hover:bg-cosmic-nebula/10">
-                <Palette className={cn(
-                  "mr-2 text-cosmic-nebula",
-                  isMobile ? "h-4 w-4" : "h-4 w-4"
-                )} />
-                <span className={isMobile ? "text-sm" : ""}>Appearance</span>
+              <DropdownMenuSubTrigger className="hover:bg-emerald-500/10 rounded-xl mx-2 px-3 py-2 transition-colors duration-200">
+                <Palette className="mr-3 h-4 w-4 text-emerald-500" />
+                <span>Appearance</span>
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
-                <DropdownMenuSubContent className={cn(
-                  "backdrop-blur-lg bg-white/90 dark:bg-cosmic-deep/90 border-cosmic-nebula/20",
-                  isMobile ? "w-48" : ""
-                )}>
+                <DropdownMenuSubContent className="backdrop-blur-3xl bg-white/95 dark:bg-slate-900/95 border-white/40 dark:border-slate-700/40 rounded-xl shadow-2xl">
                   <DropdownMenuGroup>
-                    <DropdownMenuItem 
-                      onClick={toggleTheme}
-                      className="cursor-pointer hover:bg-cosmic-nebula/10"
-                    >
-                      {theme === 'dark' ? (
-                        <>
-                          <Sun className={cn(
-                            "mr-2 text-cosmic-star",
-                            isMobile ? "h-4 w-4" : "h-4 w-4"
-                          )} />
-                          <span className={isMobile ? "text-sm" : ""}>Light Mode</span>
-                        </>
-                      ) : (
-                        <>
-                          <Moon className={cn(
-                            "mr-2 text-cosmic-nebula",
-                            isMobile ? "h-4 w-4" : "h-4 w-4"
-                          )} />
-                          <span className={isMobile ? "text-sm" : ""}>Dark Mode</span>
-                        </>
-                      )}
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuSeparator />
-                    
-                    <DropdownMenuItem 
-                      onClick={() => setColorTheme('teal-purple')}
-                      className={`cursor-pointer ${colorTheme === 'teal-purple' ? 'bg-cosmic-nebula/20' : 'hover:bg-cosmic-nebula/10'}`}
-                    >
-                      <div className="w-4 h-4 rounded-full bg-gradient-to-r from-[#4FD1C5] to-[#9b87f5] mr-2" />
-                      <span>Teal-Purple</span>
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuItem 
-                      onClick={() => setColorTheme('blue-pink')}
-                      className={`cursor-pointer ${colorTheme === 'blue-pink' ? 'bg-cosmic-nebula/20' : 'hover:bg-cosmic-nebula/10'}`}
-                    >
-                      <div className="w-4 h-4 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 mr-2" />
-                      <span>Blue-Pink</span>
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuItem 
-                      onClick={() => setColorTheme('green-yellow')}
-                      className={`cursor-pointer ${colorTheme === 'green-yellow' ? 'bg-cosmic-nebula/20' : 'hover:bg-cosmic-nebula/10'}`}
-                    >
-                      <div className="w-4 h-4 rounded-full bg-gradient-to-r from-green-500 to-yellow-400 mr-2" />
-                      <span>Green-Yellow</span>
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuItem 
-                      onClick={() => setColorTheme('sunset')}
-                      className={`cursor-pointer ${colorTheme === 'sunset' ? 'bg-cosmic-nebula/20' : 'hover:bg-cosmic-nebula/10'}`}
-                    >
-                      <div className="w-4 h-4 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 mr-2" />
-                      <span>Sunset</span>
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuItem 
-                      onClick={() => setColorTheme('ocean')}
-                      className={`cursor-pointer ${colorTheme === 'ocean' ? 'bg-cosmic-nebula/20' : 'hover:bg-cosmic-nebula/10'}`}
-                    >
-                      <div className="w-4 h-4 rounded-full bg-gradient-to-r from-sky-500 to-green-500 mr-2" />
-                      <span>Ocean</span>
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuItem 
-                      onClick={() => setColorTheme('cosmic-nebula')}
-                      className={`cursor-pointer ${colorTheme === 'cosmic-nebula' ? 'bg-cosmic-nebula/20' : 'hover:bg-cosmic-nebula/10'}`}
-                    >
-                      <div className="w-4 h-4 rounded-full bg-gradient-to-r from-cosmic-nebula to-cosmic-highlight mr-2 animate-pulse-soft" />
-                      <span>Cosmic Nebula</span>
-                    </DropdownMenuItem>
+                    {colorThemes.map(({ key, colors, name }) => (
+                      <DropdownMenuItem 
+                        key={key}
+                        onClick={() => setColorTheme(key as any)}
+                        className={`cursor-pointer rounded-xl px-3 py-2 mx-1 transition-colors duration-200 ${
+                          colorTheme === key ? 'bg-emerald-500/20' : 'hover:bg-emerald-500/10'
+                        }`}
+                      >
+                        <div className={`w-4 h-4 rounded-full bg-gradient-to-r ${colors} mr-3 shadow-lg`} />
+                        <span className="text-sm font-medium">{name}</span>
+                      </DropdownMenuItem>
+                    ))}
                   </DropdownMenuGroup>
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
-
-            {/* Effects submenu - simplified for mobile */}
-            {!isMobile && (
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger className="hover:bg-cosmic-nebula/10">
-                  <Sparkles className="mr-2 h-4 w-4 text-cosmic-star" />
-                  <span>Effects</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                  <DropdownMenuSubContent className="backdrop-blur-lg bg-white/90 dark:bg-cosmic-deep/90 border-cosmic-nebula/20">
-                    <DropdownMenuGroup>
-                      <DropdownMenuItem 
-                        onClick={() => setGlassEffect('standard')}
-                        className={`cursor-pointer ${glassEffect === 'standard' ? 'bg-cosmic-nebula/20' : 'hover:bg-cosmic-nebula/10'}`}
-                      >
-                        <div className="w-4 h-4 rounded bg-gray-200 dark:bg-gray-800 mr-2 border border-gray-300 dark:border-gray-700" />
-                        <span>Standard Glass</span>
-                      </DropdownMenuItem>
-                      
-                      <DropdownMenuItem 
-                        onClick={() => setGlassEffect('frosted')}
-                        className={`cursor-pointer ${glassEffect === 'frosted' ? 'bg-cosmic-nebula/20' : 'hover:bg-cosmic-nebula/10'}`}
-                      >
-                        <div className="w-4 h-4 rounded bg-white/60 dark:bg-black/60 mr-2 border border-white/30 dark:border-white/10" />
-                        <span>Frosted Glass</span>
-                      </DropdownMenuItem>
-                      
-                      <DropdownMenuItem 
-                        onClick={() => setGlassEffect('neo')}
-                        className={`cursor-pointer ${glassEffect === 'neo' ? 'bg-cosmic-nebula/20' : 'hover:bg-cosmic-nebula/10'}`}
-                      >
-                        <div className="w-4 h-4 rounded bg-white/20 dark:bg-black/40 mr-2 shadow-sm border border-white/30 dark:border-white/5" />
-                        <span>Neo Glass</span>
-                      </DropdownMenuItem>
-                      
-                      <DropdownMenuItem 
-                        onClick={() => setGlassEffect('ultra')}
-                        className={`cursor-pointer ${glassEffect === 'ultra' ? 'bg-cosmic-nebula/20' : 'hover:bg-cosmic-nebula/10'}`}
-                      >
-                        <div className="w-4 h-4 rounded bg-gradient-to-br from-white/30 to-black/10 dark:from-white/10 dark:to-black/30 mr-2 shadow-md border border-white/40 dark:border-white/5" />
-                        <span>Ultra Glass</span>
-                      </DropdownMenuItem>
-                      
-                      <DropdownMenuItem 
-                        onClick={() => setGlassEffect('iridescent')}
-                        className={`cursor-pointer ${glassEffect === 'iridescent' ? 'bg-cosmic-nebula/20' : 'hover:bg-cosmic-nebula/10'}`}
-                      >
-                        <div className="w-4 h-4 rounded bg-gradient-to-br from-purple-300/40 via-blue-300/20 to-pink-300/30 dark:from-purple-500/30 dark:via-blue-500/20 dark:to-pink-500/30 mr-2 border border-white/20" />
-                        <span>Iridescent</span>
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem 
-                        onClick={() => setGlassEffect('cosmic')}
-                        className={`cursor-pointer ${glassEffect === 'cosmic' ? 'bg-cosmic-nebula/20' : 'hover:bg-cosmic-nebula/10'}`}
-                      >
-                        <div className="w-4 h-4 rounded bg-gradient-to-br from-cosmic-nebula/30 via-cosmic-deep/20 to-cosmic-highlight/30 mr-2 border border-cosmic-nebula/20 animate-pulse" />
-                        <span>Cosmic</span>
-                      </DropdownMenuItem>
-                      
-                      <DropdownMenuSeparator />
-                      
-                      <DropdownMenuItem 
-                        onClick={() => setEnableParticles(!enableParticles)}
-                        className="cursor-pointer hover:bg-cosmic-nebula/10"
-                      >
-                        <span className="w-4 h-4 flex items-center justify-center mr-2">
-                          {enableParticles ? '✓' : ''}
-                        </span>
-                        <span>Background Particles</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                  </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-              </DropdownMenuSub>
-            )}
-            
-            {/* Simplified effects toggle for mobile */}
-            {isMobile && (
-              <DropdownMenuItem 
-                onClick={() => setEnableParticles(!enableParticles)}
-                className="cursor-pointer hover:bg-cosmic-nebula/10"
-              >
-                <Sparkles className="mr-2 h-4 w-4 text-cosmic-star" />
-                <span className="text-sm">
-                  {enableParticles ? 'Disable' : 'Enable'} Effects
-                </span>
-              </DropdownMenuItem>
-            )}
-            
+          ) : (
             <DropdownMenuItem 
-              onClick={() => navigate('/settings')}
-              className="cursor-pointer hover:bg-cosmic-nebula/10"
+              onClick={() => setEnableParticles(!enableParticles)}
+              className="cursor-pointer hover:bg-emerald-500/10 rounded-xl mx-2 my-1 px-3 py-2 transition-colors duration-200"
             >
-              <Eye className={cn(
-                "mr-2 text-cosmic-highlight",
-                isMobile ? "h-4 w-4" : "h-4 w-4"
-              )} />
-              <span className={isMobile ? "text-sm" : ""}>Display</span>
-            </DropdownMenuItem>
-            
-            <DropdownMenuItem className="cursor-pointer hover:bg-cosmic-nebula/10">
-              <Languages className="mr-2 h-4 w-4 text-cosmic-accent" />
-              <span>Language</span>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-
-          <DropdownMenuSeparator />
-          
-          {/* Condensed settings for mobile */}
-          <DropdownMenuGroup>
-            <DropdownMenuItem 
-              onClick={() => navigate('/settings?tab=units')}
-              className="cursor-pointer hover:bg-cosmic-nebula/10"
-            >
-              <Scale className={cn(
-                "mr-2 text-cosmic-star",
-                isMobile ? "h-4 w-4" : "h-4 w-4"
-              )} />
-              <span className={isMobile ? "text-sm" : ""}>
-                {isMobile ? "Units" : "Units & Measurements"}
+              <Zap className="mr-3 h-4 w-4 text-emerald-500" />
+              <span className="text-sm">
+                {enableParticles ? 'Disable' : 'Enable'} Effects
               </span>
             </DropdownMenuItem>
+          )}
+          
+          <DropdownMenuSeparator className="my-2" />
+          
+          {/* Enhanced settings shortcuts */}
+          <DropdownMenuGroup>
+            <DropdownMenuItem 
+              onClick={() => navigate('/settings')}
+              className="cursor-pointer hover:bg-blue-500/10 rounded-xl mx-2 my-1 px-3 py-2 transition-colors duration-200"
+            >
+              <Monitor className={cn(
+                "mr-3 text-blue-500",
+                isMobile ? "h-4 w-4" : "h-4 w-4"
+              )} />
+              <span className={isMobile ? "text-sm" : ""}>Display Settings</span>
+            </DropdownMenuItem>
             
-            <DropdownMenuItem className="cursor-pointer hover:bg-cosmic-nebula/10">
+            <DropdownMenuItem className="cursor-pointer hover:bg-purple-500/10 rounded-xl mx-2 my-1 px-3 py-2 transition-colors duration-200">
               <Bell className={cn(
-                "mr-2 text-cosmic-star",
+                "mr-3 text-purple-500",
                 isMobile ? "h-4 w-4" : "h-4 w-4"
               )} />
               <span className={isMobile ? "text-sm" : ""}>Notifications</span>
             </DropdownMenuItem>
             
-            <DropdownMenuItem className="cursor-pointer hover:bg-cosmic-nebula/10">
+            <DropdownMenuItem className="cursor-pointer hover:bg-orange-500/10 rounded-xl mx-2 my-1 px-3 py-2 transition-colors duration-200">
               <Lock className={cn(
-                "mr-2 text-cosmic-accent",
+                "mr-3 text-orange-500",
                 isMobile ? "h-4 w-4" : "h-4 w-4"
               )} />
-              <span>Privacy</span>
+              <span className={isMobile ? "text-sm" : ""}>Privacy & Security</span>
             </DropdownMenuItem>
             
-            <DropdownMenuItem className="cursor-pointer hover:bg-cosmic-nebula/10">
+            <DropdownMenuItem className="cursor-pointer hover:bg-green-500/10 rounded-xl mx-2 my-1 px-3 py-2 transition-colors duration-200">
               <HelpCircle className={cn(
-                "mr-2 text-cosmic-highlight",
+                "mr-3 text-green-500",
                 isMobile ? "h-4 w-4" : "h-4 w-4"
               )} />
-              <span>Help & Support</span>
+              <span className={isMobile ? "text-sm" : ""}>Help & Support</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           
           {userLoggedIn && (
             <>
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator className="my-2" />
               <DropdownMenuGroup>
                 <DropdownMenuItem 
                   onClick={() => navigate('/profile')}
-                  className="cursor-pointer hover:bg-cosmic-nebula/10"
+                  className="cursor-pointer hover:bg-emerald-500/10 rounded-xl mx-2 my-1 px-3 py-2 transition-colors duration-200"
                 >
                   <User className={cn(
-                    "mr-2 text-cosmic-nebula",
+                    "mr-3 text-emerald-500",
                     isMobile ? "h-4 w-4" : "h-4 w-4"
                   )} />
-                  <span className={isMobile ? "text-sm" : ""}>Profile</span>
+                  <span className={isMobile ? "text-sm" : ""}>My Profile</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer text-red-500 hover:bg-red-500/10">
+                <DropdownMenuItem className="cursor-pointer text-red-500 hover:bg-red-500/10 rounded-xl mx-2 my-1 px-3 py-2 transition-colors duration-200">
                   <LogOut className={cn(
-                    "mr-2",
+                    "mr-3",
                     isMobile ? "h-4 w-4" : "h-4 w-4"
                   )} />
-                  <span className={isMobile ? "text-sm" : ""}>Log out</span>
+                  <span className={isMobile ? "text-sm" : ""}>Sign Out</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </>

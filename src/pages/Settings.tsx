@@ -13,7 +13,12 @@ import {
   Speech, 
   Download, 
   CircleHelp, 
-  Users 
+  Users,
+  Palette,
+  Monitor,
+  MousePointer,
+  Eye,
+  Sparkles
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -21,27 +26,56 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 const Settings = () => {
-  const { theme, toggleTheme, setTheme, measurementSystem, setMeasurementSystem } = useTheme();
+  const { 
+    theme, 
+    toggleTheme, 
+    setTheme, 
+    measurementSystem, 
+    setMeasurementSystem,
+    colorTheme,
+    setColorTheme,
+    isReducedMotion,
+    setIsReducedMotion
+  } = useTheme();
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold mb-2">Settings</h1>
+        <h1 className="text-3xl font-bold mb-2 gradient-text">Settings</h1>
         <p className="text-gray-500 dark:text-gray-400">
           Manage your app preferences and account settings
         </p>
       </div>
 
       <Tabs defaultValue="appearance" className="w-full">
-        <TabsList className="grid grid-cols-4 md:grid-cols-6 mb-8">
-          <TabsTrigger value="appearance">Appearance</TabsTrigger>
-          <TabsTrigger value="units">Units</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="privacy">Privacy</TabsTrigger>
-          <TabsTrigger value="advanced" className="hidden md:inline-flex">Advanced</TabsTrigger>
-          <TabsTrigger value="help" className="hidden md:inline-flex">Help</TabsTrigger>
+        <TabsList className="grid grid-cols-3 md:grid-cols-6 mb-8">
+          <TabsTrigger value="appearance" className="btn-shine">
+            <Palette className="h-4 w-4 mr-2" />
+            <span className="hidden sm:inline">Appearance</span>
+          </TabsTrigger>
+          <TabsTrigger value="units" className="btn-shine">
+            <Scale className="h-4 w-4 mr-2" />
+            <span className="hidden sm:inline">Units</span>
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="btn-shine">
+            <Bell className="h-4 w-4 mr-2" />
+            <span className="hidden sm:inline">Notifications</span>
+          </TabsTrigger>
+          <TabsTrigger value="privacy" className="btn-shine">
+            <Lock className="h-4 w-4 mr-2" />
+            <span className="hidden sm:inline">Privacy</span>
+          </TabsTrigger>
+          <TabsTrigger value="advanced" className="hidden md:inline-flex btn-shine">
+            <Monitor className="h-4 w-4 mr-2" />
+            <span className="hidden sm:inline">Advanced</span>
+          </TabsTrigger>
+          <TabsTrigger value="help" className="hidden md:inline-flex btn-shine">
+            <CircleHelp className="h-4 w-4 mr-2" />
+            <span className="hidden sm:inline">Help</span>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="appearance" className="space-y-6">
@@ -69,6 +103,7 @@ const Settings = () => {
                 <Switch 
                   checked={theme === 'dark'} 
                   onCheckedChange={() => toggleTheme()} 
+                  className="data-[state=checked]:bg-health-secondary"
                 />
               </div>
               
@@ -76,26 +111,61 @@ const Settings = () => {
               
               <div>
                 <h3 className="text-sm font-medium mb-3">Color Theme</h3>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-3">
                   <div 
-                    className={`p-2 rounded-md cursor-pointer transition-all ${
-                      theme === 'light' ? 'ring-2 ring-health-primary ring-offset-2' : ''
+                    className={`p-3 rounded-lg cursor-pointer transition-all hover-lift ${
+                      colorTheme === 'teal-purple' 
+                        ? 'ring-2 ring-health-primary ring-offset-2 dark:ring-offset-gray-900' 
+                        : 'border border-gray-200 dark:border-gray-700'
                     }`}
-                    onClick={() => setTheme('light')}
+                    onClick={() => setColorTheme('teal-purple')}
                   >
-                    <div className="bg-gradient-to-r from-health-primary to-health-secondary h-12 rounded-md mb-1"></div>
-                    <span className="text-xs font-medium">Light</span>
+                    <div className="bg-gradient-to-r from-health-primary to-health-secondary h-14 rounded-md mb-2"></div>
+                    <span className="text-xs font-medium">Teal/Purple</span>
                   </div>
+                  
                   <div 
-                    className={`p-2 rounded-md cursor-pointer transition-all ${
-                      theme === 'dark' ? 'ring-2 ring-health-primary ring-offset-2' : ''
+                    className={`p-3 rounded-lg cursor-pointer transition-all hover-lift ${
+                      colorTheme === 'blue-pink' 
+                        ? 'ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-900' 
+                        : 'border border-gray-200 dark:border-gray-700'
                     }`}
-                    onClick={() => setTheme('dark')}
+                    onClick={() => setColorTheme('blue-pink')}
                   >
-                    <div className="bg-gradient-to-r from-gray-800 to-gray-700 h-12 rounded-md mb-1"></div>
-                    <span className="text-xs font-medium">Dark</span>
+                    <div className="bg-gradient-to-r from-blue-500 to-pink-500 h-14 rounded-md mb-2"></div>
+                    <span className="text-xs font-medium">Blue/Pink</span>
+                  </div>
+                  
+                  <div 
+                    className={`p-3 rounded-lg cursor-pointer transition-all hover-lift ${
+                      colorTheme === 'green-yellow' 
+                        ? 'ring-2 ring-green-500 ring-offset-2 dark:ring-offset-gray-900' 
+                        : 'border border-gray-200 dark:border-gray-700'
+                    }`}
+                    onClick={() => setColorTheme('green-yellow')}
+                  >
+                    <div className="bg-gradient-to-r from-green-500 to-yellow-500 h-14 rounded-md mb-2"></div>
+                    <span className="text-xs font-medium">Green/Yellow</span>
                   </div>
                 </div>
+              </div>
+              
+              <Separator />
+              
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <MousePointer className="h-5 w-5 text-health-primary" />
+                  <div className="flex flex-col">
+                    <span className="font-medium">Reduced Motion</span>
+                    <span className="text-xs text-muted-foreground">
+                      Minimize animations across the app
+                    </span>
+                  </div>
+                </div>
+                <Switch 
+                  checked={isReducedMotion} 
+                  onCheckedChange={() => setIsReducedMotion(!isReducedMotion)}
+                />
               </div>
             </CardContent>
           </Card>
@@ -123,6 +193,34 @@ const Settings = () => {
               
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
+                  <Eye className="h-5 w-5 text-health-secondary" />
+                  <div className="flex flex-col">
+                    <span className="font-medium">High Contrast</span>
+                    <span className="text-xs text-muted-foreground">
+                      Improve visibility with higher contrast
+                    </span>
+                  </div>
+                </div>
+                <Switch defaultChecked={false} />
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <Sparkles className="h-5 w-5 text-amber-500" />
+                  <div className="flex flex-col">
+                    <span className="font-medium">Visual Effects</span>
+                    <span className="text-xs text-muted-foreground">
+                      Enable special visual effects
+                    </span>
+                  </div>
+                </div>
+                <Switch defaultChecked={true} />
+              </div>
+              
+              <Separator />
+              
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
                   <Languages className="h-5 w-5 text-health-secondary" />
                   <div className="flex flex-col">
                     <span className="font-medium">Language</span>
@@ -131,7 +229,7 @@ const Settings = () => {
                     </span>
                   </div>
                 </div>
-                <select className="text-sm rounded border border-gray-300 p-1">
+                <select className="text-sm rounded border border-gray-300 dark:border-gray-700 dark:bg-gray-800 p-1">
                   <option value="en">English</option>
                   <option value="es">Spanish</option>
                   <option value="fr">French</option>
@@ -153,10 +251,11 @@ const Settings = () => {
               <RadioGroup 
                 defaultValue={measurementSystem} 
                 onValueChange={(value) => setMeasurementSystem(value as 'metric' | 'imperial')}
+                className="space-y-4"
               >
-                <div className="flex items-center space-x-2 mb-3">
-                  <RadioGroupItem value="metric" id="metric" />
-                  <Label htmlFor="metric" className="flex items-center gap-2">
+                <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                  <RadioGroupItem value="metric" id="metric" className="text-health-primary" />
+                  <Label htmlFor="metric" className="flex items-center gap-2 cursor-pointer">
                     <Scale className="h-4 w-4 text-health-primary" />
                     <div>
                       <span className="font-medium">Metric System</span>
@@ -164,9 +263,9 @@ const Settings = () => {
                     </div>
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="imperial" id="imperial" />
-                  <Label htmlFor="imperial" className="flex items-center gap-2">
+                <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                  <RadioGroupItem value="imperial" id="imperial" className="text-health-secondary" />
+                  <Label htmlFor="imperial" className="flex items-center gap-2 cursor-pointer">
                     <Ruler className="h-4 w-4 text-health-secondary" />
                     <div>
                       <span className="font-medium">Imperial System</span>
@@ -187,7 +286,7 @@ const Settings = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 gap-4">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="flex flex-col">
                       <span className="font-medium">Show Percentages</span>
@@ -196,10 +295,10 @@ const Settings = () => {
                       </span>
                     </div>
                   </div>
-                  <Switch defaultChecked />
+                  <Switch defaultChecked className="data-[state=checked]:bg-health-primary" />
                 </div>
                 
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="flex flex-col">
                       <span className="font-medium">Detailed Macros</span>
@@ -208,7 +307,16 @@ const Settings = () => {
                       </span>
                     </div>
                   </div>
-                  <Switch defaultChecked />
+                  <Switch defaultChecked className="data-[state=checked]:bg-health-primary" />
+                </div>
+                
+                <div className="mt-4">
+                  <h3 className="text-sm font-medium mb-3">Display Format</h3>
+                  <ToggleGroup type="single" defaultValue="bars">
+                    <ToggleGroupItem value="bars" className="flex-1">Bars</ToggleGroupItem>
+                    <ToggleGroupItem value="pie" className="flex-1">Pie Chart</ToggleGroupItem>
+                    <ToggleGroupItem value="text" className="flex-1">Text Only</ToggleGroupItem>
+                  </ToggleGroup>
                 </div>
               </div>
             </CardContent>
@@ -224,7 +332,7 @@ const Settings = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                 <div className="flex items-center gap-3">
                   <Bell className="h-5 w-5 text-health-primary" />
                   <div className="flex flex-col">
@@ -234,10 +342,10 @@ const Settings = () => {
                     </span>
                   </div>
                 </div>
-                <Switch defaultChecked />
+                <Switch defaultChecked className="data-[state=checked]:bg-health-primary" />
               </div>
               
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                 <div className="flex items-center gap-3">
                   <BellRing className="h-5 w-5 text-health-secondary" />
                   <div className="flex flex-col">
@@ -247,10 +355,10 @@ const Settings = () => {
                     </span>
                   </div>
                 </div>
-                <Switch defaultChecked />
+                <Switch defaultChecked className="data-[state=checked]:bg-health-secondary" />
               </div>
               
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                 <div className="flex items-center gap-3">
                   <Speech className="h-5 w-5 text-amber-500" />
                   <div className="flex flex-col">
@@ -260,7 +368,19 @@ const Settings = () => {
                     </span>
                   </div>
                 </div>
-                <Switch defaultChecked={false} />
+                <Switch defaultChecked={false} className="data-[state=checked]:bg-amber-500" />
+              </div>
+              
+              <Separator />
+              
+              <div>
+                <h3 className="text-sm font-medium mb-3">Notification Time</h3>
+                <select className="w-full p-2 rounded-md border border-gray-200 dark:border-gray-700 dark:bg-gray-800">
+                  <option value="morning">Morning (8:00 AM)</option>
+                  <option value="noon">Noon (12:00 PM)</option>
+                  <option value="evening">Evening (6:00 PM)</option>
+                  <option value="custom">Custom Time</option>
+                </select>
               </div>
             </CardContent>
           </Card>
@@ -275,7 +395,7 @@ const Settings = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                 <div className="flex items-center gap-3">
                   <Lock className="h-5 w-5 text-health-primary" />
                   <div className="flex flex-col">
@@ -285,10 +405,10 @@ const Settings = () => {
                     </span>
                   </div>
                 </div>
-                <Switch defaultChecked />
+                <Switch defaultChecked className="data-[state=checked]:bg-health-primary" />
               </div>
               
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                 <div className="flex items-center gap-3">
                   <Download className="h-5 w-5 text-health-secondary" />
                   <div className="flex flex-col">
@@ -298,8 +418,21 @@ const Settings = () => {
                     </span>
                   </div>
                 </div>
-                <button className="text-xs bg-health-primary/10 text-health-primary px-3 py-1 rounded">
+                <button className="text-xs bg-health-primary/10 text-health-primary hover:bg-health-primary/20 px-4 py-2 rounded-md transition-colors btn-shine">
                   Export
+                </button>
+              </div>
+              
+              <Separator />
+              
+              <div className="bg-amber-50 dark:bg-amber-900/30 p-4 rounded-lg">
+                <h3 className="text-sm font-medium text-amber-800 dark:text-amber-300 mb-2">Data Deletion</h3>
+                <p className="text-xs text-amber-700 dark:text-amber-400 mb-3">
+                  You can request to delete all your data and information from our servers.
+                  This action cannot be undone.
+                </p>
+                <button className="text-xs bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50 px-4 py-2 rounded-md transition-colors">
+                  Request Data Deletion
                 </button>
               </div>
             </CardContent>
@@ -314,8 +447,44 @@ const Settings = () => {
                 Configure advanced application options
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <p className="text-sm">Advanced settings options will appear here.</p>
+            <CardContent className="space-y-6">
+              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col">
+                    <span className="font-medium">Data Auto-Sync</span>
+                    <span className="text-xs text-muted-foreground">
+                      Automatically sync data when online
+                    </span>
+                  </div>
+                </div>
+                <Switch defaultChecked />
+              </div>
+              
+              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col">
+                    <span className="font-medium">Cache Management</span>
+                    <span className="text-xs text-muted-foreground">
+                      Control how app data is cached
+                    </span>
+                  </div>
+                </div>
+                <button className="text-xs bg-muted hover:bg-muted/80 px-4 py-2 rounded-md transition-colors">
+                  Clear Cache
+                </button>
+              </div>
+              
+              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col">
+                    <span className="font-medium">Debug Mode</span>
+                    <span className="text-xs text-muted-foreground">
+                      Show detailed logs and error messages
+                    </span>
+                  </div>
+                </div>
+                <Switch defaultChecked={false} />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -329,13 +498,47 @@ const Settings = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                 <CircleHelp className="h-5 w-5 text-health-primary" />
                 <div className="flex flex-col">
                   <span className="font-medium">Documentation</span>
                   <span className="text-xs text-muted-foreground">
                     Read our detailed user guides
                   </span>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <div className="flex flex-col">
+                  <span className="font-medium">Contact Support</span>
+                  <span className="text-xs text-muted-foreground">
+                    Get help from our support team
+                  </span>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <div className="flex flex-col">
+                  <span className="font-medium">Frequently Asked Questions</span>
+                  <span className="text-xs text-muted-foreground">
+                    Find answers to common questions
+                  </span>
+                </div>
+              </div>
+              
+              <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg mt-4">
+                <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-2">About VitalitySync</h3>
+                <p className="text-xs text-blue-700 dark:text-blue-400 mb-3">
+                  Version 1.0.0 <br />
+                  © 2025 VitalitySync. All rights reserved.
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button className="text-xs bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/70 px-4 py-2 rounded-md transition-colors">
+                    Privacy Policy
+                  </button>
+                  <button className="text-xs bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/70 px-4 py-2 rounded-md transition-colors">
+                    Terms of Service
+                  </button>
                 </div>
               </div>
             </CardContent>

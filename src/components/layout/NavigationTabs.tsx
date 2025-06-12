@@ -84,23 +84,27 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
   };
 
   return (
-    <div className={cn("relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 p-2", className)}>
+    <div className={cn(
+      "relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-200/60 dark:border-gray-700/60 p-3 mx-auto max-w-fit",
+      "ring-1 ring-white/20 dark:ring-slate-700/20",
+      className
+    )}>
       <div className="flex items-center relative">
         {showLeftArrow && !isMobile && (
           <Button
             variant="ghost"
             size="icon"
-            className="absolute left-1 z-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border border-gray-200/50 dark:border-gray-700/50"
+            className="absolute left-2 z-20 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-200/60 dark:border-gray-700/60 h-9 w-9"
             onClick={scrollLeft}
             aria-label="Scroll tabs left"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4 text-gray-700 dark:text-gray-300" />
           </Button>
         )}
         
         <div
           ref={scrollContainerRef}
-          className="flex overflow-x-auto scrollbar-none scroll-smooth gap-2 px-10 py-2"
+          className="flex overflow-x-auto scrollbar-none scroll-smooth gap-2 px-12 py-2"
           style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
         >
           {tabs.map(tab => (
@@ -109,25 +113,25 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
               to={tab.path}
               className={({ isActive }) => 
                 cn(
-                  "flex items-center gap-3 whitespace-nowrap px-5 py-3 rounded-xl transition-all duration-300 text-sm font-medium group relative overflow-hidden",
-                  "hover:scale-[1.02] active:scale-[0.98]",
+                  "flex items-center gap-3 whitespace-nowrap px-6 py-3 rounded-xl transition-all duration-300 text-sm font-semibold group relative overflow-hidden min-w-fit",
+                  "hover:scale-[1.02] active:scale-[0.98] border",
                   "focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2",
                   isActive 
-                    ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/25 active-tab transform scale-[1.02]"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-50 dark:hover:from-slate-800 dark:hover:to-slate-700 hover:shadow-md",
-                  isMobile ? "flex-grow justify-center min-w-[120px]" : "min-w-fit"
+                    ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/25 active-tab transform scale-[1.02] border-blue-400/50" 
+                    : "text-gray-700 dark:text-gray-200 bg-white/60 dark:bg-slate-800/60 hover:bg-white/80 dark:hover:bg-slate-800/80 hover:shadow-md border-gray-200/50 dark:border-gray-700/50",
+                  isMobile ? "flex-grow justify-center min-w-[140px]" : "min-w-fit"
                 )
               }
               role="tab"
               aria-selected={location.pathname === tab.path}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <span className="relative z-10 transition-transform duration-300 group-hover:scale-110">
+              <span className="relative z-10 transition-transform duration-300 group-hover:scale-110 flex-shrink-0">
                 {tab.icon}
               </span>
-              <span className="relative z-10 font-semibold">{tab.name}</span>
+              <span className="relative z-10 font-semibold text-base leading-tight">{tab.name}</span>
               {location.pathname === tab.path && (
-                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-white rounded-full opacity-80"></div>
+                <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-white/90 rounded-full shadow-lg"></div>
               )}
             </NavLink>
           ))}
@@ -137,11 +141,11 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ tabs, className = '' })
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-1 z-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border border-gray-200/50 dark:border-gray-700/50"
+            className="absolute right-2 z-20 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-200/60 dark:border-gray-700/60 h-9 w-9"
             onClick={scrollRight}
             aria-label="Scroll tabs right"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4 text-gray-700 dark:text-gray-300" />
           </Button>
         )}
       </div>

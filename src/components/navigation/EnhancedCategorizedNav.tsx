@@ -120,111 +120,109 @@ const EnhancedCategorizedNav: React.FC = React.memo(() => {
 
   return (
     <nav className="flex items-center justify-center">
-      <div className="flex items-center gap-2 p-2 bg-white/10 dark:bg-slate-900/10 backdrop-blur-2xl rounded-3xl border border-white/20 dark:border-slate-700/20 shadow-2xl">
-        {categories.map((category) => {
-          const isCurrentActive = activeCategory === category.id;
-          
-          return (
-            <DropdownMenu 
-              key={category.id}
-              open={openCategory === category.id}
-              onOpenChange={(open) => setOpenCategory(open ? category.id : null)}
-            >
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "flex items-center gap-2 px-6 py-3 rounded-2xl transition-all duration-500 relative overflow-hidden group",
-                    "hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500/50",
-                    isCurrentActive
-                      ? `bg-gradient-to-r ${category.gradient} text-white shadow-2xl scale-105 border border-white/20`
-                      : "text-gray-700 dark:text-gray-300 hover:bg-white/20 dark:hover:bg-slate-800/20 border border-white/10"
-                  )}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <category.icon className={cn(
-                    "w-5 h-5 transition-transform duration-300 relative z-10",
-                    isCurrentActive ? "scale-110" : "group-hover:scale-110"
-                  )} />
-                  <span className="font-semibold text-sm relative z-10">
-                    {category.name}
-                  </span>
-                  <ChevronDown className={cn(
-                    "w-4 h-4 transition-transform duration-300 relative z-10",
-                    openCategory === category.id ? "rotate-180" : ""
-                  )} />
-                  {isCurrentActive && (
-                    <Sparkles className="w-3 h-3 text-white/80 animate-pulse absolute -top-1 -right-1" />
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              
-              <DropdownMenuContent 
-                className="w-72 p-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-3xl border border-white/30 dark:border-slate-700/30 rounded-2xl shadow-2xl"
-                sideOffset={8}
+      {/* Single gradient background with glossy overlay */}
+      <div className="relative bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 dark:from-slate-800 dark:via-purple-800 dark:to-slate-800 rounded-3xl p-1 shadow-2xl">
+        <div className="absolute inset-0 bg-white/10 dark:bg-white/5 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-white/10"></div>
+        
+        <div className="relative flex items-center gap-2 p-2">
+          {categories.map((category) => {
+            const isCurrentActive = activeCategory === category.id;
+            
+            return (
+              <DropdownMenu 
+                key={category.id}
+                open={openCategory === category.id}
+                onOpenChange={(open) => setOpenCategory(open ? category.id : null)}
               >
-                <DropdownMenuLabel className="flex items-center gap-3 px-2 py-3 mb-2">
-                  <div className={cn(
-                    "w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center text-white shadow-xl",
-                    category.gradient
-                  )}>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "flex items-center gap-2 px-6 py-3 rounded-2xl transition-all duration-300 relative",
+                      "hover:scale-105 focus:outline-none",
+                      isCurrentActive
+                        ? `bg-gradient-to-r ${category.gradient} text-white shadow-xl scale-105`
+                        : "text-white/80 hover:text-white hover:bg-white/10"
+                    )}
+                  >
                     <category.icon className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-lg">{category.name}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {category.items.length} features
-                    </div>
-                  </div>
-                </DropdownMenuLabel>
+                    <span className="font-semibold text-sm">
+                      {category.name}
+                    </span>
+                    <ChevronDown className={cn(
+                      "w-4 h-4 transition-transform duration-300",
+                      openCategory === category.id ? "rotate-180" : ""
+                    )} />
+                    {isCurrentActive && (
+                      <Sparkles className="w-3 h-3 text-white/80 animate-pulse absolute -top-1 -right-1" />
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
                 
-                <DropdownMenuSeparator className="my-3 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent" />
-                
-                <div className="space-y-1">
-                  {category.items.map((item) => (
-                    <DropdownMenuItem key={item.path} asChild className="p-0">
-                      <Link
-                        to={item.path}
-                        onClick={() => setOpenCategory(null)}
-                        className={cn(
-                          "flex items-center gap-3 p-3 rounded-xl transition-all duration-300 group relative overflow-hidden",
-                          isActive(item.path)
-                            ? `bg-gradient-to-r ${category.gradient} text-white shadow-lg scale-105`
-                            : "hover:bg-gray-100/80 dark:hover:bg-slate-800/80 hover:scale-105"
-                        )}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        
+                <DropdownMenuContent 
+                  className="w-72 p-0 border-0 shadow-2xl"
+                  sideOffset={8}
+                >
+                  {/* Single gradient background with glossy overlay for dropdown */}
+                  <div className="relative bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 dark:from-slate-800 dark:via-purple-800 dark:to-slate-800 rounded-2xl overflow-hidden">
+                    <div className="absolute inset-0 bg-white/10 dark:bg-white/5 backdrop-blur-xl"></div>
+                    
+                    <div className="relative p-4">
+                      <DropdownMenuLabel className="flex items-center gap-3 px-2 py-3 mb-2">
                         <div className={cn(
-                          "w-8 h-8 rounded-lg flex items-center justify-center transition-transform duration-300 relative z-10",
-                          isActive(item.path)
-                            ? "bg-white/20 text-white scale-110"
-                            : `bg-${category.color}-100 dark:bg-${category.color}-900/30 text-${category.color}-600 dark:text-${category.color}-400 group-hover:scale-110`
+                          "w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center text-white shadow-xl",
+                          category.gradient
                         )}>
-                          <item.icon className="w-4 h-4" />
+                          <category.icon className="w-5 h-5" />
                         </div>
-                        
-                        <div className="flex-1 relative z-10">
-                          <div className="font-semibold text-sm">{item.name}</div>
-                          <div className={cn(
-                            "text-xs opacity-80",
-                            isActive(item.path) ? "text-white/80" : "text-gray-500 dark:text-gray-400"
-                          )}>
-                            {item.description}
+                        <div>
+                          <div className="font-bold text-lg text-white">{category.name}</div>
+                          <div className="text-xs text-white/60">
+                            {category.items.length} features
                           </div>
                         </div>
-                        
-                        {isActive(item.path) && (
-                          <div className="w-2 h-2 rounded-full bg-white/90 animate-pulse relative z-10" />
-                        )}
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          );
-        })}
+                      </DropdownMenuLabel>
+                      
+                      <DropdownMenuSeparator className="my-3 bg-white/20" />
+                      
+                      <div className="space-y-1">
+                        {category.items.map((item) => (
+                          <DropdownMenuItem key={item.path} asChild className="p-0">
+                            <Link
+                              to={item.path}
+                              onClick={() => setOpenCategory(null)}
+                              className={cn(
+                                "flex items-center gap-3 p-3 rounded-xl transition-all duration-300 group",
+                                isActive(item.path)
+                                  ? `bg-gradient-to-r ${category.gradient} text-white shadow-lg scale-105`
+                                  : "text-white/80 hover:text-white hover:bg-white/10 hover:scale-105"
+                              )}
+                            >
+                              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/10">
+                                <item.icon className="w-4 h-4" />
+                              </div>
+                              
+                              <div className="flex-1">
+                                <div className="font-semibold text-sm">{item.name}</div>
+                                <div className="text-xs opacity-80">
+                                  {item.description}
+                                </div>
+                              </div>
+                              
+                              {isActive(item.path) && (
+                                <div className="w-2 h-2 rounded-full bg-white/90 animate-pulse" />
+                              )}
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            );
+          })}
+        </div>
       </div>
     </nav>
   );

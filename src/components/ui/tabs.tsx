@@ -13,12 +13,12 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "inline-flex items-center justify-center rounded-3xl bg-black/30 backdrop-blur-2xl p-2 text-muted-foreground shadow-2xl border border-white/20 transition-all duration-500 hover:shadow-3xl relative overflow-hidden group w-full",
+      "inline-flex items-center justify-center rounded-3xl bg-white/10 dark:bg-black/20 backdrop-blur-xl p-2 text-muted-foreground shadow-2xl border border-white/30 dark:border-white/10 transition-all duration-500 hover:shadow-3xl relative overflow-hidden group w-full",
       className
     )}
     {...props}
   >
-    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
     <div className="relative z-10 flex w-full gap-2">{props.children}</div>
   </TabsPrimitive.List>
 ))
@@ -32,9 +32,9 @@ const TabsTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       "inline-flex items-center justify-center whitespace-nowrap rounded-2xl px-6 py-4 text-sm font-bold ring-offset-background transition-all duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 relative overflow-hidden group flex-1 min-h-[60px]",
-      "hover:bg-gradient-to-br hover:from-gray-700/60 hover:to-gray-800/60 hover:text-white hover:shadow-xl hover:scale-[1.02] hover:backdrop-blur-xl",
-      "data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500 data-[state=active]:via-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-2xl data-[state=active]:shadow-blue-500/30 data-[state=active]:scale-[1.05] data-[state=active]:border-2 data-[state=active]:border-white/30",
-      "active:scale-[0.98] backdrop-blur-sm border border-white/10",
+      "hover:bg-white/20 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white hover:shadow-xl hover:scale-[1.02] hover:backdrop-blur-xl",
+      "data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500 data-[state=active]:via-cyan-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-2xl data-[state=active]:shadow-blue-500/30 data-[state=active]:scale-[1.05] data-[state=active]:border-2 data-[state=active]:border-white/30",
+      "active:scale-[0.98] backdrop-blur-sm border border-white/20 dark:border-white/10 text-gray-700 dark:text-gray-300",
       className
     )}
     {...props}
@@ -64,15 +64,8 @@ const TabsContent = React.forwardRef<
     )}
     {...props}
   >
-    {/* Single gradient background with glossy overlay */}
-    <div className="relative bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 dark:from-slate-800 dark:via-purple-800 dark:to-slate-800 rounded-3xl overflow-hidden">
-      <div className="absolute inset-0 bg-white/10 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-3xl"></div>
-      
-      <div className="relative p-8">
-        {props.children}
-      </div>
-    </div>
-  </TabsPrimitive.Content>
+    {props.children}
+  </TabsContent>
 ))
 TabsContent.displayName = TabsPrimitive.Content.displayName
 

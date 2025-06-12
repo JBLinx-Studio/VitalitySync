@@ -403,7 +403,7 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
     return 0;
   };
 
-  // Add the enhanced getHealthSummary method
+  // Add the missing getHealthSummary method
   const getHealthSummary = () => {
     const today = new Date().toISOString().split('T')[0];
     const todayFoodItems = foodItems.filter(item => item.date === today);
@@ -422,24 +422,11 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
       ? recentMood.reduce((total, record) => total + moodScores[record.mood], 0) / recentMood.length
       : 0;
 
-    // Calculate weekly totals for progress tracking
-    const weekAgo = new Date();
-    weekAgo.setDate(weekAgo.getDate() - 7);
-    const weekAgoString = weekAgo.toISOString().split('T')[0];
-    
-    const weeklyExercises = exerciseItems.filter(item => item.date >= weekAgoString);
-    const totalDuration = weeklyExercises.reduce((total, item) => total + item.duration, 0);
-    const totalCalories = weeklyExercises.reduce((total, item) => total + item.calories_burned, 0);
-    const calorieGoal = userProfile?.daily_calorie_goal || userProfile?.goals?.calorieGoal || 2000;
-
     return {
       todayCalories: Math.round(todayCalories),
       totalWorkouts,
       avgSleepHours: Math.round(avgSleepHours * 10) / 10,
-      moodScore: Math.round(avgMoodScore * 10) / 10,
-      totalDuration,
-      totalCalories,
-      calorieGoal
+      moodScore: Math.round(avgMoodScore * 10) / 10
     };
   };
 
@@ -462,12 +449,10 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
     getTodaysExerciseItems,
     getExerciseSummary,
     sleepRecords,
-    sleepItems: sleepRecords, // compatibility alias
     addSleepRecord,
     deleteSleepRecord,
     getSleepSummary,
     moodRecords,
-    mentalWellnessItems: moodRecords, // compatibility alias
     addMoodRecord,
     deleteMoodRecord,
     getMoodSummary,

@@ -1,49 +1,13 @@
 
-import React, { lazy, Suspense } from 'react';
+import React from 'react';
 import { VisualEffectProps } from '@/types';
 
-// Use lazy loading for better performance
-const VisualEffectsUI = lazy(() => import('@/components/ui/VisualEffects'));
-
-const PremiumEffects: React.FC<VisualEffectProps> = ({ 
-  type = 'cosmic',
-  density = 'medium',
-  speed = 'medium',
-  interactive = true,
-  color,
-  className
-}) => {
-  // Map unsupported types to supported ones
-  const mapTypeToSupported = (inputType: string): "aurora" | "particles" | "cosmic" | "fireflies" => {
-    switch (inputType) {
-      case 'aurora': return 'aurora';
-      case 'particles': return 'particles';
-      case 'cosmic': return 'cosmic';
-      // Map unsupported types to similar supported ones
-      case 'matrix':
-      case 'gradient':
-      case 'atmosphere':
-        return 'cosmic';
-      default:
-        return 'cosmic';
-    }
-  };
+// This wrapper component imports from the UI component
+const PremiumEffects: React.FC<VisualEffectProps> = (props) => {
+  // Import the actual component dynamically to avoid circular dependencies
+  const PremiumEffectsUI = require('@/components/ui/PremiumEffects').default;
   
-  // Ensure we only pass allowed types
-  const safeType = mapTypeToSupported(type);
-  
-  return (
-    <Suspense fallback={<div className="w-full h-full"></div>}>
-      <VisualEffectsUI 
-        type={safeType}
-        density={density}
-        speed={speed}
-        interactive={interactive}
-        // Remove the color prop as it's not supported by VisualEffectsProps
-        className={className}
-      />
-    </Suspense>
-  );
+  return <PremiumEffectsUI {...props} />;
 };
 
 export default PremiumEffects;

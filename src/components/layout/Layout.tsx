@@ -24,8 +24,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const appRef = useRef<HTMLDivElement>(null);
   const mainContentRef = useRef<HTMLDivElement>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
-  const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
 
   // Determine if we're on the home page, considering GitHub Pages base path
   const isHomePage = location.pathname === "/" || 
@@ -51,27 +49,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   }, [location.pathname, isReducedMotion]);
 
-  // Update viewport dimensions on resize with throttling
-  useEffect(() => {
-    let resizeTimeout: number;
-    
-    const handleResize = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = window.setTimeout(() => {
-        setViewportHeight(window.innerHeight);
-        setViewportWidth(window.innerWidth);
-      }, 100); // Throttle resize events
-    };
-    
-    window.addEventListener('resize', handleResize);
-    handleResize(); // Initialize on mount
-    
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      clearTimeout(resizeTimeout);
-    };
-  }, []);
-
   // Choose background effect based on route
   const getBackgroundEffect = (): VisualEffectType => {
     const pathWithoutBase = location.pathname.replace('/Health-and-Fitness-Webapp', '');
@@ -85,7 +62,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
     
     if (pathWithoutBase.includes('/food')) {
-      return 'aurora';
+      return 'gradient';
     }
     
     if (pathWithoutBase.includes('/sleep')) {
@@ -93,7 +70,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
     
     if (pathWithoutBase.includes('/mental')) {
-      return 'cosmic';
+      return 'atmosphere';
     }
     
     return 'particles';
@@ -107,14 +84,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       return `${baseClasses}`;
     }
     
-    // Adjust padding for different screen sizes
-    if (viewportWidth < 640) { // Mobile
-      return `${baseClasses} py-4 mb-4`;
-    } else if (viewportWidth < 1024) { // Tablet
-      return `${baseClasses} py-6 mb-6`;
-    } else { // Desktop
-      return `${baseClasses} py-8 mb-6`;
-    }
+    return `${baseClasses} py-8 mb-6`;
   };
 
   // Get the appropriate card class based on the glass effect
@@ -133,24 +103,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       default:
         return "glass-card";
     }
-  };
-
-  // Adjust padding based on viewport size
-  const getCardPadding = () => {
-    if (viewportWidth < 640) { // Mobile
-      return "p-3 md:p-4";
-    } else if (viewportWidth < 1024) { // Tablet
-      return "p-4 md:p-5";
-    } else { // Desktop
-      return "p-4 md:p-6 lg:p-8";
-    }
-  };
-  
-  // Determine main content max width for better readability on large screens
-  const getMainContentMaxWidth = () => {
-    if (viewportWidth < 640) return '100%'; // Mobile: full width
-    if (viewportWidth < 1024) return '100%'; // Tablet: full width
-    return '1400px'; // Desktop: max width
   };
 
   return (
@@ -186,17 +138,15 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-cosmic-deep/90 to-transparent"></div>
       </div>
 
-      {/* Fixed header with improved styling */}
       <Header />
       
       <main 
         ref={mainContentRef}
-        style={{ maxWidth: getMainContentMaxWidth(), margin: '0 auto', width: '100%' }}
         className={`${getContentContainerClass()} ${isTransitioning ? 'opacity-0' : ''}`}
       >
         {/* Conditional wrapper for non-home pages */}
         {!isHomePage ? (
-          <UltraCard className={`${getCardPadding()} shadow-cosmic relative overflow-hidden ${getCardClass()} border-cosmic-nebula/20`}>
+          <UltraCard className={`p-4 md:p-6 lg:p-8 shadow-cosmic relative overflow-hidden ${getCardClass()} border-cosmic-nebula/20`}>
             <div className="absolute inset-0 premium-nebula opacity-10"></div>
             <div className="absolute top-0 right-0 w-40 h-40 bg-cosmic-highlight/10 rounded-full blur-xl animate-pulse-soft"></div>
             <div className="absolute bottom-0 left-0 w-60 h-60 bg-cosmic-nebula/10 rounded-full blur-xl animate-pulse-soft"></div>

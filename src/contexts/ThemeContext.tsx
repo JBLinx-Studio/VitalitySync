@@ -32,55 +32,46 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Theme state
   const [theme, setTheme] = useState<Theme>(() => {
     const savedTheme = localStorage.getItem('vitality-theme');
     return (savedTheme as Theme) || 'light';
   });
   
-  // Measurement system state
   const [measurementSystem, setMeasurementSystem] = useState<MeasurementSystem>(() => {
     const savedSystem = localStorage.getItem('vitality-measurement');
     return (savedSystem as MeasurementSystem) || 'metric';
   });
 
-  // Color theme state
   const [colorTheme, setColorTheme] = useState<ColorTheme>(() => {
     const savedColorTheme = localStorage.getItem('vitality-color-theme');
     return (savedColorTheme as ColorTheme) || 'teal-purple';
   });
 
-  // Reduced motion state
   const [isReducedMotion, setIsReducedMotion] = useState(() => {
     const savedMotion = localStorage.getItem('vitality-reduced-motion');
     return savedMotion === 'true';
   });
 
-  // Glass effect state
   const [glassEffect, setGlassEffect] = useState<GlassEffect>(() => {
     const savedEffect = localStorage.getItem('vitality-glass-effect');
     return (savedEffect as GlassEffect) || 'neo';
   });
 
-  // Animation level state
   const [animationLevel, setAnimationLevel] = useState<AnimationLevel>(() => {
     const savedLevel = localStorage.getItem('vitality-animation-level');
     return (savedLevel as AnimationLevel) || 'moderate';
   });
 
-  // Particles state
   const [enableParticles, setEnableParticles] = useState(() => {
     const savedParticles = localStorage.getItem('vitality-particles');
     return savedParticles !== 'false'; // Default to true
   });
   
-  // Blur effect state
   const [enableBlur, setEnableBlur] = useState(() => {
     const savedBlur = localStorage.getItem('vitality-enable-blur');
     return savedBlur !== 'false'; // Default to true
   });
   
-  // Card style state
   const [cardStyle, setCardStyle] = useState(() => {
     const savedCardStyle = localStorage.getItem('vitality-card-style');
     return savedCardStyle || 'standard'; // Default to standard

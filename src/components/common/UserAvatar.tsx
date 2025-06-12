@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { UserProfile } from '@/types/health';
@@ -34,10 +35,13 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     return nameParts[0][0] || "U";
   };
 
-  // Use only the avatar property from UserProfile
+  // Use a safe property access for the avatar/profileImage
   const getAvatarSrc = () => {
     if (imageError) return "";
-    return userProfile?.avatar || "/placeholder.svg";
+    
+    // Check for various possible profile image properties
+    const imageSrc = userProfile?.avatar || userProfile?.profileImage || userProfile?.photoUrl || userProfile?.image;
+    return imageSrc || "/placeholder.svg";
   };
 
   // Size classes

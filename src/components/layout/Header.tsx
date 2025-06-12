@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   User, 
@@ -12,17 +12,16 @@ import {
   Menu, 
   X,
   Award,
-  ChevronLeft,
-  ChevronRight
 } from 'lucide-react';
 import { useHealth } from '@/contexts/HealthContext';
 import { Button } from '@/components/ui/button';
 import NotificationsMenu from '@/components/Notifications/NotificationsMenu';
 import { UltraCard } from '@/components/ui/card';
 import { UserAvatar } from '@/components/common';
-import { useIsMobile } from '@/hooks';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import OptionsMenu from '@/components/common/OptionsMenu';
+import MainNavigation from './MainNavigation';
 
 const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -30,11 +29,6 @@ const Header: React.FC = () => {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const isMobile = useIsMobile();
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const navRef = useRef<HTMLDivElement>(null);
-  const navContainerRef = useRef<HTMLDivElement>(null);
-  const [showScrollButtons, setShowScrollButtons] = useState(false);
-  const [activeCategory, setActiveCategory] = useState('');
 
   const handleScroll = useCallback(() => {
     if (window.scrollY > 10) {
@@ -50,30 +44,9 @@ const Header: React.FC = () => {
   }, [handleScroll]);
 
   useEffect(() => {
+    // Close mobile menu when route changes
     setMobileMenuOpen(false);
-    const currentPath = location.pathname.replace('/Health-and-Fitness-Webapp', '');
-    setActiveCategory(currentPath);
   }, [location.pathname]);
-
-  useEffect(() => {
-    const checkForScrollButtons = () => {
-      if (!navRef.current || !navContainerRef.current) return;
-      const { scrollWidth, clientWidth } = navRef.current;
-      setShowScrollButtons(scrollWidth > clientWidth);
-    };
-    
-    checkForScrollButtons();
-    const resizeObserver = new ResizeObserver(checkForScrollButtons);
-    if (navContainerRef.current) {
-      resizeObserver.observe(navContainerRef.current);
-    }
-    
-    return () => {
-      if (navContainerRef.current) {
-        resizeObserver.disconnect();
-      }
-    };
-  }, []);
 
   const navItems = [
     { path: "/dashboard", icon: <BarChart className="w-5 h-5" />, label: "Dashboard" },
@@ -85,132 +58,56 @@ const Header: React.FC = () => {
     { path: "/achievements", icon: <Award className="w-5 h-5" />, label: "Achievements" },
   ];
 
-  const isActive = (path: string) => {
-    const currentPath = location.pathname.replace('/Health-and-Fitness-Webapp', '');
-    const targetPath = path === '/' ? '/' : path;
-    return currentPath === targetPath;
-  };
-
-  const scrollNav = (direction: 'left' | 'right') => {
-    if (!navRef.current) return;
-    const scrollAmount = navRef.current.clientWidth / 2;
-    const newPosition = direction === 'left' 
-      ? Math.max(0, navRef.current.scrollLeft - scrollAmount)
-      : navRef.current.scrollLeft + scrollAmount;
-      
-    navRef.current.scrollTo({
-      left: newPosition,
-      behavior: 'smooth'
-    });
-    setScrollPosition(newPosition);
-  };
-
   return (
     <header 
-      className={`sticky top-0 z-50 transition-all duration-500 ${
+      className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled 
-          ? 'py-2 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-xl border-b border-gray-200/50 dark:border-gray-700/50' 
-          : 'py-4 bg-gradient-to-r from-white/90 to-gray-50/90 dark:from-slate-900/90 dark:to-slate-800/90 backdrop-blur-lg'
+          ? 'py-2 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-lg' 
+          : 'py-4 bg-transparent'
       }`}
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          {/* Logo */}
           <Link 
             to="/" 
-            className="flex items-center space-x-3 flex-shrink-0 group"
+            className="flex items-center gap-2 flex-shrink-0"
           >
-            <div className="relative">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                <span className="text-white font-bold text-xl">V</span>
-              </div>
-              <div className="absolute -inset-1 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl opacity-0 group-hover:opacity-30 blur transition-all duration-300"></div>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                VitalitySync
-              </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">Health & Wellness</span>
-            </div>
+            <UltraCard className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-health-primary to-health-secondary shadow-glow">
+              <span className="text-white font-bold text-xl">V</span>
+            </UltraCard>
+            <span className="text-xl font-display font-bold bg-gradient-to-r from-health-primary to-health-secondary bg-clip-text text-transparent">
+              VitalitySync
+            </span>
           </Link>
 
-          <div 
-            ref={navContainerRef}
-            className="hidden md:flex items-center justify-center flex-grow mx-6 relative"
-          >
-            {showScrollButtons && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute left-0 z-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl border border-gray-200/50 dark:border-gray-700/50"
-                onClick={() => scrollNav('left')}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-            )}
-            
-            <div className="w-full overflow-hidden relative">
-              <nav 
-                ref={navRef}
-                className="flex items-center space-x-1 overflow-x-auto scrollbar-none px-12 py-3 max-w-full scroll-smooth"
-              >
-                {navItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={cn(
-                      "flex items-center space-x-2 px-4 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap relative group",
-                      isActive(item.path) 
-                        ? "bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 text-blue-600 dark:text-blue-400 font-medium shadow-lg backdrop-blur-sm" 
-                        : "text-gray-600 hover:bg-gray-100/70 dark:text-gray-300 dark:hover:bg-slate-800/70 hover:shadow-md backdrop-blur-sm"
-                    )}
-                  >
-                    <span className={cn("transition-transform duration-300", isActive(item.path) ? "scale-110" : "group-hover:scale-105")}>
-                      {item.icon}
-                    </span>
-                    <span className="font-medium">{item.label}</span>
-                    {isActive(item.path) && (
-                      <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
-                    )}
-                  </Link>
-                ))}
-              </nav>
-              
-              <div className="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-white dark:from-slate-900 to-transparent pointer-events-none"></div>
-              <div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-white dark:from-slate-900 to-transparent pointer-events-none"></div>
-            </div>
-            
-            {showScrollButtons && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 z-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl border border-gray-200/50 dark:border-gray-700/50"
-                onClick={() => scrollNav('right')}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            )}
+          {/* Main Navigation - rendered in center for larger screens, hidden on mobile */}
+          <div className="hidden md:flex flex-grow justify-center">
+            <MainNavigation navItems={navItems} className="max-w-3xl w-full" />
           </div>
 
-          <div className="flex items-center space-x-3 flex-shrink-0">
+          {/* Right side - Actions */}
+          <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
+            {/* Notifications */}
             <div className="hidden sm:block">
               <NotificationsMenu />
             </div>
 
+            {/* Options Menu (includes Theme Toggle) */}
             <OptionsMenu userLoggedIn={!!userProfile} />
 
+            {/* Profile */}
             {userProfile ? (
               <Link to="/profile" className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-0 group-hover:opacity-50 blur transition-all duration-300"></div>
-                <div className="relative">
-                  <UserAvatar userProfile={userProfile} />
-                </div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-health-primary to-health-secondary rounded-full opacity-25 group-hover:opacity-50 blur transition duration-300"></div>
+                <UserAvatar userProfile={userProfile} />
               </Link>
             ) : (
               <Link to="/profile">
                 <Button 
                   className={cn(
-                    "bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:shadow-xl transition-all duration-300 text-white border-0 hover:scale-105",
-                    isMobile ? "px-3 py-2 text-sm" : "px-6 py-2.5"
+                    "bg-gradient-to-r from-health-primary to-health-secondary hover:shadow-glow transition-all text-white",
+                    isMobile ? "px-2 py-1 text-xs" : "px-4 py-2"
                   )}
                   size={isMobile ? "sm" : "default"}
                 >
@@ -219,90 +116,86 @@ const Header: React.FC = () => {
               </Link>
             )}
 
+            {/* Mobile Menu Button */}
             <Button 
               variant="outline"
               size="icon"
-              className="md:hidden border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-xl"
+              className="md:hidden border-health-primary/20 hover:border-health-primary/40 hover:bg-health-primary/10"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </Button>
           </div>
         </div>
-        
-        <div className="md:hidden mt-3 relative">
-          <div className="overflow-x-auto scrollbar-none py-2 px-1 flex gap-2">
-            {navItems.map((item) => {
-              const isItemActive = isActive(item.path);
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={cn(
-                    "flex items-center space-x-2 px-4 py-2.5 rounded-xl transition-all duration-300 flex-shrink-0 whitespace-nowrap",
-                    isItemActive 
-                      ? "bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 text-blue-600 dark:text-blue-400 font-medium shadow-lg" 
-                      : "bg-white/70 dark:bg-slate-800/70 hover:bg-gray-100/80 dark:hover:bg-slate-700/80 backdrop-blur-sm shadow-md"
-                  )}
-                >
-                  <span className={cn("transition-transform", isItemActive ? "scale-110" : "")}>{item.icon}</span>
-                  <span className="text-sm font-medium">{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-          <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-white dark:from-slate-900 to-transparent pointer-events-none"></div>
-          <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-white dark:from-slate-900 to-transparent pointer-events-none"></div>
+
+        {/* Mobile Navigation - only visible on small screens */}
+        <div className="md:hidden mt-3">
+          {!mobileMenuOpen && (
+            <MainNavigation navItems={navItems} />
+          )}
         </div>
       </div>
 
-      {/* Enhanced Mobile Menu */}
+      {/* Enhanced Mobile Menu with blur backdrop */}
       <div
         className={`fixed inset-0 z-40 transform ${
           mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
         } transition-transform duration-300 md:hidden`}
       >
         <div 
-          className="absolute inset-0 bg-black/60 backdrop-blur-md" 
+          className="absolute inset-0 bg-black/50 backdrop-blur-md" 
           onClick={() => setMobileMenuOpen(false)}
         ></div>
-        <div className="absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-2xl flex flex-col border-l border-gray-200/50 dark:border-gray-700/50">
-          <div className="p-6 border-b border-gray-200/50 dark:border-gray-700/50 flex justify-between items-center">
-            <span className="text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Navigation</span>
+        <div className="absolute right-0 top-0 bottom-0 w-3/4 max-w-sm bg-gradient-to-br from-white/95 to-gray-100/95 dark:from-gray-900/95 dark:to-gray-950/95 backdrop-blur-lg shadow-xl flex flex-col">
+          <div className="p-5 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
+            <span className="text-lg font-medium bg-gradient-to-r from-health-primary to-health-secondary bg-clip-text text-transparent">Menu</span>
             <button 
               onClick={() => setMobileMenuOpen(false)}
-              className="rounded-xl p-2 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+              className="rounded-full p-1 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
             >
-              <X className="w-5 h-5 text-gray-500" />
+              <X className="w-6 h-6 text-gray-500" />
             </button>
           </div>
-          <nav className="flex-1 overflow-y-auto p-6 space-y-2">
+          <nav className="flex-1 overflow-y-auto p-5 space-y-2">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={cn(
-                  "flex items-center space-x-3 p-4 rounded-xl transition-all duration-300",
+                className={`flex items-center space-x-3 p-3 rounded-xl ${
                   location.pathname.replace('/Health-and-Fitness-Webapp', '') === item.path 
-                    ? 'bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 text-blue-600 dark:text-blue-400 font-medium shadow-lg' 
-                    : 'hover:bg-gray-100/70 dark:hover:bg-slate-800/70 hover:shadow-md'
-                )}
+                    ? 'bg-gradient-to-r from-health-primary/20 to-health-secondary/20 text-health-primary font-medium shadow-inner' 
+                    : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {item.icon}
-                <span className="font-medium">{item.label}</span>
+                <span>{item.label}</span>
               </Link>
             ))}
-            <div className="border-t border-gray-200/50 dark:border-gray-700/50 pt-6 mt-6 space-y-2">
+            <div className="border-t border-gray-200 dark:border-gray-800 pt-5 mt-5 space-y-2">
               <Link
                 to="/profile"
-                className="flex items-center space-x-3 p-4 rounded-xl hover:bg-gray-100/70 dark:hover:bg-slate-800/70 transition-all duration-300"
+                className="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <User className="w-5 h-5" />
-                <span className="font-medium">Profile</span>
+                <span>Profile</span>
               </Link>
-              <div className="p-4">
+              <Link
+                to="/settings"
+                className="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <User className="w-5 h-5" />
+                <span>Settings</span>
+              </Link>
+
+              {/* Mobile Notifications access */}
+              <div className="p-3">
                 <NotificationsMenu />
               </div>
             </div>

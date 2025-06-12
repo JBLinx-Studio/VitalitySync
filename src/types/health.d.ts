@@ -8,6 +8,7 @@ export interface UserProfile {
   weight?: number; // in kg
   gender?: 'male' | 'female' | 'other';
   activityLevel?: 'sedentary' | 'lightly_active' | 'moderately_active' | 'very_active' | 'extremely_active';
+  activity_level?: 'sedentary' | 'lightly_active' | 'moderately_active' | 'very_active' | 'extremely_active'; // compatibility
   goals?: {
     weightGoal?: number;
     calorieGoal?: number;
@@ -16,6 +17,11 @@ export interface UserProfile {
     targetDate?: string;
     primaryGoal?: 'lose_weight' | 'gain_weight' | 'maintain_weight' | 'build_muscle' | 'improve_fitness';
   };
+  daily_calorie_goal?: number;
+  daily_exercise_goal?: number;
+  daily_water_goal?: number;
+  weight_goal?: number;
+  health_conditions?: string;
   preferences?: {
     units?: 'metric' | 'imperial';
     notifications?: boolean;
@@ -182,6 +188,7 @@ export interface HealthContextType {
   
   // Sleep
   sleepRecords: SleepRecord[];
+  sleepItems: SleepRecord[]; // compatibility alias
   addSleepRecord: (record: Omit<SleepRecord, 'id'>) => void;
   deleteSleepRecord: (id: string) => void;
   getSleepSummary: (days?: number) => {
@@ -192,6 +199,7 @@ export interface HealthContextType {
   
   // Mental Wellness
   moodRecords: MoodRecord[];
+  mentalWellnessItems: MoodRecord[]; // compatibility alias
   addMoodRecord: (record: Omit<MoodRecord, 'id'>) => void;
   deleteMoodRecord: (id: string) => void;
   getMoodSummary: (days?: number) => {
@@ -227,4 +235,15 @@ export interface HealthContextType {
   // Goals
   checkAndUpdateGoals: () => void;
   getGoalProgress: (type: string) => number;
+  
+  // Health Summary
+  getHealthSummary: () => {
+    todayCalories: number;
+    totalWorkouts: number;
+    avgSleepHours: number;
+    moodScore: number;
+    totalDuration: number;
+    totalCalories: number;
+    calorieGoal: number;
+  };
 }

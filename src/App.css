@@ -9,7 +9,7 @@
   background-image: 
     radial-gradient(circle at top right, rgba(79, 209, 197, 0.15), transparent 70%),
     radial-gradient(circle at bottom left, rgba(155, 135, 245, 0.15), transparent 70%),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(240, 240, 250, 0.9));
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(245, 245, 255, 0.92));
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
@@ -34,8 +34,6 @@
 /* Enhanced background particles */
 .bg-particle {
   position: absolute;
-  width: 6px;
-  height: 6px;
   border-radius: 50%;
   background: linear-gradient(135deg, rgba(79, 209, 197, 0.6), rgba(155, 135, 245, 0.6));
   opacity: 0.2;
@@ -49,6 +47,23 @@
   opacity: 0.3;
   filter: blur(2px);
   background: linear-gradient(135deg, rgba(79, 209, 197, 0.7), rgba(155, 135, 245, 0.7));
+}
+
+/* Interactive orbs */
+.interactive-orb {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  opacity: 0.5;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2));
+  filter: blur(8px);
+  transition: all 0.8s ease;
+  pointer-events: none;
+}
+
+.dark .interactive-orb {
+  background: radial-gradient(circle at 30% 30%, rgba(79, 209, 197, 0.4), rgba(155, 135, 245, 0.1));
 }
 
 @keyframes float-particle {
@@ -92,10 +107,11 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Card effects */
 .glass-effect {
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  border-radius: var(--radius);
 }
 
 /* Shimmer effect for cards */
@@ -109,11 +125,11 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(
     135deg,
     rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0.1) 50%,
     rgba(255, 255, 255, 0) 100%
   );
   transform: rotate(45deg);
-  transition: all 0.5s ease;
+  transition: all 0.8s ease;
   z-index: 0;
   pointer-events: none;
 }
@@ -127,7 +143,7 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(
     135deg,
     rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.025) 50%,
+    rgba(255, 255, 255, 0.05) 50%,
     rgba(255, 255, 255, 0) 100%
   );
 }
@@ -290,8 +306,103 @@ h1, h2, h3, h4, h5, h6 {
   transform: scaleX(1);
 }
 
+/* New 3D effects */
+.scene {
+  perspective: 1000px;
+}
+
+.card-3d {
+  transition: transform 0.5s;
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+
+.card-3d:hover {
+  transform: rotateY(10deg) rotateX(5deg);
+}
+
 @media (min-width: 768px) {
   .app-container {
     padding: 2rem;
   }
 }
+
+/* Firefly effect */
+.firefly {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  animation: firefly-animation 4s linear infinite;
+}
+
+@keyframes firefly-animation {
+  0% {
+    opacity: 0;
+    transform: translateY(0) translateX(0) scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(-100px) translateX(100px) scale(0.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-200px) translateX(200px) scale(0);
+  }
+}
+
+/* Gradient border hover effect */
+.gradient-border-hover {
+  position: relative;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: all 0.3s ease;
+}
+
+.gradient-border-hover:before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  bottom: -2px;
+  left: -2px;
+  background: linear-gradient(45deg, #4FD1C5, #9b87f5);
+  z-index: -1;
+  border-radius: calc(var(--radius) + 2px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.gradient-border-hover:hover:before {
+  opacity: 1;
+}
+
+/* Light reflections */
+.light-reflection {
+  position: relative;
+  overflow: hidden;
+}
+
+.light-reflection:before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+  transform: rotate(-45deg);
+  animation: light-move 4s infinite linear;
+}
+
+@keyframes light-move {
+  0% {
+    transform: rotate(-45deg) translateY(-30%);
+  }
+  100% {
+    transform: rotate(-45deg) translateY(100%);
+  }
+}
+

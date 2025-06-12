@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -98,8 +99,6 @@ export default {
         '2xl': '1rem',
         '3xl': '1.5rem',
         '4xl': '2rem',
-        '5xl': '2.5rem',
-        '6xl': '3rem',
       },
       boxShadow: {
         'soft': '0 4px 20px rgba(0, 0, 0, 0.07)',
@@ -113,9 +112,6 @@ export default {
         'cosmic-glow': '0 0 30px rgba(124, 58, 237, 0.6), 0 0 60px rgba(6, 182, 212, 0.3)',
         'prismatic': '0 5px 20px rgba(236, 72, 153, 0.5), 0 12px 30px rgba(6, 182, 212, 0.4)',
         'nebula': '0 8px 20px rgba(124, 58, 237, 0.3), 0 6px 12px rgba(15, 23, 42, 0.5)',
-        'ultra': '0 25px 50px rgba(0, 0, 0, 0.25), 0 0 50px rgba(124, 58, 237, 0.3)',
-        'glass': 'inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.3)',
-        'premium': '0 20px 40px rgba(0, 0, 0, 0.1), 0 0 40px rgba(124, 58, 237, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
       },
       keyframes: {
         'accordion-down': {
@@ -210,28 +206,6 @@ export default {
             filter: 'hue-rotate(360deg)'
           },
         },
-        'holographic': {
-          '0%': { 
-            backgroundPosition: '0% 50%',
-            filter: 'hue-rotate(0deg) brightness(1)'
-          },
-          '25%': {
-            backgroundPosition: '100% 50%',
-            filter: 'hue-rotate(90deg) brightness(1.2)'
-          },
-          '50%': {
-            backgroundPosition: '100% 100%',
-            filter: 'hue-rotate(180deg) brightness(1)'
-          },
-          '75%': {
-            backgroundPosition: '0% 100%',
-            filter: 'hue-rotate(270deg) brightness(1.2)'
-          },
-          '100%': { 
-            backgroundPosition: '0% 50%',
-            filter: 'hue-rotate(360deg) brightness(1)'
-          },
-        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -249,7 +223,6 @@ export default {
         'star-twinkle': 'star-twinkle 3s ease-in-out infinite',
         'nebula-drift': 'nebula-drift 30s linear infinite',
         'prismatic-shift': 'prismatic-shift 6s linear infinite',
-        'holographic': 'holographic 8s linear infinite',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -266,27 +239,17 @@ export default {
         'gradient-nebula': 'radial-gradient(circle at center, rgba(124, 58, 237, 0.8) 0%, rgba(15, 23, 42, 0) 70%)',
         'gradient-space': 'radial-gradient(ellipse at bottom, rgb(30, 41, 59) 0%, rgb(15, 23, 42) 100%)',
         'gradient-star-field': 'radial-gradient(1px 1px at 25px 25px, white, rgba(255, 255, 255, 0)), radial-gradient(1px 1px at 50px 50px, white, rgba(255, 255, 255, 0))',
-        'gradient-holographic': 'linear-gradient(45deg, #ff006e, #3a86ff, #06ffa5, #ffbe0b, #fb5607)',
-        'gradient-glass': 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
       },
       transitionProperty: {
         'height': 'height',
         'spacing': 'margin, padding',
         'glow': 'box-shadow',
         'backdrop': 'backdrop-filter',
-        'transform-opacity': 'transform, opacity',
       },
       transitionTimingFunction: {
         'bounce': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
         'cosmic': 'cubic-bezier(0.19, 1, 0.22, 1)',
-        'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
-        'spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
       },
-      backdropBlur: {
-        'xs': '2px',
-        '4xl': '72px',
-        '5xl': '96px',
-      }
     }
   },
   plugins: [require("tailwindcss-animate")],

@@ -35,53 +35,25 @@ export interface WaterIntake {
   date: string;
 }
 
-export interface SleepRecord {
-  id: string;
-  date: string;
-  duration: number; // in hours
-  quality: number; // 1-10 scale
-  bedtime: string;
-  wakeTime: string;
-  notes: string;
-}
-
-export interface MoodRecord {
-  id: string;
-  date: string;
-  mood: 'great' | 'good' | 'neutral' | 'bad' | 'awful';
-  stressLevel: number; // 1-10
-  notes: string;
-  activities: string[];
-}
-
 export interface HealthContextType {
   userProfile: UserProfile | null;
   foodItems: NutritionItem[];
   exerciseItems: ExerciseItem[];
   waterIntake: WaterIntake[];
-  sleepRecords: SleepRecord[];
-  moodRecords: MoodRecord[];
   dailyGoals: {
     calories: number;
     protein: number;
     carbs: number;
     fat: number;
     water: number;
-    sleep: number;
   };
   updateUserProfile: (profile: UserProfile) => void;
   addFoodItem: (item: NutritionItem) => void;
   addExerciseItem: (item: ExerciseItem) => void;
   updateWaterIntake: (amount: number) => void;
-  addSleepRecord: (record: SleepRecord) => void;
-  addMoodRecord: (record: MoodRecord) => void;
   getTodaysFoodItems: () => NutritionItem[];
   getTodaysExerciseItems: () => ExerciseItem[];
   getTodaysWaterIntake: () => number;
-  getLatestSleepRecord: () => SleepRecord | null;
-  getLatestMoodRecord: () => MoodRecord | null;
-  getWeeklySleepData: () => SleepRecord[];
-  getWeeklyMoodData: () => MoodRecord[];
   calculateBMI: () => number | null;
   calculateCalorieNeeds: () => number | null;
   getNutritionSummary: () => {
@@ -94,14 +66,6 @@ export interface HealthContextType {
     totalCaloriesBurned: number;
     totalDuration: number;
   };
-  getSleepSummary: () => {
-    averageDuration: number;
-    averageQuality: number;
-  };
-  getMoodSummary: () => {
-    averageStressLevel: number;
-    predominantMood: string;
-  };
   resetDailyData: () => void;
 }
 
@@ -111,7 +75,6 @@ const defaultGoals = {
   carbs: 250, // grams
   fat: 70, // grams
   water: 2500, // ml
-  sleep: 8, // hours
 };
 
 const HealthContext = createContext<HealthContextType | undefined>(undefined);
@@ -137,16 +100,6 @@ export const HealthProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return saved ? JSON.parse(saved) : [];
   });
   
-  const [sleepRecords, setSleepRecords] = useState<SleepRecord[]>(() => {
-    const saved = localStorage.getItem('sleepRecords');
-    return saved ? JSON.parse(saved) : [];
-  });
-  
-  const [moodRecords, setMoodRecords] = useState<MoodRecord[]>(() => {
-    const saved = localStorage.getItem('moodRecords');
-    return saved ? JSON.parse(saved) : [];
-  });
-  
   const [dailyGoals, setDailyGoals] = useState(() => {
     const saved = localStorage.getItem('dailyGoals');
     return saved ? JSON.parse(saved) : defaultGoals;
@@ -158,10 +111,8 @@ export const HealthProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     localStorage.setItem('foodItems', JSON.stringify(foodItems));
     localStorage.setItem('exerciseItems', JSON.stringify(exerciseItems));
     localStorage.setItem('waterIntake', JSON.stringify(waterIntake));
-    localStorage.setItem('sleepRecords', JSON.stringify(sleepRecords));
-    localStorage.setItem('moodRecords', JSON.stringify(moodRecords));
     localStorage.setItem('dailyGoals', JSON.stringify(dailyGoals));
-  }, [userProfile, foodItems, exerciseItems, waterIntake, sleepRecords, moodRecords, dailyGoals]);
+  }, [userProfile, foodItems, exerciseItems, waterIntake, dailyGoals]);
 
   const updateUserProfile = (profile: UserProfile) => {
     setUserProfile(profile);
@@ -198,14 +149,6 @@ export const HealthProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
 
-  const addSleepRecord = (record: SleepRecord) => {
-    setSleepRecords(current => [...current, { ...record, id: crypto.randomUUID() }]);
-  };
-
-  const addMoodRecord = (record: MoodRecord) => {
-    setMoodRecords(current => [...current, { ...record, id: crypto.randomUUID() }]);
-  };
-
   const getTodaysFoodItems = () => {
     const today = new Date().toISOString().split('T')[0];
     return foodItems.filter(item => item.date === today);
@@ -220,38 +163,6 @@ export const HealthProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const today = new Date().toISOString().split('T')[0];
     const todayEntry = waterIntake.find(entry => entry.date === today);
     return todayEntry ? todayEntry.amount : 0;
-  };
-
-  const getLatestSleepRecord = () => {
-    if (!sleepRecords.length) return null;
-    return sleepRecords.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-  };
-
-  const getLatestMoodRecord = () => {
-    if (!moodRecords.length) return null;
-    return moodRecords.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-  };
-
-  const getWeeklySleepData = () => {
-    const today = new Date();
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(today.getDate() - 7);
-    
-    return sleepRecords.filter(record => {
-      const recordDate = new Date(record.date);
-      return recordDate >= oneWeekAgo && recordDate <= today;
-    });
-  };
-
-  const getWeeklyMoodData = () => {
-    const today = new Date();
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(today.getDate() - 7);
-    
-    return moodRecords.filter(record => {
-      const recordDate = new Date(record.date);
-      return recordDate >= oneWeekAgo && recordDate <= today;
-    });
   };
 
   const calculateBMI = () => {
@@ -323,47 +234,6 @@ export const HealthProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     };
   };
 
-  const getSleepSummary = () => {
-    const weeklySleepData = getWeeklySleepData();
-    if (!weeklySleepData.length) return { averageDuration: 0, averageQuality: 0 };
-    
-    const totalDuration = weeklySleepData.reduce((sum, record) => sum + record.duration, 0);
-    const totalQuality = weeklySleepData.reduce((sum, record) => sum + record.quality, 0);
-    
-    return {
-      averageDuration: totalDuration / weeklySleepData.length,
-      averageQuality: totalQuality / weeklySleepData.length
-    };
-  };
-
-  const getMoodSummary = () => {
-    const weeklyMoodData = getWeeklyMoodData();
-    if (!weeklyMoodData.length) return { averageStressLevel: 0, predominantMood: 'neutral' };
-    
-    const totalStressLevel = weeklyMoodData.reduce((sum, record) => sum + record.stressLevel, 0);
-    
-    // Count occurrences of each mood
-    const moodCounts = weeklyMoodData.reduce((counts, record) => {
-      counts[record.mood] = (counts[record.mood] || 0) + 1;
-      return counts;
-    }, {} as Record<string, number>);
-    
-    // Find the mood with the highest count
-    let predominantMood = 'neutral';
-    let maxCount = 0;
-    for (const [mood, count] of Object.entries(moodCounts)) {
-      if (count > maxCount) {
-        maxCount = count;
-        predominantMood = mood;
-      }
-    }
-    
-    return {
-      averageStressLevel: totalStressLevel / weeklyMoodData.length,
-      predominantMood
-    };
-  };
-
   const resetDailyData = () => {
     // Function to reset daily data (if needed)
     // Implement if needed, otherwise keep empty
@@ -374,28 +244,18 @@ export const HealthProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     foodItems,
     exerciseItems,
     waterIntake,
-    sleepRecords,
-    moodRecords,
     dailyGoals,
     updateUserProfile,
     addFoodItem,
     addExerciseItem,
     updateWaterIntake,
-    addSleepRecord,
-    addMoodRecord,
     getTodaysFoodItems,
     getTodaysExerciseItems,
     getTodaysWaterIntake,
-    getLatestSleepRecord,
-    getLatestMoodRecord,
-    getWeeklySleepData,
-    getWeeklyMoodData,
     calculateBMI,
     calculateCalorieNeeds,
     getNutritionSummary,
     getExerciseSummary,
-    getSleepSummary,
-    getMoodSummary,
     resetDailyData,
   };
 

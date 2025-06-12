@@ -1,106 +1,128 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState, lazy, Suspense } from 'react';
+import { useLocation } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import { useHealth } from '@/contexts/HealthContext';
-import { Toaster } from '@/components/ui/toaster';
 import { useTheme } from '@/contexts/ThemeContext';
+import { Toaster } from '@/components/ui/toaster';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { Info } from 'lucide-react';
+import PremiumEffects from '../ui/PremiumEffects';
+import { UltraCard } from '../ui/card';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { getUnreadNotificationsCount } = useHealth();
-  const { theme } = useTheme();
-  const [scrollY, setScrollY] = useState(0);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const { 
+    theme, 
+    colorTheme, 
+    isReducedMotion, 
+    glassEffect, 
+    animationLevel,
+    enableParticles
+  } = useTheme();
   
-  // Enhanced page transition and parallax effects
+  const location = useLocation();
+  const appRef = useRef<HTMLDivElement>(null);
+  const mainContentRef = useRef<HTMLDivElement>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const isHomePage = location.pathname === "/" || location.pathname === "/Health-and-Fitness-Webapp/";
+  
+  // Handle page transitions with enhanced animation
   useEffect(() => {
-    const mainContent = document.querySelector('main');
-    if (mainContent) {
-      mainContent.classList.add('fade-in-slide');
+    if (mainContentRef.current && !isReducedMotion) {
+      setIsTransitioning(true);
       
-      // Parallax scrolling effect
-      const handleScroll = () => {
-        const newScrollY = window.scrollY;
-        setScrollY(newScrollY);
-        
-        if (newScrollY > 0) {
-          document.body.style.backgroundPositionY = `${newScrollY * 0.1}px`;
-          
-          // Parallax for background elements
-          const bgElements = document.querySelectorAll('.bg-parallax');
-          bgElements.forEach((el, index) => {
-            const speed = 0.1 + (index * 0.05);
-            (el as HTMLElement).style.transform = `translateY(${newScrollY * speed}px)`;
-          });
+      // Apply entrance animation
+      const entranceAnimation = () => {
+        if (mainContentRef.current) {
+          mainContentRef.current.classList.add('animate-fade-in');
+          mainContentRef.current.classList.remove('opacity-0');
         }
+        setIsTransitioning(false);
       };
       
-      // Add a more pronounced hover effect to cards
-      const addCardHoverEffects = () => {
-        document.querySelectorAll('.glass-effect, .glass-card').forEach(card => {
-          card.classList.add('card-hover-enhanced');
-        });
-      };
-      
-      // Add mouse movement effect for subtle tilt
-      const handleMouseMove = (e: MouseEvent) => {
-        setMousePosition({ x: e.clientX, y: e.clientY });
-        
-        // Apply tilt effect to specified elements
-        document.querySelectorAll('.tilt-effect').forEach((el) => {
-          const rect = el.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          
-          const centerX = rect.width / 2;
-          const centerY = rect.height / 2;
-          
-          const tiltX = (y - centerY) / (rect.height / 2) * -3;
-          const tiltY = (x - centerX) / (rect.width / 2) * 3;
-          
-          (el as HTMLElement).style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
-        });
-      };
-      
-      addCardHoverEffects();
-      window.addEventListener('scroll', handleScroll);
-      window.addEventListener('mousemove', handleMouseMove);
-      
-      return () => {
-        if (mainContent) {
-          mainContent.classList.remove('fade-in-slide');
-        }
-        window.removeEventListener('scroll', handleScroll);
-        window.removeEventListener('mousemove', handleMouseMove);
-      };
+      // Brief timeout to ensure state updates and animations work properly
+      setTimeout(entranceAnimation, 50);
     }
-  }, []);
+  }, [location.pathname, isReducedMotion]);
+
+  // Choose background effect based on route
+  const getBackgroundEffect = () => {
+    if (isHomePage) {
+      return 'cosmic';
+    }
+    
+    if (location.pathname.includes('/exercise')) {
+      return 'particles';
+    }
+    
+    if (location.pathname.includes('/food')) {
+      return 'gradient';
+    }
+    
+    if (location.pathname.includes('/sleep')) {
+      return 'aurora';
+    }
+    
+    if (location.pathname.includes('/mental')) {
+      return 'atmosphere';
+    }
+    
+    return 'particles';
+  };
+
+  // Get the appropriate glass effect class
+  const getContentContainerClass = () => {
+    const baseClasses = "relative z-20 transition-all duration-500 flex-grow container mx-auto px-4 py-6";
+    
+    if (isHomePage) {
+      return `${baseClasses}`;
+    }
+    
+    return `${baseClasses} py-8 mb-6`;
+  };
 
   return (
-    <div className="flex flex-col min-h-screen transition-all duration-500">
-      {/* Background decorative elements */}
-      <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-0 right-0 w-2/3 h-2/3 bg-gradient-radial from-health-primary/5 to-transparent opacity-70 blur-3xl bg-parallax"></div>
-        <div className="absolute bottom-0 left-0 w-2/3 h-2/3 bg-gradient-radial from-health-secondary/5 to-transparent opacity-70 blur-3xl bg-parallax"></div>
+    <div className="flex flex-col min-h-screen relative overflow-hidden" ref={appRef}>
+      {/* Dynamic background */}
+      <div className="fixed inset-0 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 transition-colors duration-500">
+        {/* Background effects */}
+        {enableParticles && !isReducedMotion && (
+          <PremiumEffects 
+            type={getBackgroundEffect()} 
+            density={animationLevel === 'full' ? 'high' : animationLevel === 'moderate' ? 'medium' : 'low'}
+            speed={animationLevel === 'full' ? 'medium' : 'slow'}
+            interactive={animationLevel !== 'minimal'}
+          />
+        )}
         
-        {/* Dynamic interactive background */}
-        <div 
-          className="absolute inset-0 opacity-30"
-          style={{ 
-            backgroundImage: `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, 
-              ${theme === 'dark' ? 'rgba(79, 209, 197, 0.15)' : 'rgba(79, 209, 197, 0.1)'} 0%, 
-              transparent 15%)` 
-          }}
-        ></div>
+        {/* Bottom gradient overlay for better text contrast */}
+        <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t from-gray-100/90 to-transparent dark:from-gray-950/90"></div>
       </div>
-      
+
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-8 mb-6 transition-all duration-500 ease-in-out z-10 relative">
-        <div className="animate-fade-in rounded-2xl glass-effect p-6 transform transition-all duration-500 shadow-soft dark:shadow-glow-dark tilt-effect">
-          {children}
-        </div>
+      
+      <main 
+        ref={mainContentRef}
+        className={`${getContentContainerClass()} ${isTransitioning ? 'opacity-0' : ''}`}
+      >
+        {/* Conditional wrapper for non-home pages */}
+        {!isHomePage ? (
+          <UltraCard className="p-4 md:p-6 lg:p-8 shadow-xl relative overflow-hidden">
+            <div className="relative z-10">
+              {children}
+            </div>
+          </UltraCard>
+        ) : (
+          <div className="relative z-10">
+            {children}
+          </div>
+        )}
       </main>
-      <Footer />
+      
+      {/* Show footer only on home page */}
+      {isHomePage && <Footer />}
       <Toaster />
     </div>
   );

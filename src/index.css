@@ -1,4 +1,7 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -33,7 +36,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
-    --radius: 0.5rem;
+    --radius: 0.9rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -91,13 +94,130 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Poppins', system-ui, sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight font-medium font-display;
+  }
+  
+  h1 {
+    @apply text-3xl font-bold bg-gradient-to-r from-health-primary to-health-secondary bg-clip-text text-transparent;
+  }
+  
+  h2 {
+    @apply text-2xl font-semibold;
+  }
+  
+  h3 {
+    @apply text-xl;
+  }
+  
+  button {
+    @apply transition-all duration-200;
   }
 }
 
-.nutrition-card {
-  @apply rounded-xl p-4 mb-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow;
+@layer utilities {
+  .nutrition-card {
+    @apply rounded-xl p-4 mb-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow;
+  }
+
+  .nutrition-bar {
+    @apply h-2 rounded-full my-1;
+  }
+  
+  .glass-effect {
+    @apply backdrop-blur-md bg-white/70 border border-white/20 shadow-soft;
+  }
+  
+  .glass-card {
+    @apply backdrop-blur-md bg-white/80 border border-gray-100 shadow-soft rounded-xl;
+  }
+  
+  .frosted-glass {
+    @apply backdrop-blur-lg bg-white/60 border border-white/30 shadow-soft;
+  }
+  
+  .animate-float-slow {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-float-slower {
+    animation: float 8s ease-in-out infinite;
+  }
+  
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(155, 155, 155, 0.5);
+    border-radius: 20px;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-health-primary to-health-secondary bg-clip-text text-transparent;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-200 hover:-translate-y-1 hover:shadow-md;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+  
+  .shadow-soft {
+    @apply shadow-[0_4px_12px_-2px_rgba(0,0,0,0.05)];
+  }
+  
+  .shadow-glow {
+    @apply shadow-[0_0_15px_rgba(79,209,197,0.2)];
+  }
+  
+  .animate-pulse-soft {
+    animation: pulseSoft 2s ease-in-out infinite;
+  }
 }
 
-.nutrition-bar {
-  @apply h-2 rounded-full my-1;
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseSoft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }

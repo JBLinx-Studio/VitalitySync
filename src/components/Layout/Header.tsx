@@ -12,216 +12,191 @@ import {
   Menu, 
   X,
   Settings as SettingsIcon,
-  Sun,
-  Award
+  Sun
 } from 'lucide-react';
 import { useHealth } from '@/contexts/HealthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 import NotificationsMenu from '../Notifications/NotificationsMenu';
-import { UltraCard } from '../ui/card';
 
 const Header: React.FC = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { userProfile, getUnreadNotificationsCount } = useHealth();
+  const { userProfile } = useHealth();
   const { theme, toggleTheme } = useTheme();
-  const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [animatedElements, setAnimatedElements] = useState<HTMLElement[]>([]);
+  const location = useLocation();
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
+
+  const isActivePath = (path: string) => {
+    return location.pathname === path;
+  };
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 20);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    // Close mobile menu when route changes
-    setMobileMenuOpen(false);
-  }, [location.pathname]);
-
   const navItems = [
-    { path: "/dashboard", icon: <BarChart className="w-5 h-5" />, label: "Dashboard" },
-    { path: "/food", icon: <Utensils className="w-5 h-5" />, label: "Nutrition" },
-    { path: "/exercise", icon: <Activity className="w-5 h-5" />, label: "Fitness" },
-    { path: "/sleep", icon: <Moon className="w-5 h-5" />, label: "Sleep" },
-    { path: "/mental", icon: <Brain className="w-5 h-5" />, label: "Mental" },
-    { path: "/body", icon: <Ruler className="w-5 h-5" />, label: "Body" },
-    { path: "/achievements", icon: <Award className="w-5 h-5" />, label: "Achievements" },
+    { path: "/", icon: <BarChart className="h-5 w-5" />, label: "Home" },
+    { path: "/dashboard", icon: <Activity className="h-5 w-5" />, label: "Dashboard" },
+    { path: "/food", icon: <Utensils className="h-5 w-5" />, label: "Nutrition" },
+    { path: "/exercise", icon: <Activity className="h-5 w-5" />, label: "Exercise" },
+    { path: "/sleep", icon: <Moon className="h-5 w-5" />, label: "Sleep" },
+    { path: "/mental", icon: <Brain className="h-5 w-5" />, label: "Mental" },
+    { path: "/body", icon: <Ruler className="h-5 w-5" />, label: "Body" },
+    { path: "/profile", icon: <User className="h-5 w-5" />, label: "Profile" },
+    { path: "/settings", icon: <SettingsIcon className="h-5 w-5" />, label: "Settings" }
   ];
 
-  const isActive = (path: string) => {
-    return location.pathname === path ? 
-      "text-health-primary dark:text-health-primary font-medium" : 
-      "text-gray-600 hover:text-health-primary dark:text-gray-300 dark:hover:text-health-primary";
-  };
-
   return (
-    <header 
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled 
-          ? 'py-2 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-md' 
-          : 'py-4 bg-transparent'
-      }`}
-    >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link 
-            to="/" 
-            className="flex items-center space-x-2"
-          >
-            <UltraCard className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-health-primary to-health-secondary">
-              <span className="text-white font-bold text-xl">V</span>
-            </UltraCard>
-            <span className="text-xl font-display font-bold bg-gradient-to-r from-health-primary to-health-secondary bg-clip-text text-transparent">
+    <header className={`sticky top-0 z-40 transition-all duration-300 ${
+      scrolled ? 'backdrop-blur-md bg-white/80 dark:bg-gray-900/80 shadow-md' : 
+      'backdrop-blur-sm bg-gradient-to-r from-health-primary to-health-secondary text-white shadow-sm'
+    }`}>
+      <div className="container mx-auto">
+        <div className="flex justify-between items-center py-3 px-4">
+          {/* Logo and brand */}
+          <div className="flex items-center">
+            <Activity className={`h-8 w-8 mr-2 ${scrolled ? 'text-health-primary' : 'text-white'}`} />
+            <h1 className={`text-2xl font-bold font-display ${
+              scrolled ? 'bg-gradient-to-r from-health-primary to-health-secondary bg-clip-text text-transparent' : 'text-white'
+            }`}>
               VitalitySync
-            </span>
-          </Link>
+            </h1>
+          </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          {/* Desktop navigation */}
+          <nav className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center space-x-1 transition-colors duration-200 ${isActive(item.path)}`}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </Link>
+              <NavLink 
+                key={item.path} 
+                to={item.path} 
+                icon={item.icon} 
+                label={item.label} 
+                isActive={isActivePath(item.path)}
+                onClick={closeMobileMenu}
+                scrolled={scrolled}
+              />
             ))}
-          </nav>
-
-          {/* Right side - Actions */}
-          <div className="flex items-center space-x-3">
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {theme === 'dark' ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
-              )}
-            </button>
-
-            {/* Notifications */}
-            <div className="hidden sm:block">
+            <div className="ml-3 flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className={`rounded-full ${
+                  scrolled 
+                    ? 'text-gray-700 hover:bg-gray-200/70' 
+                    : 'text-white hover:bg-white/20'
+                }`}
+              >
+                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+              </Button>
               <NotificationsMenu />
             </div>
+          </nav>
 
-            {/* Settings & Profile */}
-            {userProfile ? (
-              <div className="flex items-center space-x-3">
-                <Link 
-                  to="/settings"
-                  className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <SettingsIcon className="w-5 h-5" />
-                </Link>
-                <Link 
-                  to="/profile"
-                  className="relative flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-br from-health-primary to-health-secondary text-white font-medium overflow-hidden"
-                >
-                  {userProfile?.avatar ? (
-                    <img 
-                      src={userProfile.avatar} 
-                      alt={userProfile.name || 'User'} 
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span>{userProfile.name?.charAt(0) || 'U'}</span>
-                  )}
-                </Link>
-              </div>
-            ) : (
-              <Link to="/profile">
-                <Button 
-                  size="sm"
-                  className="bg-gradient-to-r from-health-primary to-health-secondary hover:shadow-md transition-shadow text-white"
-                >
-                  Get Started
-                </Button>
-              </Link>
-            )}
-
-            {/* Mobile Menu Button */}
-            <button 
-              className="p-2 rounded-lg md:hidden bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          {/* Mobile menu button */}
+          <div className="md:hidden flex items-center">
+            <Button
+              variant="ghost" 
+              size="icon"
+              onClick={toggleTheme}
+              className={`rounded-full mr-2 ${
+                scrolled 
+                  ? 'text-gray-700 hover:bg-gray-200/70' 
+                  : 'text-white hover:bg-white/20'
+              }`}
+            >
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </Button>
+            <NotificationsMenu />
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={toggleMobileMenu} 
+              className={`ml-2 ${
+                scrolled 
+                  ? 'text-gray-700 hover:bg-gray-200/70' 
+                  : 'text-white hover:bg-white/20'
+              }`}
             >
               {mobileMenuOpen ? (
-                <X className="w-6 h-6" />
+                <X className="h-6 w-6" />
               ) : (
-                <Menu className="w-6 h-6" />
+                <Menu className="h-6 w-6" />
               )}
-            </button>
+            </Button>
           </div>
         </div>
-      </div>
 
-      {/* Mobile Menu */}
-      <div
-        className={`fixed inset-0 z-40 transform ${
-          mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        } transition-transform duration-300 md:hidden`}
-      >
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)}></div>
-        <div className="absolute right-0 top-0 bottom-0 w-3/4 max-w-sm bg-white dark:bg-gray-900 shadow-xl flex flex-col">
-          <div className="p-5 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
-            <span className="text-lg font-medium">Menu</span>
-            <button onClick={() => setMobileMenuOpen(false)}>
-              <X className="w-6 h-6 text-gray-500" />
-            </button>
+        {/* Mobile navigation */}
+        {mobileMenuOpen && (
+          <div className="md:hidden py-3 px-4 bg-gradient-to-b from-health-secondary/90 to-health-primary/90 backdrop-blur-md animate-fade-in">
+            <nav className="grid grid-cols-4 gap-2">
+              {navItems.map((item) => (
+                <NavLink 
+                  key={item.path} 
+                  to={item.path} 
+                  icon={item.icon} 
+                  label={item.label} 
+                  isActive={isActivePath(item.path)}
+                  isMobile={true}
+                  onClick={closeMobileMenu}
+                  scrolled={false}
+                />
+              ))}
+            </nav>
           </div>
-          <nav className="flex-1 overflow-y-auto p-5 space-y-6">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center space-x-3 p-3 rounded-lg ${
-                  location.pathname === item.path 
-                    ? 'bg-health-primary/10 text-health-primary' 
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </Link>
-            ))}
-            <div className="border-t border-gray-200 dark:border-gray-800 pt-5 mt-5">
-              <Link
-                to="/profile"
-                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <User className="w-5 h-5" />
-                <span>Profile</span>
-              </Link>
-              <Link
-                to="/settings"
-                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <SettingsIcon className="w-5 h-5" />
-                <span>Settings</span>
-              </Link>
-            </div>
-          </nav>
-        </div>
+        )}
       </div>
     </header>
+  );
+};
+
+const NavLink: React.FC<{ 
+  to: string; 
+  icon: React.ReactNode; 
+  label: string;
+  isActive?: boolean;
+  isMobile?: boolean;
+  scrolled?: boolean;
+  onClick?: () => void;
+}> = ({ to, icon, label, isActive = false, isMobile = false, scrolled = false, onClick }) => {
+  const baseClasses = "flex flex-col items-center rounded-lg transition-all duration-300";
+  
+  let desktopClasses = "";
+  if (scrolled) {
+    desktopClasses = isActive 
+      ? "bg-gray-200/70 text-health-primary px-3 py-2" 
+      : "hover:bg-gray-100/70 text-gray-700 hover:text-health-primary px-3 py-2";
+  } else {
+    desktopClasses = isActive 
+      ? "bg-white/30 text-white px-3 py-2" 
+      : "hover:bg-white/20 text-white/90 hover:text-white px-3 py-2";
+  }
+  
+  const mobileClasses = isActive 
+    ? "bg-white/20 text-white p-2" 
+    : "hover:bg-white/10 text-white/90 hover:text-white p-2";
+  
+  const classes = `${baseClasses} ${isMobile ? mobileClasses : desktopClasses}`;
+  
+  return (
+    <Link to={to} className={classes} onClick={onClick}>
+      <div className="mb-1">{icon}</div>
+      <span className={`text-xs ${isMobile ? "" : "sm:text-sm"}`}>{label}</span>
+    </Link>
   );
 };
 

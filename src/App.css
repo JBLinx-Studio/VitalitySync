@@ -12,13 +12,6 @@
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
-  transition: background-color 0.5s ease-in-out;
-}
-
-.dark .app-background {
-  background-image: 
-    radial-gradient(circle at top right, rgba(79, 209, 197, 0.05), transparent 70%),
-    radial-gradient(circle at bottom left, rgba(155, 135, 245, 0.05), transparent 70%);
 }
 
 .app-container {
@@ -46,13 +39,6 @@ h1, h2, h3, h4, h5, h6 {
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-}
-
-.dark .glass-effect {
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* Animation utilities */
@@ -67,55 +53,6 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
-}
-
-/* Enhanced fade-in-slide animation */
-.fade-in-slide {
-  animation: fadeInSlide 0.6s ease-out;
-}
-
-@keyframes fadeInSlide {
-  0% {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Pulse glow effect */
-.pulse-glow {
-  animation: pulseGlow 2s infinite alternate;
-}
-
-.dark .pulse-glow {
-  animation: darkPulseGlow 2s infinite alternate;
-}
-
-@keyframes pulseGlow {
-  from { box-shadow: 0 0 10px rgba(79, 209, 197, 0.2); }
-  to { box-shadow: 0 0 20px rgba(155, 135, 245, 0.4); }
-}
-
-@keyframes darkPulseGlow {
-  from { box-shadow: 0 0 10px rgba(79, 209, 197, 0.1); }
-  to { box-shadow: 0 0 20px rgba(155, 135, 245, 0.2); }
-}
-
-/* Card hover effect */
-.card-hover {
-  transition: all 0.3s ease;
-}
-
-.card-hover:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-}
-
-.dark .card-hover:hover {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
 /* Scroll styling */
@@ -139,62 +76,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.2);
-}
-
-/* Dark mode scrollbar */
-.dark .scrollbar-thin::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.dark .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-/* Page transition animation */
-.page-enter {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.page-enter-active {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 300ms, transform 300ms;
-}
-
-.page-exit {
-  opacity: 1;
-}
-
-.page-exit-active {
-  opacity: 0;
-  transition: opacity 300ms;
-}
-
-/* Button interactions */
-button, a {
-  transition: all 0.2s ease;
-}
-
-button:active, a:active {
-  transform: scale(0.98);
-}
-
-/* Focus states */
-button:focus-visible, a:focus-visible, input:focus-visible {
-  outline: 2px solid rgba(79, 209, 197, 0.5);
-  outline-offset: 2px;
-}
-
-/* Dark mode focus states */
-.dark button:focus-visible, 
-.dark a:focus-visible, 
-.dark input:focus-visible {
-  outline: 2px solid rgba(79, 209, 197, 0.3);
 }
 
 @media (min-width: 768px) {

@@ -31,35 +31,31 @@ const queryClient = new QueryClient({
 });
 
 const App = () => (
-  <div className="app-background">
-    <div className="app-container">
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <HealthProvider>
-            <Toaster />
-            <Sonner />
-            <HashRouter>
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/food" element={<FoodTracker />} />
-                  <Route path="/exercise" element={<ExerciseTracker />} />
-                  <Route path="/sleep" element={<SleepTracker />} />
-                  <Route path="/mental" element={<MentalWellness />} />
-                  <Route path="/body" element={<BodyMeasurements />} />
-                  <Route path="/addiction" element={<AddictionTracker />} />
-                  <Route path="/achievements" element={<Achievements />} />
-                  <Route path="/profile" element={<UserProfile />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Layout>
-            </HashRouter>
-          </HealthProvider>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </div>
-  </div>
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <HealthProvider>
+        <Toaster />
+        <Sonner />
+        <HashRouter>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/food" element={<FoodTracker />} />
+              <Route path="/exercise" element={<ExerciseTracker />} />
+              <Route path="/sleep" element={<SleepTracker />} />
+              <Route path="/mental" element={<MentalWellness />} />
+              <Route path="/body" element={<BodyMeasurements />} />
+              <Route path="/addiction" element={<AddictionTracker />} />
+              <Route path="/achievements" element={<Achievements />} />
+              <Route path="/profile" element={<UserProfile />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
+        </HashRouter>
+      </HealthProvider>
+    </TooltipProvider>
+  </QueryClientProvider>
 );
 
 export default App;

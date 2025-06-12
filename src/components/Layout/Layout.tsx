@@ -1,37 +1,24 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
+import NotificationsMenu from '../Notifications/NotificationsMenu';
 import { useHealth } from '@/contexts/HealthContext';
-import { Toaster } from '@/components/ui/toaster';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { getUnreadNotificationsCount } = useHealth();
+  const unreadCount = getUnreadNotificationsCount();
   
-  // Apply a subtle page transition effect
-  useEffect(() => {
-    const mainContent = document.querySelector('main');
-    if (mainContent) {
-      mainContent.classList.add('fade-in-slide');
-    }
-    
-    return () => {
-      if (mainContent) {
-        mainContent.classList.remove('fade-in-slide');
-      }
-    };
-  }, []);
-
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-50">
+    <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-8 mb-6 transition-all duration-300 ease-in-out">
-        <div className="animate-fade-in rounded-2xl bg-white/80 backdrop-blur-sm shadow-soft p-6">
-          {children}
-        </div>
+      <div className="fixed bottom-6 right-6 z-50 md:hidden">
+        <NotificationsMenu />
+      </div>
+      <main className="flex-grow container mx-auto px-4 py-6">
+        {children}
       </main>
       <Footer />
-      <Toaster />
     </div>
   );
 };

@@ -1,54 +1,53 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useToast } from "@/hooks/use-toast";
 
-type Theme = 'light' | 'dark';
-type MeasurementSystem = 'metric' | 'imperial';
+type Theme = 'light' | 'dark' | 'system';
 
 interface ThemeContextType {
   theme: Theme;
-  toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
-  measurementSystem: MeasurementSystem;
-  setMeasurementSystem: (system: MeasurementSystem) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    const savedTheme = localStorage.getItem('vitality-theme');
-    return (savedTheme as Theme) || 'light';
+  const [theme, setThemeState] = useState<Theme>(() => {
+    // Get from localStorage or default to system
+    const savedTheme = localStorage.getItem('health-theme') as Theme;
+    return savedTheme || 'system';
   });
-  
-  const [measurementSystem, setMeasurementSystem] = useState<MeasurementSystem>(() => {
-    const savedSystem = localStorage.getItem('vitality-measurement');
-    return (savedSystem as MeasurementSystem) || 'metric';
-  });
+  const { toast } = useToast();
 
   useEffect(() => {
-    localStorage.setItem('vitality-theme', theme);
-    document.documentElement.classList.remove('light', 'dark');
-    document.documentElement.classList.add(theme);
+    const root = window.document.documentElement;
+    
+    // Remove old theme class
+    root.classList.remove('light', 'dark');
+    
+    // Determine theme to apply
+    let themeToApply: 'light' | 'dark' = theme === 'system' 
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      : theme as 'light' | 'dark';
+      
+    // Apply theme class
+    root.classList.add(themeToApply);
+    
+    // Save to localStorage
+    localStorage.setItem('health-theme', theme);
   }, [theme]);
 
-  useEffect(() => {
-    localStorage.setItem('vitality-measurement', measurementSystem);
-  }, [measurementSystem]);
-
-  const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
+  const setTheme = (newTheme: Theme) => {
+    setThemeState(newTheme);
+    toast({
+      title: "Theme Updated",
+      description: `Theme set to ${newTheme.charAt(0).toUpperCase() + newTheme.slice(1)}`,
+      duration: 2000,
+    });
   };
 
   return (
-    <ThemeContext.Provider 
-      value={{ 
-        theme, 
-        toggleTheme, 
-        setTheme, 
-        measurementSystem, 
-        setMeasurementSystem 
-      }}
-    >
+    <ThemeContext.Provider value={{ theme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );
@@ -56,7 +55,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
 export function useTheme() {
   const context = useContext(ThemeContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider');
   }
   return context;

@@ -20,7 +20,6 @@ import BodyMeasurements from "@/pages/BodyMeasurements";
 import AddictionTracker from "@/pages/AddictionTracker";
 import Achievements from "@/pages/Achievements";
 import NotFound from "./pages/NotFound";
-import Settings from "./pages/Settings";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -33,11 +32,11 @@ const queryClient = new QueryClient({
 });
 
 const App = () => (
-  <ThemeProvider>
-    <div className="app-background">
-      <div className="app-container">
-        <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
+  <div className="app-background">
+    <div className="app-container">
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <ThemeProvider>
             <HealthProvider>
               <Toaster />
               <Sonner />
@@ -54,17 +53,16 @@ const App = () => (
                     <Route path="/addiction" element={<AddictionTracker />} />
                     <Route path="/achievements" element={<Achievements />} />
                     <Route path="/profile" element={<UserProfile />} />
-                    <Route path="/settings" element={<Settings />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Layout>
               </HashRouter>
             </HealthProvider>
-          </TooltipProvider>
-        </QueryClientProvider>
-      </div>
+          </ThemeProvider>
+        </TooltipProvider>
+      </QueryClientProvider>
     </div>
-  </ThemeProvider>
+  </div>
 );
 
 export default App;

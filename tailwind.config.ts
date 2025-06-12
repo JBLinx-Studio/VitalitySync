@@ -96,6 +96,8 @@ export default {
         'card': '0 2px 8px rgba(0, 0, 0, 0.05)',
         'highlight': '0 0 15px rgba(79, 209, 197, 0.5)',
         'glow': '0 0 20px rgba(155, 135, 245, 0.6)',
+        'soft-dark': '0 4px 20px rgba(0, 0, 0, 0.2)',
+        'glow-dark': '0 0 15px rgba(79, 209, 197, 0.15)',
       },
       keyframes: {
         'accordion-down': {
@@ -129,6 +131,18 @@ export default {
         'fadeIn': {
           '0%': { opacity: '0', transform: 'translateY(10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'shimmer': {
+          '0%': { backgroundPosition: '-100% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+        'glow-pulse': {
+          '0%, 100%': { 
+            boxShadow: '0 0 10px rgba(79, 209, 197, 0.2)' 
+          },
+          '50%': { 
+            boxShadow: '0 0 15px rgba(155, 135, 245, 0.4)' 
+          },
         }
       },
       animation: {
@@ -138,6 +152,8 @@ export default {
         'float': 'float 3s ease-in-out infinite',
         'scale': 'scale 3s ease-in-out infinite',
         'fade-in': 'fadeIn 0.5s ease-out forwards',
+        'shimmer': 'shimmer 2s infinite',
+        'glow-pulse': 'glow-pulse 2s ease-in-out infinite'
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -145,7 +161,12 @@ export default {
         'gradient-secondary': 'linear-gradient(135deg, #9b87f5 0%, #63B3ED 100%)',
         'gradient-card': 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(249,250,251,0.8) 100%)',
         'gradient-highlight': 'linear-gradient(90deg, #4FD1C5 0%, #9b87f5 100%)',
+        'dark-gradient-card': 'linear-gradient(180deg, rgba(15,23,42,0) 0%, rgba(15,23,42,0.8) 100%)',
       },
+      transitionProperty: {
+        'height': 'height',
+        'spacing': 'margin, padding',
+      }
     }
   },
   plugins: [require("tailwindcss-animate")],

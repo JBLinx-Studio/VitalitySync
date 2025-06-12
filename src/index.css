@@ -133,96 +133,33 @@
   }
   
   .glass-effect {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+    @apply backdrop-blur-md border border-opacity-20 shadow-soft;
+    background-color: rgba(255, 255, 255, 0.7);
   }
   
   .glass-card {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-    @apply rounded-xl;
+    @apply backdrop-blur-md border shadow-soft rounded-xl;
+    background-color: rgba(255, 255, 255, 0.8);
   }
   
   .dark .glass-effect {
-    background: rgba(30, 30, 42, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    background-color: rgba(30, 30, 35, 0.7);
+    border-color: rgba(75, 75, 90, 0.3);
   }
   
   .dark .glass-card {
-    background: rgba(30, 30, 42, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    background-color: rgba(30, 30, 35, 0.8);
+    border-color: rgba(75, 75, 90, 0.3);
   }
   
   .frosted-glass {
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 24px rgba(31, 38, 135, 0.1);
+    @apply backdrop-blur-lg border border-opacity-30 shadow-soft;
+    background-color: rgba(255, 255, 255, 0.6);
   }
   
   .dark .frosted-glass {
-    background: rgba(30, 30, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
-  }
-  
-  .neo-glass {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2));
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
-  }
-  
-  .dark .neo-glass {
-    background: linear-gradient(135deg, rgba(40, 40, 60, 0.5), rgba(30, 30, 45, 0.2));
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  }
-
-  /* New ultra glass effect */
-  .ultra-glass {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .ultra-glass::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, 
-      rgba(255, 255, 255, 0) 0%, 
-      rgba(255, 255, 255, 0.2) 50%, 
-      rgba(255, 255, 255, 0) 100%
-    );
-    transform: skewX(-25deg);
-    animation: shimmerEffect 5s infinite;
-  }
-
-  .dark .ultra-glass {
-    background: linear-gradient(135deg, rgba(50, 50, 75, 0.4), rgba(30, 30, 60, 0.1));
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  }
-
-  .dark .ultra-glass::before {
-    background: linear-gradient(90deg, 
-      rgba(255, 255, 255, 0) 0%, 
-      rgba(255, 255, 255, 0.1) 50%, 
-      rgba(255, 255, 255, 0) 100%
-    );
+    background-color: rgba(30, 30, 35, 0.6);
+    border-color: rgba(75, 75, 90, 0.3);
   }
   
   .animate-float-slow {
@@ -287,7 +224,7 @@
     @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-md;
   }
   
-  /* Enhanced UI effects */
+  /* New enhanced UI effects */
   .hover-lift {
     @apply transition-all duration-300;
     transform: translateY(0);
@@ -350,44 +287,6 @@
       rgba(255, 255, 255, 0.15) 100%
     );
   }
-  
-  /* Improved glass morphism effects */
-  .glass-morphism {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-  }
-  
-  .dark .glass-morphism {
-    background: rgba(20, 20, 35, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-  }
-  
-  .glass-button {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    @apply rounded-lg px-4 py-2 transition-all duration-300;
-  }
-  
-  .glass-button:hover {
-    background: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
-  }
-  
-  .dark .glass-button {
-    background: rgba(60, 60, 80, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-  
-  .dark .glass-button:hover {
-    background: rgba(70, 70, 90, 0.3);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  }
 }
 
 @keyframes float {
@@ -423,12 +322,12 @@
 }
 
 /* New animations */
-@keyframes shimmerEffect {
+@keyframes shimmer {
   0% {
-    left: -100%;
+    background-position: -100% 0;
   }
   100% {
-    left: 200%;
+    background-position: 100% 0;
   }
 }
 
@@ -451,174 +350,4 @@
     transparent 100%
   );
   background-size: 200% 100%;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -100% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-/* Click ripple effect */
-.click-ripple {
-  position: fixed;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(79, 209, 197, 0.4) 0%, rgba(79, 209, 197, 0) 70%);
-  transform: scale(0);
-  animation: ripple 1s linear forwards;
-  pointer-events: none;
-  z-index: 9999;
-  width: 100px;
-  height: 100px;
-  margin-left: -50px;
-  margin-top: -50px;
-}
-
-.dark .click-ripple {
-  background: radial-gradient(circle, rgba(79, 209, 197, 0.5) 0%, rgba(79, 209, 197, 0) 70%);
-}
-
-@keyframes ripple {
-  0% {
-    transform: scale(0);
-    opacity: 0.6;
-  }
-  100% {
-    transform: scale(6);
-    opacity: 0;
-  }
-}
-
-/* Background orbs for interactive effect */
-.bg-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.5;
-  transition: transform 2s ease-out;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Enhanced background particles */
-.bg-particle {
-  position: absolute;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(79, 209, 197, 0.6), rgba(155, 135, 245, 0.6));
-  opacity: 0.15;
-  pointer-events: none;
-  z-index: 0;
-  animation: float-particle 20s ease-in-out infinite;
-  filter: blur(2px);
-}
-
-.dark .bg-particle {
-  opacity: 0.25;
-  filter: blur(3px);
-  background: linear-gradient(135deg, rgba(79, 209, 197, 0.7), rgba(155, 135, 245, 0.7));
-}
-
-/* Firefly effect */
-.firefly {
-  position: absolute;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8);
-  pointer-events: none;
-  z-index: 1;
-  animation: firefly 8s linear infinite;
-}
-
-.dark .firefly {
-  background: #4FD1C5;
-  box-shadow: 0 0 10px 2px rgba(79, 209, 197, 0.8);
-}
-
-@keyframes firefly {
-  0%, 100% {
-    opacity: 0;
-    transform: scale(0.2);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1);
-  }
-}
-
-@keyframes float-particle {
-  0%, 100% { 
-    transform: translateY(0) translateX(0) scale(1);
-    opacity: 0.15;
-  }
-  25% {
-    transform: translateY(-50vh) translateX(20vw) scale(1.5);
-    opacity: 0.1;
-  }
-  50% {
-    transform: translateY(-80vh) translateX(40vw) scale(0.8);
-    opacity: 0.05;
-  }
-  75% {
-    transform: translateY(-30vh) translateX(60vw) scale(1.2);
-    opacity: 0.15;
-  }
-}
-
-/* New 3D effects */
-.card-3d-effect {
-  transform-style: preserve-3d;
-  transition: transform 0.5s ease;
-  perspective: 1000px;
-}
-
-.card-3d-effect:hover {
-  transform: rotateY(5deg) rotateX(5deg);
-}
-
-/* Glowing border effect */
-.glow-border {
-  position: relative;
-  border-radius: inherit;
-  overflow: hidden;
-}
-
-.glow-border::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(45deg, #4FD1C5, #9b87f5, #4FD1C5, #9b87f5);
-  background-size: 400% 400%;
-  animation: glowingBorder 6s linear infinite;
-  z-index: -1;
-  border-radius: inherit;
-  filter: blur(8px);
-}
-
-@keyframes glowingBorder {
-  0% {
-    background-position: 0% 0%;
-  }
-  50% {
-    background-position: 100% 100%;
-  }
-  100% {
-    background-position: 0% 0%;
-  }
-}
-
-/* Enhanced tilt effect for cards */
-.tilt-card {
-  transition: transform 0.3s ease;
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-
-.tilt-card:hover {
-  transform: perspective(1000px) rotateX(2deg) rotateY(2deg) scale(1.01);
 }

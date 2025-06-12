@@ -1,4 +1,3 @@
-
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
@@ -10,7 +9,7 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-md",
+      "rounded-lg border bg-card text-card-foreground shadow-sm",
       className
     )}
     {...props}
@@ -77,77 +76,4 @@ const CardFooter = React.forwardRef<
 ))
 CardFooter.displayName = "CardFooter"
 
-// Enhanced glass card variants with improved visual effects
-const GlassCard = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg glass-card shadow-soft transition-all duration-300 hover:shadow-lg relative overflow-hidden",
-      className
-    )}
-    {...props}
-  />
-))
-GlassCard.displayName = "GlassCard"
-
-const FrostedCard = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg frosted-glass shadow-soft transition-all duration-300 hover:shadow-lg relative overflow-hidden",
-      className
-    )}
-    {...props}
-  />
-))
-FrostedCard.displayName = "FrostedCard"
-
-const NeoCard = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg neo-glass shadow-soft transition-all duration-300 hover:shadow-lg relative overflow-hidden",
-      className
-    )}
-    {...props}
-  />
-))
-NeoCard.displayName = "NeoCard"
-
-// New ultramodern card with advanced effects
-const UltraCard = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg ultra-glass shadow-glow transition-all duration-300 hover:shadow-highlight relative overflow-hidden",
-      className
-    )}
-    {...props}
-  />
-))
-UltraCard.displayName = "UltraCard"
-
-export { 
-  Card, 
-  CardHeader, 
-  CardFooter, 
-  CardTitle, 
-  CardDescription, 
-  CardContent,
-  GlassCard,
-  FrostedCard,
-  NeoCard,
-  UltraCard
-}
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }

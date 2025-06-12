@@ -7,24 +7,52 @@
 
 .app-background {
   background-image: 
-    radial-gradient(circle at top right, rgba(79, 209, 197, 0.15), transparent 70%),
-    radial-gradient(circle at bottom left, rgba(155, 135, 245, 0.15), transparent 70%);
+    radial-gradient(circle at top right, rgba(79, 209, 197, 0.12), transparent 60%),
+    radial-gradient(circle at bottom left, rgba(155, 135, 245, 0.12), transparent 60%),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(240, 240, 250, 0.8));
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
-  transition: background-color 0.5s ease-in-out;
-}
-
-.dark .app-background {
-  background-image: 
-    radial-gradient(circle at top right, rgba(79, 209, 197, 0.05), transparent 70%),
-    radial-gradient(circle at bottom left, rgba(155, 135, 245, 0.05), transparent 70%);
 }
 
 .app-container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Background particles */
+.bg-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(79, 209, 197, 0.4), rgba(155, 135, 245, 0.4));
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 0;
+  animation: float-particle 20s ease-in-out infinite;
+}
+
+@keyframes float-particle {
+  0%, 100% { 
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0.2;
+  }
+  25% {
+    transform: translateY(-50vh) translateX(20vw) scale(1.5);
+    opacity: 0.1;
+  }
+  50% {
+    transform: translateY(-80vh) translateX(40vw) scale(0.8);
+    opacity: 0.05;
+  }
+  75% {
+    transform: translateY(-30vh) translateX(60vw) scale(1.2);
+    opacity: 0.15;
+  }
 }
 
 /* Improved typography */
@@ -49,10 +77,9 @@ h1, h2, h3, h4, h5, h6 {
   transition: all 0.3s ease;
 }
 
-.dark .glass-effect {
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+.glass-effect:hover {
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
 /* Animation utilities */
@@ -69,53 +96,15 @@ h1, h2, h3, h4, h5, h6 {
   50% { transform: translateY(-10px); }
 }
 
-/* Enhanced fade-in-slide animation */
-.fade-in-slide {
-  animation: fadeInSlide 0.6s ease-out;
+/* Interactive hover effects */
+.interactive-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform, box-shadow;
 }
 
-@keyframes fadeInSlide {
-  0% {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Pulse glow effect */
-.pulse-glow {
-  animation: pulseGlow 2s infinite alternate;
-}
-
-.dark .pulse-glow {
-  animation: darkPulseGlow 2s infinite alternate;
-}
-
-@keyframes pulseGlow {
-  from { box-shadow: 0 0 10px rgba(79, 209, 197, 0.2); }
-  to { box-shadow: 0 0 20px rgba(155, 135, 245, 0.4); }
-}
-
-@keyframes darkPulseGlow {
-  from { box-shadow: 0 0 10px rgba(79, 209, 197, 0.1); }
-  to { box-shadow: 0 0 20px rgba(155, 135, 245, 0.2); }
-}
-
-/* Card hover effect */
-.card-hover {
-  transition: all 0.3s ease;
-}
-
-.card-hover:hover {
+.interactive-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-}
-
-.dark .card-hover:hover {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 /* Scroll styling */
@@ -141,23 +130,36 @@ h1, h2, h3, h4, h5, h6 {
   background: rgba(0, 0, 0, 0.2);
 }
 
-/* Dark mode scrollbar */
-.dark .scrollbar-thin::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+/* Subtle card tilt effect */
+.tilt-card {
+  transition: transform 0.2s ease;
 }
 
-.dark .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+.tilt-card:hover {
+  transform: perspective(1000px) rotateX(2deg) rotateY(2deg);
 }
 
-.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.15);
+/* Pulsing effect */
+.pulse-subtle {
+  animation: pulse-subtle 3s infinite;
 }
 
-/* Page transition animation */
+@keyframes pulse-subtle {
+  0% {
+    box-shadow: 0 0 0 0 rgba(79, 209, 197, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(79, 209, 197, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(79, 209, 197, 0);
+  }
+}
+
+/* Page transitions */
 .page-enter {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(10px);
 }
 
 .page-enter-active {
@@ -172,29 +174,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .page-exit-active {
   opacity: 0;
-  transition: opacity 300ms;
-}
-
-/* Button interactions */
-button, a {
-  transition: all 0.2s ease;
-}
-
-button:active, a:active {
-  transform: scale(0.98);
-}
-
-/* Focus states */
-button:focus-visible, a:focus-visible, input:focus-visible {
-  outline: 2px solid rgba(79, 209, 197, 0.5);
-  outline-offset: 2px;
-}
-
-/* Dark mode focus states */
-.dark button:focus-visible, 
-.dark a:focus-visible, 
-.dark input:focus-visible {
-  outline: 2px solid rgba(79, 209, 197, 0.3);
+  transform: translateY(-10px);
+  transition: opacity 300ms, transform 300ms;
 }
 
 @media (min-width: 768px) {

@@ -2,18 +2,80 @@
 #root {
   margin: 0 auto;
   padding: 0;
+  width: 100%;
 }
 
 .app-background {
-  background-image: radial-gradient(circle at top right, rgba(79, 209, 197, 0.1), transparent 70%),
-                    radial-gradient(circle at bottom left, rgba(155, 135, 245, 0.1), transparent 70%);
+  background-image: 
+    radial-gradient(circle at top right, rgba(79, 209, 197, 0.15), transparent 70%),
+    radial-gradient(circle at bottom left, rgba(155, 135, 245, 0.15), transparent 70%);
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
 }
 
 .app-container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 1rem;
+}
+
+/* Improved typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Quicksand', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #4FD1C5, #9b87f5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card effects */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Animation utilities */
+.animate-float-slow {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-float-slower {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Scroll styling */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
 }
 
 @media (min-width: 768px) {

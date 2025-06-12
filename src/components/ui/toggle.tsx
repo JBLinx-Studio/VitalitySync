@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import * as TogglePrimitive from "@radix-ui/react-toggle"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -12,17 +11,12 @@ const toggleVariants = cva(
       variant: {
         default: "bg-transparent",
         outline:
-          "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/20",
-        soft: 
-          "bg-muted/40 hover:bg-muted/60 dark:bg-slate-800/40 dark:hover:bg-slate-800/60",
-        glass:
-          "backdrop-blur-md bg-white/50 dark:bg-slate-900/30 border border-white/20 dark:border-slate-800/30 shadow-sm",
+          "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground",
       },
       size: {
         default: "h-10 px-3",
         sm: "h-9 px-2.5",
         lg: "h-11 px-5",
-        icon: "h-9 w-9 p-0",
       },
     },
     defaultVariants: {
@@ -39,8 +33,7 @@ const Toggle = React.forwardRef<
 >(({ className, variant, size, ...props }, ref) => (
   <TogglePrimitive.Root
     ref={ref}
-    className={cn(toggleVariants({ variant, size, className }), 
-      "transition-all duration-200 hover:-translate-y-0.5 active:scale-95 hover:shadow-md dark:hover:shadow-glow-dark/20")}
+    className={cn(toggleVariants({ variant, size, className }))}
     {...props}
   />
 ))

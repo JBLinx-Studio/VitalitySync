@@ -4,7 +4,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useViewport } from '@/hooks/use-viewport';
 
 interface NavItem {
   name: string;
@@ -21,9 +20,9 @@ interface ModernNavigationProps {
 const ModernNavigation: React.FC<ModernNavigationProps> = ({ items, className = '' }) => {
   const location = useLocation();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { isMobile, isTablet } = useViewport();
   const [showLeftScroll, setShowLeftScroll] = useState(false);
   const [showRightScroll, setShowRightScroll] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const checkScrollButtons = () => {
     if (!scrollRef.current) return;
@@ -31,6 +30,15 @@ const ModernNavigation: React.FC<ModernNavigationProps> = ({ items, className = 
     setShowLeftScroll(scrollLeft > 10);
     setShowRightScroll(scrollLeft < scrollWidth - clientWidth - 10);
   };
+
+  useEffect(() => {
+    const currentIndex = items.findIndex(item => 
+      location.pathname.replace('/Health-and-Fitness-Webapp', '') === item.path
+    );
+    if (currentIndex !== -1) {
+      setActiveIndex(currentIndex);
+    }
+  }, [location.pathname, items]);
 
   useEffect(() => {
     checkScrollButtons();
@@ -47,37 +55,21 @@ const ModernNavigation: React.FC<ModernNavigationProps> = ({ items, className = 
 
   const scrollToDirection = (direction: 'left' | 'right') => {
     if (!scrollRef.current) return;
-    const scrollAmount = scrollRef.current.clientWidth * 0.6;
+    const scrollAmount = scrollRef.current.clientWidth * 0.8;
     scrollRef.current.scrollBy({
       left: direction === 'left' ? -scrollAmount : scrollAmount,
       behavior: 'smooth'
     });
   };
 
-  // Responsive sizing
-  const containerPadding = isMobile ? 'p-1' : 'p-2';
-  const itemPadding = isMobile ? 'px-3 py-2' : isTablet ? 'px-4 py-2' : 'px-6 py-3';
-  const iconSize = isMobile ? 'w-4 h-4' : 'w-5 h-5';
-  const fontSize = isMobile ? 'text-xs' : isTablet ? 'text-sm' : 'text-sm';
-  const borderRadius = isMobile ? 'rounded-2xl' : 'rounded-3xl';
-  const scrollButtonSize = isMobile ? 'h-7 w-7' : 'h-9 w-9';
-
   return (
-    <div className={cn(
-      "relative bg-white/10 dark:bg-slate-900/10 backdrop-blur-2xl border border-white/20 dark:border-slate-700/20 shadow-2xl transition-all duration-500 hover:shadow-3xl",
-      borderRadius,
-      containerPadding,
-      className
-    )}>
+    <div className={cn("relative bg-white/10 dark:bg-slate-900/10 backdrop-blur-2xl rounded-3xl border border-white/20 dark:border-slate-700/20 p-2 shadow-2xl transition-all duration-500 hover:shadow-3xl", className)}>
       <div className="relative flex items-center">
-        {showLeftScroll && !isMobile && (
+        {showLeftScroll && (
           <Button
             variant="ghost"
             size="icon"
-            className={cn(
-              "absolute left-2 z-20 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full shadow-xl hover:shadow-2xl border border-white/30 dark:border-slate-600/30 transition-all duration-300 hover:scale-110",
-              scrollButtonSize
-            )}
+            className="absolute left-2 z-20 h-9 w-9 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full shadow-xl hover:shadow-2xl border border-white/30 dark:border-slate-600/30 transition-all duration-300 hover:scale-110"
             onClick={() => scrollToDirection('left')}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -86,10 +78,7 @@ const ModernNavigation: React.FC<ModernNavigationProps> = ({ items, className = 
 
         <div
           ref={scrollRef}
-          className={cn(
-            "flex overflow-x-auto scrollbar-none gap-1 scroll-smooth",
-            isMobile ? "px-2 py-2" : "px-12 py-3"
-          )}
+          className="flex overflow-x-auto scrollbar-none gap-2 px-12 py-3 scroll-smooth"
           style={{ scrollBehavior: 'smooth' }}
         >
           {items.map((item, index) => {
@@ -99,10 +88,8 @@ const ModernNavigation: React.FC<ModernNavigationProps> = ({ items, className = 
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  "flex items-center gap-2 transition-all duration-500 whitespace-nowrap relative overflow-hidden group min-w-fit",
+                  "flex items-center gap-3 px-6 py-3 rounded-2xl transition-all duration-500 whitespace-nowrap relative overflow-hidden group min-w-fit",
                   "hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 backdrop-blur-sm",
-                  borderRadius,
-                  itemPadding,
                   isActive
                     ? "bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white shadow-2xl shadow-blue-500/30 scale-105 border border-white/20"
                     : "text-gray-700 dark:text-gray-300 hover:bg-white/15 dark:hover:bg-slate-800/15 hover:scale-105 border border-white/10 dark:border-slate-700/10"
@@ -111,32 +98,24 @@ const ModernNavigation: React.FC<ModernNavigationProps> = ({ items, className = 
                 <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <span className={cn(
                   "transition-all duration-300 relative z-10",
-                  iconSize,
                   isActive ? "scale-110 drop-shadow-lg" : "group-hover:scale-110"
                 )}>
                   {item.icon}
                 </span>
-                {(!isMobile || isActive) && (
-                  <span className={cn("font-semibold relative z-10", fontSize)}>
-                    {isMobile && item.name.length > 8 ? item.name.slice(0, 6) + '...' : item.name}
-                  </span>
-                )}
+                <span className="font-semibold relative z-10 text-sm">{item.name}</span>
                 {isActive && (
-                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-white/90 rounded-full animate-pulse shadow-lg"></div>
+                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-white/90 rounded-full animate-pulse shadow-lg"></div>
                 )}
               </Link>
             );
           })}
         </div>
 
-        {showRightScroll && !isMobile && (
+        {showRightScroll && (
           <Button
             variant="ghost"
             size="icon"
-            className={cn(
-              "absolute right-2 z-20 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full shadow-xl hover:shadow-2xl border border-white/30 dark:border-slate-600/30 transition-all duration-300 hover:scale-110",
-              scrollButtonSize
-            )}
+            className="absolute right-2 z-20 h-9 w-9 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full shadow-xl hover:shadow-2xl border border-white/30 dark:border-slate-600/30 transition-all duration-300 hover:scale-110"
             onClick={() => scrollToDirection('right')}
           >
             <ChevronRight className="h-4 w-4" />

@@ -403,46 +403,6 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
     return 0;
   };
 
-  // Add the enhanced getHealthSummary method
-  const getHealthSummary = () => {
-    const today = new Date().toISOString().split('T')[0];
-    const todayFoodItems = foodItems.filter(item => item.date === today);
-    const todayExercises = exerciseItems.filter(item => item.date === today);
-    const recentSleep = sleepRecords.slice(-7);
-    const recentMood = moodRecords.slice(-7);
-    
-    const todayCalories = todayFoodItems.reduce((total, item) => total + (item.calories * item.quantity), 0);
-    const totalWorkouts = exerciseItems.length;
-    const avgSleepHours = recentSleep.length > 0 
-      ? recentSleep.reduce((total, record) => total + record.duration, 0) / recentSleep.length 
-      : 0;
-    
-    const moodScores = { awful: 1, bad: 2, neutral: 3, good: 4, great: 5 };
-    const avgMoodScore = recentMood.length > 0
-      ? recentMood.reduce((total, record) => total + moodScores[record.mood], 0) / recentMood.length
-      : 0;
-
-    // Calculate weekly totals for progress tracking
-    const weekAgo = new Date();
-    weekAgo.setDate(weekAgo.getDate() - 7);
-    const weekAgoString = weekAgo.toISOString().split('T')[0];
-    
-    const weeklyExercises = exerciseItems.filter(item => item.date >= weekAgoString);
-    const totalDuration = weeklyExercises.reduce((total, item) => total + item.duration, 0);
-    const totalCalories = weeklyExercises.reduce((total, item) => total + item.calories_burned, 0);
-    const calorieGoal = userProfile?.daily_calorie_goal || userProfile?.goals?.calorieGoal || 2000;
-
-    return {
-      todayCalories: Math.round(todayCalories),
-      totalWorkouts,
-      avgSleepHours: Math.round(avgSleepHours * 10) / 10,
-      moodScore: Math.round(avgMoodScore * 10) / 10,
-      totalDuration,
-      totalCalories,
-      calorieGoal
-    };
-  };
-
   const value: HealthContextType = {
     userProfile,
     updateUserProfile,
@@ -462,12 +422,10 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
     getTodaysExerciseItems,
     getExerciseSummary,
     sleepRecords,
-    sleepItems: sleepRecords, // compatibility alias
     addSleepRecord,
     deleteSleepRecord,
     getSleepSummary,
     moodRecords,
-    mentalWellnessItems: moodRecords, // compatibility alias
     addMoodRecord,
     deleteMoodRecord,
     getMoodSummary,
@@ -488,8 +446,7 @@ export const HealthProvider: React.FC<HealthProviderProps> = ({ children }) => {
     calculateBMI,
     calculateCalorieNeeds,
     checkAndUpdateGoals,
-    getGoalProgress,
-    getHealthSummary
+    getGoalProgress
   };
 
   return <HealthContext.Provider value={value}>{children}</HealthContext.Provider>;

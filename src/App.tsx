@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { HealthProvider } from "@/contexts/HealthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import Layout from "@/components/Layout/Layout";
 
 // Pages
@@ -35,27 +36,29 @@ const App = () => (
     <div className="app-container">
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <HealthProvider>
-            <Toaster />
-            <Sonner />
-            <HashRouter>
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/food" element={<FoodTracker />} />
-                  <Route path="/exercise" element={<ExerciseTracker />} />
-                  <Route path="/sleep" element={<SleepTracker />} />
-                  <Route path="/mental" element={<MentalWellness />} />
-                  <Route path="/body" element={<BodyMeasurements />} />
-                  <Route path="/addiction" element={<AddictionTracker />} />
-                  <Route path="/achievements" element={<Achievements />} />
-                  <Route path="/profile" element={<UserProfile />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Layout>
-            </HashRouter>
-          </HealthProvider>
+          <ThemeProvider>
+            <HealthProvider>
+              <Toaster />
+              <Sonner />
+              <HashRouter>
+                <Layout>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/food" element={<FoodTracker />} />
+                    <Route path="/exercise" element={<ExerciseTracker />} />
+                    <Route path="/sleep" element={<SleepTracker />} />
+                    <Route path="/mental" element={<MentalWellness />} />
+                    <Route path="/body" element={<BodyMeasurements />} />
+                    <Route path="/addiction" element={<AddictionTracker />} />
+                    <Route path="/achievements" element={<Achievements />} />
+                    <Route path="/profile" element={<UserProfile />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Layout>
+              </HashRouter>
+            </HealthProvider>
+          </ThemeProvider>
         </TooltipProvider>
       </QueryClientProvider>
     </div>

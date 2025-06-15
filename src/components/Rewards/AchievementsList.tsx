@@ -117,7 +117,7 @@ const AchievementsList: React.FC = () => {
       )
       .map((a) => ({
         id: a.id,
-        title: (a.name as string).split("_").map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(" "),
+        title: a.name.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" "),
         description: a.description,
         isUnlocked: true,
         unlockDate: a.date,

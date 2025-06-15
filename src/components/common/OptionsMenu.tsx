@@ -18,11 +18,6 @@ import {
   Eye,
   Zap,
   Sparkles,
-  Bell,
-  Languages,
-  Scale,
-  Lock,
-  HelpCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -112,208 +107,151 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ userLoggedIn = false }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="outline" 
-          size="icon" 
-          className="relative rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border-gray-200/60 dark:border-gray-700/60 hover:bg-white dark:hover:bg-slate-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 h-10 w-10"
-        >
-          <Settings className="h-5 w-5 text-gray-700 dark:text-gray-300 transition-transform hover:rotate-45 duration-300" />
-          <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-blue-500 animate-pulse"></span>
+        <Button variant="outline" size="icon" className="rounded-full bg-background/80 backdrop-blur-sm border-cosmic-nebula/20">
+          <Settings className="h-5 w-5 text-cosmic-nebula" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent 
-        align="end" 
-        sideOffset={8}
-        className="w-80 mr-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-gray-200/60 dark:border-gray-700/60 shadow-2xl rounded-2xl border-2 p-0 overflow-hidden"
-      >
-        {/* Header */}
-        <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-700 border-b border-gray-200/60 dark:border-gray-700/60">
-          <DropdownMenuLabel className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2 p-0">
-            <Settings className="h-5 w-5 text-blue-500" />
-            Options & Settings
-          </DropdownMenuLabel>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+      <DropdownMenuContent align="end" className="w-56 backdrop-blur-md bg-background/80 border-cosmic-nebula/20">
+        <DropdownMenuLabel className="font-normal">
+          <p className="text-sm font-medium leading-none mb-1">Appearance</p>
+          <p className="text-xs leading-none text-muted-foreground">
             Customize your experience
           </p>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+
+        {/* Theme Toggle */}
+        <div className="px-2 py-1.5 flex items-center justify-between">
+          <span className="text-sm">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={toggleTheme}
+            className="h-8 w-8 bg-transparent border-cosmic-nebula/20"
+          >
+            {theme === "dark" ? (
+              <Sun className="h-4 w-4 text-cosmic-star" />
+            ) : (
+              <Moon className="h-4 w-4 text-cosmic-nebula" />
+            )}
+          </Button>
         </div>
 
-        <div className="max-h-[70vh] overflow-y-auto py-2">
-          {/* Theme Section */}
-          <div className="px-4 py-3">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
-              <Palette className="h-4 w-4 text-purple-500" />
-              Appearance
-            </h3>
-            
-            {/* Theme Toggle */}
-            <div className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={toggleTheme}
-                className="h-8 w-8 bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60 hover:scale-105 transition-transform"
-              >
-                {theme === "dark" ? (
-                  <Sun className="h-4 w-4 text-yellow-500" />
-                ) : (
-                  <Moon className="h-4 w-4 text-blue-600" />
-                )}
-              </Button>
-            </div>
-
-            {/* Color Theme Select */}
-            <div className="py-2 px-3 space-y-2">
-              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Color Theme</p>
-              <Select value={colorTheme} onValueChange={handleColorThemeChange}>
-                <SelectTrigger className="w-full h-9 text-sm bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60 text-gray-900 dark:text-gray-100">
-                  <SelectValue placeholder="Select theme" />
-                </SelectTrigger>
-                <SelectContent className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border-gray-200/60 dark:border-gray-700/60 rounded-xl">
-                  <SelectItem value="cosmic-nebula" className="text-sm text-gray-900 dark:text-gray-100">Cosmic Nebula</SelectItem>
-                  <SelectItem value="teal-purple" className="text-sm text-gray-900 dark:text-gray-100">Teal Purple</SelectItem>
-                  <SelectItem value="blue-pink" className="text-sm text-gray-900 dark:text-gray-100">Blue Pink</SelectItem>
-                  <SelectItem value="green-yellow" className="text-sm text-gray-900 dark:text-gray-100">Green Yellow</SelectItem>
-                  <SelectItem value="sunset" className="text-sm text-gray-900 dark:text-gray-100">Sunset</SelectItem>
-                  <SelectItem value="ocean" className="text-sm text-gray-900 dark:text-gray-100">Ocean</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Glass Effect Select */}
-            <div className="py-2 px-3 space-y-2">
-              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Glass Effect</p>
-              <Select value={glassEffect} onValueChange={handleGlassEffectChange}>
-                <SelectTrigger className="w-full h-9 text-sm bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60 text-gray-900 dark:text-gray-100">
-                  <SelectValue placeholder="Select glass effect" />
-                </SelectTrigger>
-                <SelectContent className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border-gray-200/60 dark:border-gray-700/60 rounded-xl">
-                  <SelectItem value="cosmic" className="text-sm text-gray-900 dark:text-gray-100">Cosmic</SelectItem>
-                  <SelectItem value="frosted" className="text-sm text-gray-900 dark:text-gray-100">Frosted</SelectItem>
-                  <SelectItem value="ultra" className="text-sm text-gray-900 dark:text-gray-100">Ultra</SelectItem>
-                  <SelectItem value="neo" className="text-sm text-gray-900 dark:text-gray-100">Neo</SelectItem>
-                  <SelectItem value="iridescent" className="text-sm text-gray-900 dark:text-gray-100">Iridescent</SelectItem>
-                  <SelectItem value="standard" className="text-sm text-gray-900 dark:text-gray-100">Standard</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Animation Level Select */}
-            <div className="py-2 px-3 space-y-2">
-              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Animation Level</p>
-              <Select value={animationLevel} onValueChange={handleAnimationLevelChange}>
-                <SelectTrigger className="w-full h-9 text-sm bg-white/80 dark:bg-slate-700/80 border-gray-200/60 dark:border-gray-600/60 text-gray-900 dark:text-gray-100">
-                  <SelectValue placeholder="Select animation level" />
-                </SelectTrigger>
-                <SelectContent className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border-gray-200/60 dark:border-gray-700/60 rounded-xl">
-                  <SelectItem value="full" className="text-sm text-gray-900 dark:text-gray-100">Full</SelectItem>
-                  <SelectItem value="moderate" className="text-sm text-gray-900 dark:text-gray-100">Moderate</SelectItem>
-                  <SelectItem value="minimal" className="text-sm text-gray-900 dark:text-gray-100">Minimal</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          
-          <DropdownMenuSeparator className="mx-4 bg-gray-200/60 dark:bg-gray-700/60" />
-          
-          {/* Performance & Accessibility */}
-          <div className="px-4 py-3">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
-              <Zap className="h-4 w-4 text-orange-500" />
-              Performance & Accessibility
-            </h3>
-            
-            {/* Reduced Motion Toggle */}
-            <div className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                <Eye className="h-4 w-4 text-green-500" />
-                Reduced Motion
-              </span>
-              <Switch 
-                checked={isReducedMotion}
-                onCheckedChange={handleReducedMotionToggle}
-                className="data-[state=checked]:bg-blue-500"
-              />
-            </div>
-            
-            {/* Particles Toggle */}
-            <div className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-purple-500" />
-                Background Effects
-              </span>
-              <Switch 
-                checked={enableParticles}
-                onCheckedChange={handleParticlesToggle}
-                className="data-[state=checked]:bg-purple-500"
-              />
-            </div>
-            
-            {/* Blur Toggle */}
-            <div className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                <Eye className="h-4 w-4 text-blue-500" />
-                Blur Effects
-              </span>
-              <Switch 
-                checked={enableBlur}
-                onCheckedChange={handleBlurToggle}
-                className="data-[state=checked]:bg-blue-500"
-              />
-            </div>
-          </div>
-          
-          <DropdownMenuSeparator className="mx-4 bg-gray-200/60 dark:bg-gray-700/60" />
-
-          {/* System Settings */}
-          <div className="px-4 py-3 space-y-1">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
-              <Settings className="h-4 w-4 text-gray-500" />
-              System
-            </h3>
-            
-            <DropdownMenuItem className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800/50 cursor-pointer">
-              <Bell className="h-4 w-4 text-blue-500" />
-              <span className="font-medium">Notifications</span>
-            </DropdownMenuItem>
-            
-            <DropdownMenuItem className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800/50 cursor-pointer">
-              <Scale className="h-4 w-4 text-green-500" />
-              <span className="font-medium">Units & Measurements</span>
-            </DropdownMenuItem>
-            
-            <DropdownMenuItem className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800/50 cursor-pointer">
-              <Languages className="h-4 w-4 text-purple-500" />
-              <span className="font-medium">Language</span>
-            </DropdownMenuItem>
-            
-            <DropdownMenuItem className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800/50 cursor-pointer">
-              <Lock className="h-4 w-4 text-red-500" />
-              <span className="font-medium">Privacy</span>
-            </DropdownMenuItem>
-            
-            <DropdownMenuItem className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800/50 cursor-pointer">
-              <HelpCircle className="h-4 w-4 text-orange-500" />
-              <span className="font-medium">Help & Support</span>
-            </DropdownMenuItem>
-          </div>
-
-          {userLoggedIn && (
-            <>
-              <DropdownMenuSeparator className="mx-4 bg-gray-200/60 dark:bg-gray-700/60" />
-              <div className="px-4 py-3 space-y-1">
-                <DropdownMenuItem className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800/50 cursor-pointer">
-                  <User className="h-4 w-4 text-blue-500" />
-                  <span className="font-medium">Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center gap-3 px-3 py-2 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer">
-                  <LogOut className="h-4 w-4" />
-                  <span className="font-medium">Logout</span>
-                </DropdownMenuItem>
-              </div>
-            </>
-          )}
+        {/* Color Theme Select */}
+        <div className="px-2 py-1.5 space-y-1">
+          <p className="text-xs text-muted-foreground mb-1">Color Theme</p>
+          <Select value={colorTheme} onValueChange={handleColorThemeChange}>
+            <SelectTrigger className="w-full h-8 text-xs bg-background/50 border-cosmic-nebula/20">
+              <SelectValue placeholder="Select theme" />
+            </SelectTrigger>
+            <SelectContent className="bg-background/90 backdrop-blur-md border-cosmic-nebula/20">
+              <SelectItem value="cosmic-nebula" className="text-xs">Cosmic Nebula</SelectItem>
+              <SelectItem value="teal-purple" className="text-xs">Teal Purple</SelectItem>
+              <SelectItem value="blue-pink" className="text-xs">Blue Pink</SelectItem>
+              <SelectItem value="green-yellow" className="text-xs">Green Yellow</SelectItem>
+              <SelectItem value="sunset" className="text-xs">Sunset</SelectItem>
+              <SelectItem value="ocean" className="text-xs">Ocean</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
+
+        {/* Glass Effect Select */}
+        <div className="px-2 py-1.5 space-y-1">
+          <p className="text-xs text-muted-foreground mb-1">Glass Effect</p>
+          <Select value={glassEffect} onValueChange={handleGlassEffectChange}>
+            <SelectTrigger className="w-full h-8 text-xs bg-background/50 border-cosmic-nebula/20">
+              <SelectValue placeholder="Select glass effect" />
+            </SelectTrigger>
+            <SelectContent className="bg-background/90 backdrop-blur-md border-cosmic-nebula/20">
+              <SelectItem value="cosmic" className="text-xs">Cosmic</SelectItem>
+              <SelectItem value="frosted" className="text-xs">Frosted</SelectItem>
+              <SelectItem value="ultra" className="text-xs">Ultra</SelectItem>
+              <SelectItem value="neo" className="text-xs">Neo</SelectItem>
+              <SelectItem value="iridescent" className="text-xs">Iridescent</SelectItem>
+              <SelectItem value="standard" className="text-xs">Standard</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Animation Level Select */}
+        <div className="px-2 py-1.5 space-y-1">
+          <p className="text-xs text-muted-foreground mb-1">Animation Level</p>
+          <Select value={animationLevel} onValueChange={handleAnimationLevelChange}>
+            <SelectTrigger className="w-full h-8 text-xs bg-background/50 border-cosmic-nebula/20">
+              <SelectValue placeholder="Select animation level" />
+            </SelectTrigger>
+            <SelectContent className="bg-background/90 backdrop-blur-md border-cosmic-nebula/20">
+              <SelectItem value="full" className="text-xs">Full</SelectItem>
+              <SelectItem value="moderate" className="text-xs">Moderate</SelectItem>
+              <SelectItem value="minimal" className="text-xs">Minimal</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <DropdownMenuSeparator />
+        
+        {/* Accessibility Options */}
+        <DropdownMenuLabel className="text-xs font-semibold">
+          Performance & Accessibility
+        </DropdownMenuLabel>
+        
+        {/* Reduced Motion Toggle */}
+        <div className="px-2 py-1.5 flex items-center justify-between">
+          <span className="text-sm flex items-center gap-2">
+            <Zap className="h-4 w-4 text-cosmic-highlight" />
+            Reduced Motion
+          </span>
+          <Switch 
+            checked={isReducedMotion}
+            onCheckedChange={handleReducedMotionToggle}
+            className="data-[state=checked]:bg-cosmic-nebula"
+          />
+        </div>
+        
+        {/* Particles Toggle */}
+        <div className="px-2 py-1.5 flex items-center justify-between">
+          <span className="text-sm flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-cosmic-star" />
+            Background Effects
+          </span>
+          <Switch 
+            checked={enableParticles}
+            onCheckedChange={handleParticlesToggle}
+            className="data-[state=checked]:bg-cosmic-nebula"
+          />
+        </div>
+        
+        {/* Blur Toggle */}
+        <div className="px-2 py-1.5 flex items-center justify-between">
+          <span className="text-sm flex items-center gap-2">
+            <Eye className="h-4 w-4 text-cosmic-highlight" />
+            Blur Effects
+          </span>
+          <Switch 
+            checked={enableBlur}
+            onCheckedChange={handleBlurToggle}
+            className="data-[state=checked]:bg-cosmic-nebula"
+          />
+        </div>
+        
+        <DropdownMenuSeparator />
+
+        {userLoggedIn && (
+          <>
+            <DropdownMenuItem className="gap-2">
+              <User className="h-4 w-4" />
+              <span>Profile</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="gap-2">
+              <Settings className="h-4 w-4" />
+              <span>Settings</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="gap-2 text-red-500">
+              <LogOut className="h-4 w-4" />
+              <span>Logout</span>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

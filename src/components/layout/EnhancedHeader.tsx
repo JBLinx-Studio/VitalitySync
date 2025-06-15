@@ -5,7 +5,7 @@ import {
   User, 
   Activity, 
   Utensils, 
-  BarChart3, 
+  BarChart, 
   Moon, 
   Brain, 
   Ruler, 
@@ -14,34 +14,33 @@ import {
   Award,
   Users,
   Zap,
-  TrendingUp,
-  Heart,
-  Target,
-  Sparkles
+  TrendingUp
 } from 'lucide-react';
 import { useHealth } from '@/contexts/HealthContext';
 import { Button } from '@/components/ui/button';
 import NotificationsMenu from '@/components/Notifications/NotificationsMenu';
+import { UserAvatar } from '@/components/common';
 import { useIsMobile, useViewport } from '@/hooks';
 import { cn } from '@/lib/utils';
-import OptionsMenu from '@/components/ui/options-menu';
+import AdvancedOptionsMenu from './AdvancedOptionsMenu';
+import ModernNavigation from './ModernNavigation';
 import GlassCard from '@/components/ui/glass-card';
-import ModernNavigationMenu from '@/components/navigation/ModernNavigationMenu';
-import ProfessionalUserMenu from '@/components/navigation/ProfessionalUserMenu';
 
 const EnhancedHeader: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { userProfile } = useHealth();
   const location = useLocation();
-  const [scrolled, setScrolled] = useState(false);
   const isMobile = useIsMobile();
+  const { width } = useViewport();
 
   const handleScroll = useCallback(() => {
-    setScrolled(window.scrollY > 20);
+    const scrolled = window.scrollY > 10;
+    setIsScrolled(scrolled);
   }, []);
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
 
@@ -50,187 +49,184 @@ const EnhancedHeader: React.FC = () => {
   }, [location.pathname]);
 
   const navItems = [
-    { 
-      path: "/dashboard", 
-      icon: <TrendingUp className="w-5 h-5" />, 
-      name: "Dashboard", 
-      category: 'overview' as const,
-      description: "Analytics & insights dashboard"
-    },
-    { 
-      path: "/food", 
-      icon: <Utensils className="w-5 h-5" />, 
-      name: "Nutrition", 
-      category: 'tracking' as const,
-      description: "Food tracking & meal planning"
-    },
-    { 
-      path: "/exercise", 
-      icon: <Activity className="w-5 h-5" />, 
-      name: "Fitness", 
-      category: 'tracking' as const,
-      description: "Exercise & workout tracking"
-    },
-    { 
-      path: "/sleep", 
-      icon: <Moon className="w-5 h-5" />, 
-      name: "Sleep", 
-      category: 'tracking' as const,
-      description: "Sleep quality & patterns"
-    },
-    { 
-      path: "/body", 
-      icon: <Ruler className="w-5 h-5" />, 
-      name: "Body", 
-      category: 'tracking' as const,
-      description: "Body measurements & stats"
-    },
-    { 
-      path: "/mental", 
-      icon: <Brain className="w-5 h-5" />, 
-      name: "Mental", 
-      category: 'wellness' as const,
-      description: "Mental health & mindfulness"
-    },
-    { 
-      path: "/community", 
-      icon: <Users className="w-5 h-5" />, 
-      name: "Community", 
-      category: 'social' as const,
-      description: "Connect & share progress"
-    },
-    { 
-      path: "/achievements", 
-      icon: <Award className="w-5 h-5" />, 
-      name: "Achievements", 
-      category: 'social' as const,
-      description: "Goals, badges & rewards"
-    },
+    { path: "/dashboard", icon: <TrendingUp className="w-4 h-4" />, name: "Dashboard", category: 'dashboard' as const },
+    { path: "/food", icon: <Utensils className="w-4 h-4" />, name: "Nutrition", category: 'tracking' as const },
+    { path: "/exercise", icon: <Activity className="w-4 h-4" />, name: "Fitness", category: 'tracking' as const },
+    { path: "/sleep", icon: <Moon className="w-4 h-4" />, name: "Sleep", category: 'tracking' as const },
+    { path: "/body", icon: <Ruler className="w-4 h-4" />, name: "Body", category: 'tracking' as const },
+    { path: "/mental", icon: <Brain className="w-4 h-4" />, name: "Mental", category: 'wellness' as const },
+    { path: "/community", icon: <Users className="w-4 h-4" />, name: "Community", category: 'social' as const },
+    { path: "/achievements", icon: <Award className="w-4 h-4" />, name: "Achievements", category: 'social' as const },
   ];
 
   return (
     <header 
       className={cn(
-        "sticky top-0 z-50 transition-all duration-700 border-b backdrop-blur-3xl",
-        scrolled 
-          ? "py-2 bg-white/98 dark:bg-slate-900/98 shadow-xl border-gray-200/40 dark:border-slate-700/40" 
-          : "py-4 bg-white/95 dark:bg-slate-900/95 border-gray-200/30 dark:border-slate-700/30 shadow-lg"
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out",
+        isScrolled 
+          ? "py-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl shadow-2xl border-b border-white/20 dark:border-slate-700/20" 
+          : "py-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl"
       )}
     >
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="flex items-center justify-between gap-6">
-          {/* Premium Logo Design */}
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6">
+        <div className="flex items-center justify-between gap-2 sm:gap-4">
+          {/* Enhanced Logo with Dynamic Sizing */}
           <Link 
             to="/" 
-            className="flex items-center gap-3 flex-shrink-0 group"
+            className="flex items-center gap-2 sm:gap-3 flex-shrink-0 group min-w-fit"
           >
             <div className="relative">
-              {/* Animated glow effect */}
-              <div className="absolute -inset-2 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-3xl opacity-0 group-hover:opacity-30 blur-xl transition-all duration-700 animate-pulse-soft"></div>
-              
-              {/* Main logo container */}
-              <div className="relative w-12 h-12 lg:w-14 lg:h-14 rounded-2xl bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center shadow-2xl group-hover:shadow-cosmic transition-all duration-700 group-hover:scale-110 group-hover:rotate-3 border border-white/20">
-                <Heart className="text-white w-6 h-6 lg:w-7 lg:h-7 drop-shadow-2xl" />
-                
-                {/* Sparkle effect */}
-                <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-yellow-300 opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse" />
+              <div className={cn(
+                "rounded-2xl bg-gradient-to-br from-emerald-400 via-blue-500 to-purple-600 flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3",
+                isMobile ? "w-8 h-8" : "w-10 h-10 lg:w-12 lg:h-12"
+              )}>
+                <Zap className={cn(
+                  "text-white drop-shadow-lg",
+                  isMobile ? "w-4 h-4" : "w-5 h-5 lg:w-6 lg:h-6"
+                )} />
               </div>
+              <div className="absolute -inset-1 bg-gradient-to-br from-emerald-400 via-blue-500 to-purple-600 rounded-2xl opacity-0 group-hover:opacity-40 blur-lg transition-all duration-500 -z-10"></div>
             </div>
-            
-            <div className="hidden sm:flex flex-col">
-              <span className="text-xl lg:text-2xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent tracking-tight">
+            <div className="hidden xs:flex flex-col">
+              <span className={cn(
+                "font-black bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent leading-tight",
+                isMobile ? "text-base" : "text-lg lg:text-xl"
+              )}>
                 VitalitySync
               </span>
-              <span className="text-xs lg:text-sm text-gray-600 dark:text-gray-400 font-semibold tracking-wider opacity-80">
-                Health Intelligence Platform
+              <span className={cn(
+                "text-gray-500 dark:text-gray-400 font-medium tracking-wide leading-tight",
+                isMobile ? "text-xs" : "text-xs lg:text-sm"
+              )}>
+                Health Intelligence
               </span>
             </div>
           </Link>
 
-          {/* Sophisticated Navigation Menu */}
-          <div className="hidden md:flex items-center justify-center flex-1 max-w-5xl mx-8">
-            <ModernNavigationMenu items={navItems} />
+          {/* Modern Navigation - Hidden on very small screens */}
+          <div className="hidden sm:flex items-center justify-center flex-1 max-w-4xl mx-2 lg:mx-6">
+            <ModernNavigation items={navItems} />
           </div>
 
-          {/* Premium Action Controls */}
-          <div className="flex items-center gap-3 flex-shrink-0">
-            {/* Enhanced Notifications */}
-            <div className="hidden sm:block">
-              <NotificationsMenu />
-            </div>
+          {/* Advanced Action Bar with Dynamic Sizing */}
+          <div className={cn(
+            "flex items-center gap-1 sm:gap-2 flex-shrink-0",
+            isMobile ? "min-w-fit" : ""
+          )}>
+            {/* Notifications - Conditional Display */}
+            {!isMobile && (
+              <div className="hidden md:block">
+                <NotificationsMenu />
+              </div>
+            )}
 
-            {/* Sophisticated Options Menu */}
-            <OptionsMenu userLoggedIn={!!userProfile} />
+            {/* Advanced Options Menu */}
+            <AdvancedOptionsMenu userLoggedIn={!!userProfile} />
 
-            {/* Professional User Profile */}
-            <ProfessionalUserMenu />
+            {/* Enhanced User Profile Button */}
+            {userProfile ? (
+              <Link to="/profile" className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 rounded-full opacity-0 group-hover:opacity-60 blur-md transition-all duration-500 -z-10"></div>
+                <div className="relative transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
+                  <UserAvatar 
+                    userProfile={userProfile} 
+                    size={isMobile ? "sm" : "md"} 
+                    className="ring-2 ring-white/30 dark:ring-slate-700/30 group-hover:ring-emerald-400/50"
+                  />
+                </div>
+              </Link>
+            ) : (
+              <Link to="/profile">
+                <Button 
+                  className={cn(
+                    "bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-600 hover:from-emerald-600 hover:via-blue-600 hover:to-purple-700 text-white border-0 rounded-xl font-bold tracking-wide shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95",
+                    isMobile ? "px-2 py-1.5 text-xs h-8" : "px-4 py-2 text-sm h-9 lg:px-6 lg:text-base lg:h-10"
+                  )}
+                >
+                  {isMobile ? (
+                    <User className="w-3 h-3" />
+                  ) : (
+                    "Get Started"
+                  )}
+                </Button>
+              </Link>
+            )}
 
-            {/* Premium Mobile Menu Toggle */}
+            {/* Mobile Menu Toggle */}
             <Button 
               variant="ghost"
               size="icon"
               className={cn(
-                "md:hidden bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border border-gray-200/50 dark:border-slate-700/50 hover:bg-white dark:hover:bg-slate-800 rounded-2xl transition-all duration-500 hover:scale-110 hover:shadow-lg group",
-                mobileMenuOpen && "bg-blue-50 dark:bg-blue-950/50 border-blue-200 dark:border-blue-800"
+                "sm:hidden bg-white/40 dark:bg-slate-800/40 backdrop-blur-sm border border-white/30 dark:border-slate-700/30 hover:bg-white/60 dark:hover:bg-slate-800/60 rounded-xl transition-all duration-300 hover:scale-105 active:scale-95",
+                isMobile ? "h-8 w-8" : "h-9 w-9"
               )}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              <div className="relative">
-                {mobileMenuOpen ? (
-                  <X className="w-5 h-5 transition-transform duration-300 rotate-90" />
-                ) : (
-                  <Menu className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
-                )}
-              </div>
+              {mobileMenuOpen ? 
+                <X className="w-4 h-4" /> : 
+                <Menu className="w-4 h-4" />
+              }
             </Button>
           </div>
         </div>
         
-        {/* Enhanced Mobile Navigation Panel */}
-        <div className="md:hidden mt-4">
-          <ModernNavigationMenu items={navItems} className="w-full" />
+        {/* Enhanced Mobile Navigation Bar */}
+        <div className="sm:hidden mt-2">
+          <div className="overflow-x-auto scrollbar-none">
+            <div className="flex gap-1 px-1 py-2 min-w-max">
+              {navItems.slice(0, 6).map((item) => {
+                const isActive = location.pathname.replace('/Health-and-Fitness-Webapp', '') === item.path;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={cn(
+                      "flex items-center gap-1.5 px-2.5 py-2 rounded-xl transition-all duration-300 flex-shrink-0 whitespace-nowrap text-xs font-medium border relative overflow-hidden group min-w-fit",
+                      isActive 
+                        ? "bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 text-white shadow-lg border-white/20 scale-105" 
+                        : "bg-white/60 dark:bg-slate-800/60 hover:bg-white/80 dark:hover:bg-slate-700/80 border-gray-200/40 dark:border-gray-700/40 hover:scale-105"
+                    )}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 -skew-x-12"></div>
+                    <span className={cn("transition-transform duration-300 relative z-10", isActive ? "scale-110" : "")}>{item.icon}</span>
+                    <span className="relative z-10 truncate">{item.name}</span>
+                    {isActive && (
+                      <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-white/80 rounded-full animate-pulse"></div>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Sophisticated Mobile Overlay Menu */}
+      {/* Enhanced Mobile Menu Overlay */}
       <div
         className={cn(
-          "fixed inset-0 z-50 transform transition-all duration-700 md:hidden",
-          mobileMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'
+          "fixed inset-0 z-50 transform transition-all duration-500 sm:hidden",
+          mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
         )}
       >
-        {/* Enhanced backdrop with blur */}
         <div 
-          className="absolute inset-0 bg-black/40 backdrop-blur-md" 
+          className="absolute inset-0 bg-black/60 backdrop-blur-md" 
           onClick={() => setMobileMenuOpen(false)}
         />
-        
-        {/* Premium sliding panel */}
-        <div className={cn(
-          "absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] transform transition-transform duration-700",
-          mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        )}>
-          <GlassCard variant="premium" className="h-full rounded-none rounded-l-3xl border-r-0 shadow-2xl bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl">
-            {/* Header with sophisticated styling */}
-            <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-200/50 dark:border-slate-700/50">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
-                  <Menu className="w-4 h-4 text-white" />
-                </div>
-                <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Navigation
-                </span>
-              </div>
+        <div className="absolute right-0 top-0 bottom-0 w-72 max-w-[85vw]">
+          <GlassCard variant="premium" className="h-full rounded-none rounded-l-2xl border-r-0">
+            <div className="flex justify-between items-center mb-6">
+              <span className="text-lg font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+                Navigation
+              </span>
               <button 
                 onClick={() => setMobileMenuOpen(false)}
-                className="rounded-2xl p-3 bg-gray-100/80 dark:bg-slate-800/80 hover:bg-gray-200 dark:hover:bg-slate-700 transition-all duration-300 border border-gray-200/50 dark:border-slate-700/50 hover:scale-105"
+                className="rounded-xl p-2 bg-white/20 dark:bg-slate-800/20 hover:bg-white/30 dark:hover:bg-slate-800/30 transition-all duration-300 border border-white/20 dark:border-slate-700/20 hover:scale-105"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
             
-            {/* Enhanced navigation items */}
-            <nav className="space-y-3">
+            <nav className="space-y-1">
               {navItems.map((item) => {
                 const isActive = location.pathname.replace('/Health-and-Fitness-Webapp', '') === item.path;
                 return (
@@ -238,40 +234,31 @@ const EnhancedHeader: React.FC = () => {
                     key={item.path}
                     to={item.path}
                     className={cn(
-                      "flex items-center gap-4 p-4 rounded-2xl transition-all duration-500 group border",
+                      "flex items-center gap-3 p-3 rounded-xl transition-all duration-300 group",
                       isActive 
-                        ? 'bg-gradient-to-r from-blue-500/15 via-purple-500/15 to-pink-500/15 text-blue-600 dark:text-blue-400 font-semibold shadow-xl border-blue-200/50 dark:border-blue-700/50 scale-105' 
-                        : 'hover:bg-gray-50/80 dark:hover:bg-slate-800/60 hover:scale-[1.02] border-transparent hover:border-gray-200/50 dark:hover:border-slate-700/50 hover:shadow-lg'
+                        ? 'bg-gradient-to-r from-emerald-500/20 to-blue-500/20 text-emerald-600 dark:text-emerald-400 font-semibold shadow-lg border border-emerald-200/50 dark:border-emerald-700/50 scale-105' 
+                        : 'hover:bg-white/20 dark:hover:bg-slate-800/20 hover:scale-105 border border-transparent'
                     )}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <div className={cn(
-                      "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500",
-                      isActive 
-                        ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 scale-110" 
-                        : "bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400 group-hover:scale-110 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/30"
-                    )}>
-                      {item.icon}
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-base">{item.name}</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400 opacity-80">{item.description}</div>
-                    </div>
-                    {isActive && (
-                      <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-                    )}
+                    <span className={cn("transition-transform duration-300", isActive ? "scale-110" : "group-hover:scale-105")}>{item.icon}</span>
+                    <span className="font-medium">{item.name}</span>
                   </Link>
                 );
               })}
             </nav>
             
-            {/* Enhanced footer section */}
-            <div className="border-t border-gray-200/50 dark:border-slate-700/50 pt-6 mt-8 space-y-4">
-              <div className="px-2">
+            <div className="border-t border-white/20 dark:border-slate-700/20 pt-4 mt-6 space-y-2">
+              <Link
+                to="/profile"
+                className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/20 dark:hover:bg-slate-800/20 transition-all duration-300 hover:scale-105 border border-transparent group"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <User className="w-4 h-4 group-hover:scale-105 transition-transform" />
+                <span className="font-medium">Profile</span>
+              </Link>
+              <div className="px-3">
                 <NotificationsMenu />
-              </div>
-              <div className="px-2">
-                <OptionsMenu userLoggedIn={!!userProfile} />
               </div>
             </div>
           </GlassCard>

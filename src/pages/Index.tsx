@@ -2,199 +2,285 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Heart, Brain, Moon, Activity, Shield, Ruler, Award, Zap, Utensils, Sparkles, Target, TrendingUp, User } from 'lucide-react';
+import { ArrowRight, Heart, Brain, Moon, Activity, Shield, Ruler, Award, Zap, Utensils } from 'lucide-react';
 import { useHealth } from '@/contexts/HealthContext';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CosmicCard, PrismaticCard, UltraCard, FloatingCard, IridescentCard } from "@/components/ui/card";
 import { useTheme } from '@/contexts/ThemeContext';
+import VisualEffects from '@/components/ui/VisualEffects';
 
 const Index = () => {
   const navigate = useNavigate();
   const { userProfile } = useHealth();
+  const { glassEffect } = useTheme();
+
+  // Get appropriate card component based on glass effect setting
+  const getCardComponent = () => {
+    switch (glassEffect) {
+      case 'ultra':
+        return UltraCard;
+      case 'iridescent':
+        return IridescentCard;
+      case 'standard':
+        return Card;
+      default:
+        return CosmicCard;
+    }
+  };
+
+  const FeatureCardComponent = getCardComponent();
 
   return (
-    <div className="min-h-screen space-y-16 relative">
+    <div className="min-h-screen space-y-12 relative">
       {/* Hero Section */}
-      <section className="relative py-20 md:py-32">
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center max-w-5xl mx-auto">
-            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm rounded-full px-6 py-3 mb-8 border border-blue-200/50 dark:border-blue-700/50">
-              <Sparkles className="w-5 h-5 text-blue-500" />
-              <span className="text-blue-600 dark:text-blue-400 font-medium">Your Complete Wellness Companion</span>
-            </div>
-            
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent leading-tight">
-              VitalitySync
-            </h1>
-            
-            <p className="text-2xl md:text-3xl text-gray-700 dark:text-gray-200 mb-6 font-light">
-              Harmonize your health & wellness journey
-            </p>
-            
-            <p className="text-lg text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Experience the future of health tracking with our comprehensive platform that seamlessly integrates nutrition, fitness, sleep, mental wellness, and body measurements in one beautiful, intuitive interface.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              {userProfile ? (
-                <Button 
-                  onClick={() => navigate('/dashboard')}
-                  className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:shadow-2xl text-white text-lg px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-105 border-0"
-                  size="lg"
-                >
-                  Go to Dashboard <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              ) : (
-                <Button 
-                  onClick={() => navigate('/profile')}
-                  className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:shadow-2xl text-white text-lg px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-105 border-0"
-                  size="lg"
-                >
-                  Get Started <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              )}
-              
-              <Button 
-                variant="outline" 
-                className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 text-lg px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-105"
-                size="lg"
-                onClick={() => document.getElementById('features')?.scrollIntoView({behavior: 'smooth'})}
-              >
-                Learn More
-              </Button>
-            </div>
-          </div>
+      <section className="relative bg-gradient-to-br from-health-primary/20 to-health-secondary/10 py-16 md:py-24 rounded-3xl overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full">
+          <VisualEffects type="cosmic" density="medium" interactive={true} />
+        </div>
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-3xl">
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-health-primary/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-40 right-20 w-32 h-32 bg-health-secondary/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 left-20 w-36 h-36 bg-health-primary/10 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-health-secondary/10 rounded-full blur-3xl"></div>
         </div>
         
-        {/* Hero visual elements */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -z-10">
-          <div className="grid grid-cols-2 gap-8 opacity-20">
-            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-500 rounded-3xl animate-float-slow"></div>
-            <div className="w-32 h-32 bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl animate-float-slower"></div>
-            <div className="w-28 h-28 bg-gradient-to-br from-pink-500 to-blue-500 rounded-3xl animate-float delay-300"></div>
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-pink-500 rounded-3xl animate-float-slow delay-150"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="flex flex-col md:flex-row md:items-center">
+            <div className="md:w-1/2 mb-10 md:mb-0 md:pr-8">
+              <span className="inline-block px-4 py-1 rounded-full bg-health-primary/10 text-health-primary font-medium text-sm mb-4">Your Complete Wellness Companion</span>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 bg-gradient-to-r from-health-primary to-health-secondary bg-clip-text text-transparent">
+                VitalitySync
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-200 mb-8">
+                Harmonize your health & wellness journey
+              </p>
+              <p className="text-gray-600 dark:text-gray-300 mb-6">
+                Comprehensive tracking for nutrition, fitness, sleep, mental wellness, and body measurements in one intuitive interface.
+              </p>
+              
+              <div className="flex flex-wrap gap-4">
+                {userProfile ? (
+                  <Button 
+                    onClick={() => navigate('/dashboard')}
+                    className="bg-health-primary hover:bg-health-primary/90 text-white flex items-center gap-2 shadow-glow"
+                    size="lg"
+                  >
+                    Go to Dashboard <ArrowRight className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={() => navigate('/profile')}
+                    className="bg-health-primary hover:bg-health-primary/90 text-white flex items-center gap-2 hover-glow-intense shadow-glow"
+                    size="lg"
+                  >
+                    Get Started <ArrowRight className="h-4 w-4" />
+                  </Button>
+                )}
+                
+                <Button 
+                  variant="outline" 
+                  className="border-health-primary text-health-primary hover:bg-health-primary/10"
+                  size="lg"
+                  onClick={() => document.getElementById('features')?.scrollIntoView({behavior: 'smooth'})}
+                >
+                  Learn More
+                </Button>
+              </div>
+            </div>
+            <div className="md:w-1/2">
+              <div className="relative">
+                <div className="w-full h-80 md:h-[400px] rounded-2xl bg-gradient-to-r from-health-primary/20 to-health-secondary/20 flex items-center justify-center shadow-xl cosmic-glass overflow-hidden">
+                  <div className="grid grid-cols-2 gap-4 p-6 relative z-10">
+                    <FloatingCard className="animate-float-slow bg-white/90 dark:bg-cosmic-deep/80 backdrop-blur rounded-xl shadow-lg p-4 flex flex-col items-center">
+                      <Activity className="h-8 w-8 text-health-primary mb-2" strokeWidth={1.5} />
+                      <span className="text-sm font-medium dark:text-white">Exercise</span>
+                    </FloatingCard>
+                    <FloatingCard className="animate-float-slower bg-white/90 dark:bg-cosmic-deep/80 backdrop-blur rounded-xl shadow-lg p-4 flex flex-col items-center delay-300">
+                      <Utensils className="h-8 w-8 text-amber-500 mb-2" strokeWidth={1.5} />
+                      <span className="text-sm font-medium dark:text-white">Nutrition</span>
+                    </FloatingCard>
+                    <FloatingCard className="animate-float-slow bg-white/90 dark:bg-cosmic-deep/80 backdrop-blur rounded-xl shadow-lg p-4 flex flex-col items-center delay-150">
+                      <Moon className="h-8 w-8 text-indigo-600 mb-2" strokeWidth={1.5} />
+                      <span className="text-sm font-medium dark:text-white">Sleep</span>
+                    </FloatingCard>
+                    <FloatingCard className="animate-float-slower bg-white/90 dark:bg-cosmic-deep/80 backdrop-blur rounded-xl shadow-lg p-4 flex flex-col items-center delay-200">
+                      <Brain className="h-8 w-8 text-health-secondary mb-2" strokeWidth={1.5} />
+                      <span className="text-sm font-medium dark:text-white">Mental</span>
+                    </FloatingCard>
+                  </div>
+                  <div className="absolute inset-0 cosmic-stars opacity-50"></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20">
+      <section id="features" className="py-16">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-sm rounded-full px-6 py-3 mb-6 border border-purple-200/50 dark:border-purple-700/50">
-              <Target className="w-5 h-5 text-purple-500" />
-              <span className="text-purple-600 dark:text-purple-400 font-medium">Complete Wellness Tracking</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-              Everything you need to optimize your health
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              VitalitySync brings together all aspects of your health journey in one place, providing deep insights and personalized analytics to help you reach your wellness goals.
-            </p>
+          <div className="text-center mb-12">
+            <span className="inline-block px-4 py-1 rounded-full bg-health-primary/10 text-health-primary font-medium text-sm mb-4">Complete Wellness Tracking</span>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800 dark:text-white">Everything you need to optimize your health</h2>
+            <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">VitalitySync brings together all aspects of your health journey in one place, providing insights and analytics to help you reach your goals.</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard
-              icon={<Heart className="h-12 w-12 text-red-500" />}
-              title="Smart Nutrition"
-              description="AI-powered meal tracking with macro analysis, personalized recommendations, and smart goal adjustments based on your progress."
-              gradient="from-red-500/10 to-pink-500/10"
-              accentColor="red"
+              icon={<Heart className="h-10 w-10 text-red-500" />}
+              title="Nutrition Tracking"
+              description="Monitor calories, macros, water intake, and get personalized meal recommendations based on your goals."
+              color="bg-red-50 dark:bg-red-900/20"
             />
             <FeatureCard
-              icon={<Activity className="h-12 w-12 text-blue-500" />}
-              title="Fitness Intelligence"
-              description="Advanced workout analytics, form tracking, and adaptive training plans that evolve with your fitness level."
-              gradient="from-blue-500/10 to-cyan-500/10"
-              accentColor="blue"
+              icon={<Activity className="h-10 w-10 text-health-primary" />}
+              title="Fitness Analytics"
+              description="Track workouts, measure progress, and visualize improvements over time with detailed exercise analytics."
+              color="bg-teal-50 dark:bg-teal-900/20"
             />
             <FeatureCard
-              icon={<Brain className="h-12 w-12 text-purple-500" />}
+              icon={<Brain className="h-10 w-10 text-health-secondary" />}
               title="Mental Wellness"
-              description="Mood pattern recognition, stress level monitoring, and personalized mindfulness recommendations."
-              gradient="from-purple-500/10 to-indigo-500/10"
-              accentColor="purple"
+              description="Monitor mood patterns, stress levels, and get personalized mindfulness recommendations."
+              color="bg-purple-50 dark:bg-purple-900/20"
             />
             <FeatureCard
-              icon={<Moon className="h-12 w-12 text-indigo-500" />}
-              title="Sleep Optimization"
-              description="Deep sleep analysis with quality metrics, sleep debt tracking, and circadian rhythm optimization."
-              gradient="from-indigo-500/10 to-blue-500/10"
-              accentColor="indigo"
+              icon={<Moon className="h-10 w-10 text-indigo-500" />}
+              title="Sleep Analysis"
+              description="Optimize your rest with detailed sleep tracking, quality metrics, and personalized insights."
+              color="bg-indigo-50 dark:bg-indigo-900/20"
             />
             <FeatureCard
-              icon={<Ruler className="h-12 w-12 text-amber-500" />}
-              title="Body Analytics"
-              description="Comprehensive body composition tracking with visual progress maps and measurement trend analysis."
-              gradient="from-amber-500/10 to-orange-500/10"
-              accentColor="amber"
+              icon={<Ruler className="h-10 w-10 text-amber-500" />}
+              title="Body Metrics"
+              description="Track body measurements, composition changes, and visualize your physical transformation."
+              color="bg-amber-50 dark:bg-amber-900/20"
             />
             <FeatureCard
-              icon={<Shield className="h-12 w-12 text-green-500" />}
-              title="Health Insights"
-              description="Holistic health dashboard with predictive analytics and actionable insights for optimal wellness."
-              gradient="from-green-500/10 to-emerald-500/10"
-              accentColor="green"
+              icon={<Shield className="h-10 w-10 text-green-500" />}
+              title="Health Overview"
+              description="Get a holistic view of your health with comprehensive dashboards and actionable insights."
+              color="bg-green-50 dark:bg-green-900/20"
             />
           </div>
         </div>
       </section>
 
       {/* How It Works */}
-      <section className="py-20 relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-100/50 to-blue-100/50 dark:from-slate-800/50 dark:to-slate-700/50 rounded-3xl mx-4"></div>
+      <section className="py-16 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-cosmic-deep dark:to-cosmic-space rounded-3xl relative overflow-hidden">
+        <div className="absolute inset-0 h-full w-full">
+          <VisualEffects type="fireflies" density="low" speed="slow" />
+        </div>
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-green-500/10 to-blue-500/10 backdrop-blur-sm rounded-full px-6 py-3 mb-6 border border-green-200/50 dark:border-green-700/50">
-              <TrendingUp className="w-5 h-5 text-green-500" />
-              <span className="text-green-600 dark:text-green-400 font-medium">Seamless Experience</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-              How VitalitySync Works
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Our intuitive platform makes health tracking effortless and actionable
-            </p>
+          <div className="text-center mb-12">
+            <span className="inline-block px-4 py-1 rounded-full bg-health-secondary/10 text-health-secondary font-medium text-sm mb-4">Seamless Experience</span>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800 dark:text-white">How VitalitySync Works</h2>
+            <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">Our intuitive platform makes health tracking simple and effective</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <StepCard
               number="01"
-              title="Smart Profile Setup"
-              description="Create your personalized health profile with AI-guided goal setting and preference optimization."
-              icon={<User className="w-8 h-8 text-blue-500" />}
+              title="Create Your Profile"
+              description="Set up your health profile with your goals, current metrics, and preferences."
             />
             <StepCard
               number="02"
-              title="Effortless Tracking"
-              description="Log activities seamlessly with smart automation, voice input, and intelligent pattern recognition."
-              icon={<Activity className="w-8 h-8 text-purple-500" />}
+              title="Track Daily Activities"
+              description="Log your meals, workouts, sleep, and mental state easily throughout your day."
             />
             <StepCard
               number="03"
-              title="Actionable Insights"
-              description="Receive personalized recommendations and visualize your progress with beautiful, meaningful analytics."
-              icon={<TrendingUp className="w-8 h-8 text-pink-500" />}
+              title="Get Personalized Insights"
+              description="Receive tailored recommendations and visualize your progress over time."
             />
+          </div>
+        </div>
+      </section>
+      
+      {/* Benefits */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row gap-8 items-center">
+            <div className="md:w-1/2">
+              <PrismaticCard className="p-8 md:p-12 relative overflow-hidden">
+                <div className="relative z-10 space-y-6">
+                  <Award className="h-12 w-12 text-health-primary" />
+                  <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Science-Backed Approach</h3>
+                  <p className="text-gray-700 dark:text-gray-200">
+                    VitalitySync combines proven health metrics and scientific research to provide you with the most accurate and effective health optimization strategies.
+                  </p>
+                  <ul className="space-y-3">
+                    {["Evidence-based recommendations", "Personalized to your unique biology", "Regular updates based on latest research"].map((item, index) => (
+                      <li key={index} className="flex items-center">
+                        <div className="h-5 w-5 rounded-full bg-health-primary/20 flex items-center justify-center mr-3">
+                          <Zap className="h-3 w-3 text-health-primary" />
+                        </div>
+                        <span className="text-sm dark:text-gray-300">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </PrismaticCard>
+            </div>
+            
+            <div className="md:w-1/2 space-y-8">
+              <div>
+                <span className="inline-block px-4 py-1 rounded-full bg-health-primary/10 text-health-primary font-medium text-sm mb-4">Why Choose VitalitySync</span>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800 dark:text-white">Optimize Every Aspect of Your Health</h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Our comprehensive approach helps you understand the connections between different aspects of your health, enabling truly holistic wellness.
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <BenefitCard
+                  icon={<Zap className="h-5 w-5 text-health-primary" />}
+                  title="Holistic View"
+                  description="See how sleep affects your workouts, how nutrition impacts your mood, and more."
+                />
+                <BenefitCard
+                  icon={<Zap className="h-5 w-5 text-health-primary" />}
+                  title="Data Insights"
+                  description="Advanced analytics reveal patterns you might miss, helping optimize your routine."
+                />
+                <BenefitCard
+                  icon={<Zap className="h-5 w-5 text-health-primary" />}
+                  title="Goal Setting"
+                  description="Set realistic, achievable goals based on your personal health data."
+                />
+                <BenefitCard
+                  icon={<Zap className="h-5 w-5 text-health-primary" />}
+                  title="Progress Tracking"
+                  description="Visualize your improvements over time with intuitive charts and graphs."
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-3xl mx-4"></div>
+      <section className="py-16 bg-gradient-to-br from-cosmic-nebula to-cosmic-highlight dark:from-health-primary dark:to-health-secondary rounded-3xl text-white relative overflow-hidden">
+        <div className="absolute inset-0 h-full w-full">
+          <VisualEffects type="particles" density="medium" />
+        </div>
         <div className="container mx-auto px-4 text-center relative z-10">
-          <div className="text-white">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Transform Your Health Today</h2>
-            <p className="text-xl mb-12 max-w-3xl mx-auto opacity-90 leading-relaxed">
-              Join thousands of users who have revolutionized their wellness journey with VitalitySync's intelligent health ecosystem.
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-0 left-0 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 right-0 w-60 h-60 bg-white/10 rounded-full blur-3xl"></div>
+          </div>
+          
+          <div className="relative z-10">
+            <h2 className="text-3xl font-bold mb-4">Begin Your Wellness Journey Today</h2>
+            <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+              Join thousands of users who have transformed their health with VitalitySync's comprehensive wellness tracking.
             </p>
             <Button 
               onClick={() => userProfile ? navigate('/dashboard') : navigate('/profile')}
-              className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-105 shadow-2xl"
+              className="bg-white text-health-primary hover:bg-white/90 hover-glow-intense"
               size="lg"
             >
-              {userProfile ? 'View Your Dashboard' : 'Start Your Journey'}
-              <ArrowRight className="ml-2 h-5 w-5" />
+              {userProfile ? 'View Your Dashboard' : 'Create Your Profile'}
             </Button>
           </div>
         </div>
@@ -203,37 +289,43 @@ const Index = () => {
   );
 };
 
-const FeatureCard = ({ icon, title, description, gradient, accentColor }) => {
+const FeatureCard = ({ icon, title, description, color }) => {
   return (
-    <Card className="group bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-gray-200/50 dark:border-gray-700/50 hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] rounded-2xl overflow-hidden">
-      <CardContent className="p-8 relative">
-        <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${gradient} rounded-full blur-2xl opacity-50 group-hover:opacity-70 transition-opacity`}></div>
-        <div className="relative z-10">
-          <div className="mb-6 transform group-hover:scale-110 transition-transform duration-300">
-            {icon}
-          </div>
-          <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">{title}</h3>
-          <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{description}</p>
+    <CosmicCard className="overflow-hidden transition-transform hover:scale-[1.02] hover:shadow-md card-3d-effect">
+      <CardContent className="p-6">
+        <div className={`w-16 h-16 rounded-2xl ${color} flex items-center justify-center mb-4`}>
+          {icon}
         </div>
+        <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">{title}</h3>
+        <p className="text-gray-600 dark:text-gray-300">{description}</p>
       </CardContent>
-    </Card>
+    </CosmicCard>
   );
 };
 
-const StepCard = ({ number, title, description, icon }) => {
+const StepCard = ({ number, title, description }) => {
   return (
-    <Card className="group bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] rounded-2xl p-8">
-      <div className="text-center">
-        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
-          <span className="text-white font-bold text-2xl">{number}</span>
-        </div>
-        <div className="mb-4 flex justify-center transform group-hover:scale-110 transition-transform duration-300">
-          {icon}
-        </div>
-        <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">{title}</h3>
-        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{description}</p>
+    <UltraCard className="p-6 hover:shadow-cosmic-glow transition-shadow">
+      <div className="w-12 h-12 rounded-full bg-health-primary/10 flex items-center justify-center mb-4">
+        <span className="text-health-primary font-bold dark:text-cosmic-star">{number}</span>
       </div>
-    </Card>
+      <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">{title}</h3>
+      <p className="text-gray-600 dark:text-gray-300">{description}</p>
+    </UltraCard>
+  );
+};
+
+const BenefitCard = ({ icon, title, description }) => {
+  return (
+    <div className="flex items-start">
+      <div className="w-10 h-10 rounded-full bg-health-primary/10 flex items-center justify-center mr-4 mt-1">
+        {icon}
+      </div>
+      <div>
+        <h4 className="text-lg font-medium mb-1 text-gray-800 dark:text-white">{title}</h4>
+        <p className="text-gray-600 dark:text-gray-300 text-sm">{description}</p>
+      </div>
+    </div>
   );
 };
 

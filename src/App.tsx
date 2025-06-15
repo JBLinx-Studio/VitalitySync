@@ -21,22 +21,31 @@ import AddictionTracker from "@/pages/AddictionTracker";
 import Achievements from "@/pages/Achievements";
 import NotFound from "./pages/NotFound";
 
-// Create a client
+// Create a client with better error handling
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+    mutations: {
       retry: 1,
     },
   },
 });
 
 const App = () => {
-  // Detect if we're in Lovable preview or production
-  const isLovablePreview = window.location.hostname.includes('lovable.app') || window.location.hostname.includes('localhost');
+  // Detect if we're in Lovable preview or production with fallback
+  const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+  const isLovablePreview = hostname.includes('lovable.app') || 
+                          hostname.includes('localhost') || 
+                          hostname === '127.0.0.1' ||
+                          hostname === '';
+  
   const basename = isLovablePreview ? "" : "/VitalitySync";
 
-  console.log('App mounting - hostname:', window.location.hostname, 'basename:', basename);
+  console.log('App mounting - hostname:', hostname, 'basename:', basename);
 
   return (
     <div className="min-h-screen bg-background text-foreground">

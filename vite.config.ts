@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
+  // Only set base path for production builds
   base: mode === 'production' ? "/VitalitySync/" : "/",
   plugins: [
     react(),

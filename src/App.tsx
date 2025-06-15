@@ -32,9 +32,11 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
-  // Use BrowserRouter for Lovable preview, HashRouter would be used for GitHub Pages deployment
-  const isProduction = import.meta.env.PROD;
-  const basename = isProduction ? "/VitalitySync" : "";
+  // Detect if we're in Lovable preview or production
+  const isLovablePreview = window.location.hostname.includes('lovable.app') || window.location.hostname.includes('localhost');
+  const basename = isLovablePreview ? "" : "/VitalitySync";
+
+  console.log('App mounting - hostname:', window.location.hostname, 'basename:', basename);
 
   return (
     <div className="min-h-screen bg-background text-foreground">

@@ -8,8 +8,6 @@ import { Toaster } from '@/components/ui/toaster';
 import { PremiumEffects } from '@/components/common';
 import ResponsiveContainer from './ResponsiveContainer';
 import GlassCard from '@/components/ui/glass-card';
-import { useViewport } from '@/hooks/use-viewport';
-import { cn } from '@/lib/utils';
 
 const ModernLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { getUnreadNotificationsCount } = useHealth();
@@ -22,11 +20,33 @@ const ModernLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   
   const location = useLocation();
   const layoutRef = useRef<HTMLDivElement>(null);
-  const { isMobile, isTablet, width, height } = useViewport();
+  const [viewportDimensions, setViewportDimensions] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
 
   const isHomePage = location.pathname === "/" || 
                      location.pathname === "/Health-and-Fitness-Webapp/" || 
                      location.pathname === "/Health-and-Fitness-Webapp";
+
+  useEffect(() => {
+    let resizeTimeout: number;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = window.setTimeout(() => {
+        setViewportDimensions({
+          width: window.innerWidth,
+          height: window.innerHeight
+        });
+      }, 100);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimeout);
+    };
+  }, []);
 
   const getBackgroundEffect = () => {
     const pathWithoutBase = location.pathname.replace('/Health-and-Fitness-Webapp', '');
@@ -39,14 +59,7 @@ const ModernLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     return 'particles';
   };
 
-  // Enhanced responsive container settings
-  const getContainerSettings = () => {
-    if (isMobile) return { maxWidth: 'full' as const, padding: 'xs' as const };
-    if (isTablet) return { maxWidth: 'xl' as const, padding: 'sm' as const };
-    return { maxWidth: '2xl' as const, padding: 'md' as const };
-  };
-
-  const { maxWidth, padding } = getContainerSettings();
+  const isDynamicSize = viewportDimensions.width < 768;
 
   return (
     <div 
@@ -57,38 +70,25 @@ const ModernLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         maxWidth: '100vw'
       }}
     >
-      {/* Enhanced gradient background with better performance */}
+      {/* Dynamic gradient background */}
       <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50/50 to-indigo-100/50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
-        {/* Responsive floating orbs with better animations */}
-        {!isReducedMotion && (
-          <>
-            <div className={cn(
-              "absolute bg-gradient-to-br from-blue-400/20 via-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-pulse-soft",
-              isMobile ? "top-3 right-3 w-24 h-24" : isTablet ? "top-6 right-6 w-48 h-48" : "top-10 right-10 w-72 h-72"
-            )}></div>
-            <div className={cn(
-              "absolute bg-gradient-to-tr from-emerald-400/20 via-cyan-500/20 to-blue-500/20 rounded-full blur-3xl animate-pulse-soft delay-1000",
-              isMobile ? "bottom-3 left-3 w-32 h-32" : isTablet ? "bottom-6 left-6 w-56 h-56" : "bottom-10 left-10 w-96 h-96"
-            )}></div>
-            <div className={cn(
-              "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-purple-400/10 via-pink-400/10 to-orange-400/10 rounded-full blur-3xl animate-pulse-soft delay-500",
-              isMobile ? "w-28 h-28" : isTablet ? "w-52 h-52" : "w-80 h-80"
-            )}></div>
-          </>
-        )}
+        {/* Floating orbs */}
+        <div className="absolute top-10 right-10 w-72 h-72 bg-gradient-to-br from-blue-400/20 via-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-pulse-soft"></div>
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-gradient-to-tr from-emerald-400/20 via-cyan-500/20 to-blue-500/20 rounded-full blur-3xl animate-pulse-soft delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-purple-400/10 via-pink-400/10 to-orange-400/10 rounded-full blur-3xl animate-pulse-soft delay-500"></div>
         
-        {/* Premium effects with adaptive performance */}
-        {enableParticles && !isReducedMotion && width >= 768 && (
+        {/* Premium effects layer */}
+        {enableParticles && !isReducedMotion && (
           <PremiumEffects 
             type={getBackgroundEffect()} 
-            density={width < 1024 ? 'low' : animationLevel === 'full' ? 'medium' : 'low'}
+            density={viewportDimensions.width < 768 ? 'low' : animationLevel === 'full' ? 'high' : 'medium'}
             speed={animationLevel === 'full' ? 'medium' : 'slow'}
-            interactive={animationLevel !== 'minimal' && width >= 1024}
+            interactive={animationLevel !== 'minimal' && viewportDimensions.width >= 768}
           />
         )}
         
-        {/* Enhanced responsive mesh gradient */}
-        <div className={cn("absolute inset-0", isMobile ? "opacity-25" : isTablet ? "opacity-30" : "opacity-35")}>
+        {/* Mesh gradient overlay */}
+        <div className="absolute inset-0 opacity-30">
           <div 
             className="absolute inset-0"
             style={{
@@ -101,49 +101,33 @@ const ModernLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
           />
         </div>
         
-        {/* Adaptive overlay for content readability */}
-        <div className={cn(
-          "absolute inset-0 backdrop-blur-[0.5px]",
-          isMobile ? "bg-white/15 dark:bg-slate-900/35" : "bg-white/20 dark:bg-slate-900/40"
-        )}></div>
+        {/* Subtle overlay for content readability */}
+        <div className="absolute inset-0 bg-white/20 dark:bg-slate-900/40 backdrop-blur-[0.5px]"></div>
       </div>
 
       <Header />
       
       <main className="flex-grow relative z-10">
         <ResponsiveContainer 
-          maxWidth={maxWidth}
-          padding={padding}
+          maxWidth={isDynamicSize ? 'full' : '2xl'}
+          padding={isDynamicSize ? 'sm' : 'lg'}
         >
           {!isHomePage ? (
             <GlassCard 
               variant="premium" 
-              size={isMobile ? 'sm' : isTablet ? 'md' : 'lg'}
-              className={cn(
-                "relative animate-fade-in",
-                isMobile ? "min-h-[45vh] mx-1" : isTablet ? "min-h-[55vh] mx-2" : "min-h-[60vh]"
-              )}
+              size={isDynamicSize ? 'sm' : 'lg'}
+              className="min-h-[60vh] relative"
             >
-              {/* Enhanced responsive decorative elements */}
-              {!isMobile && (
-                <>
-                  <div className={cn(
-                    "absolute top-0 right-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-transparent rounded-full blur-2xl",
-                    isTablet ? "w-24 h-24" : "w-32 h-32"
-                  )}></div>
-                  <div className={cn(
-                    "absolute bottom-0 left-0 bg-gradient-to-tr from-pink-500/10 via-blue-500/10 to-transparent rounded-full blur-2xl",
-                    isTablet ? "w-20 h-20" : "w-24 h-24"
-                  )}></div>
-                </>
-              )}
+              {/* Content decorative elements */}
+              <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-transparent rounded-full blur-2xl"></div>
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-pink-500/10 via-blue-500/10 to-transparent rounded-full blur-2xl"></div>
               
               <div className="relative z-10 h-full">
                 {children}
               </div>
             </GlassCard>
           ) : (
-            <div className="relative z-10 animate-fade-in">
+            <div className="relative z-10">
               {children}
             </div>
           )}

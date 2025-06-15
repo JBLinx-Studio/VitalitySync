@@ -3,19 +3,24 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Health & Fitness Tracker</title>
+  <title>VitalitySync - Health & Fitness Tracker</title>
   <script type="text/javascript">
-    // Redirect to the main page with the current path as a hash
-    var segmentCount = 1;
-    var repoName = "Health-and-Fitness-Webapp";
+    // GitHub Pages SPA redirect script
+    var pathSegmentsToKeep = 1;
     var l = window.location;
-    var redirectPath = l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + 
-      '/' + repoName + '/#' + l.pathname.slice(segmentCount + repoName.length + 1);
-    
-    window.location.href = redirectPath;
+    l.replace(
+      l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+      '/Health-and-Fitness-Webapp/' +
+      '?p=/' + l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+      (l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+      l.hash
+    );
   </script>
 </head>
 <body>
-  Redirecting...
+  <div style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px;">
+    <h1>Redirecting to VitalitySync...</h1>
+    <p>If you are not redirected automatically, <a href="/Health-and-Fitness-Webapp/">click here</a>.</p>
+  </div>
 </body>
 </html>

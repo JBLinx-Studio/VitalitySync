@@ -34,7 +34,7 @@ const queryClient = new QueryClient({
 const App = () => {
   // Use BrowserRouter for Lovable preview, HashRouter would be used for GitHub Pages deployment
   const isProduction = import.meta.env.PROD;
-  const basename = isProduction ? "/Health-and-Fitness-Webapp" : "";
+  const basename = isProduction ? "/VitalitySync" : "";
 
   return (
     <div className="min-h-screen bg-background text-foreground">

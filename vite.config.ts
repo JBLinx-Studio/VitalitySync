@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  base: mode === 'production' ? "/VitalitySync/" : "/",
+  base: mode === 'production' ? "/Health-and-Fitness-Webapp/" : "/",
   plugins: [
     react(),
     mode === 'development' && componentTagger(),

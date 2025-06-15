@@ -13,16 +13,19 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
-    // Get from localStorage or default to system
+    if (typeof window === 'undefined') return 'system';
     const savedTheme = localStorage.getItem('health-theme') as Theme;
     return savedTheme || 'system';
   });
+  
   const { toast } = useToast();
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const root = window.document.documentElement;
     
-    // Remove old theme class
+    // Remove old theme classes
     root.classList.remove('light', 'dark');
     
     // Determine theme to apply

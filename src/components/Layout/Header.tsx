@@ -12,12 +12,10 @@ import {
   Menu, 
   X 
 } from 'lucide-react';
-import { useHealth } from '@/contexts/HealthContext';
 import { Button } from '@/components/ui/button';
 import NotificationsMenu from '../Notifications/NotificationsMenu';
 
 const Header: React.FC = () => {
-  const { userProfile } = useHealth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -45,13 +43,13 @@ const Header: React.FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-40 backdrop-blur-sm bg-gradient-to-r from-health-primary to-health-secondary text-white shadow-md">
+    <header className="sticky top-0 z-40 bg-primary text-white shadow-md">
       <div className="container mx-auto">
         <div className="flex justify-between items-center py-3 px-4">
           {/* Logo and brand */}
           <div className="flex items-center">
             <Activity className="h-8 w-8 mr-2" />
-            <h1 className="text-2xl font-bold font-display">VitalitySync</h1>
+            <h1 className="text-2xl font-bold">VitalitySync</h1>
           </div>
 
           {/* Desktop navigation */}
@@ -91,7 +89,7 @@ const Header: React.FC = () => {
 
         {/* Mobile navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-3 px-4 bg-gradient-to-b from-health-secondary/90 to-health-primary/90 backdrop-blur-md">
+          <div className="md:hidden py-3 px-4 bg-primary/90">
             <nav className="grid grid-cols-4 gap-2">
               {navItems.map((item) => (
                 <NavLink 

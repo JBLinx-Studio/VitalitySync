@@ -20,7 +20,6 @@ interface EnhancedQuickStatsCardProps {
   onClick?: () => void;
   className?: string;
   size?: 'sm' | 'md' | 'lg';
-  subtitle?: string;
 }
 
 const EnhancedQuickStatsCard: React.FC<EnhancedQuickStatsCardProps> = ({
@@ -33,8 +32,7 @@ const EnhancedQuickStatsCard: React.FC<EnhancedQuickStatsCardProps> = ({
   trend,
   onClick,
   className,
-  size = 'md',
-  subtitle
+  size = 'md'
 }) => {
   const { isMobile } = useViewport();
   
@@ -109,11 +107,6 @@ const EnhancedQuickStatsCard: React.FC<EnhancedQuickStatsCardProps> = ({
             )}>
               {title}
             </h3>
-            {subtitle && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {subtitle}
-              </p>
-            )}
           </div>
 
           {/* Value */}

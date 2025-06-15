@@ -11,7 +11,7 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 16 100% 66%;
+    --primary: 265 84% 58%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -26,18 +26,18 @@
     --ring: 215 20.2% 65.1%;
     --radius: 0.75rem;
 
-    /* Enhanced Vibrant Theme Colors */
-    --vibrant-orange: 255, 107, 53;
-    --vibrant-amber: 255, 140, 66;
-    --vibrant-coral: 255, 89, 94;
-    --vibrant-teal: 79, 195, 247;
-    --vibrant-emerald: 52, 168, 83;
-    --vibrant-purple: 156, 39, 176;
+    /* Enhanced Cosmic Theme Colors */
+    --cosmic-nebula: 124, 58, 237;
+    --cosmic-highlight: 6, 182, 212;
+    --cosmic-star: 251, 191, 36;
+    --cosmic-accent: 236, 72, 153;
+    --cosmic-deep: 15, 23, 42;
+    --cosmic-space: 30, 41, 59;
 
     /* Sidebar Colors */
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222.2 84% 4.9%;
-    --sidebar-primary: 16 100% 66%;
+    --sidebar-primary: 265 84% 58%;
     --sidebar-primary-foreground: 210 40% 98%;
     --sidebar-accent: 210 40% 96.1%;
     --sidebar-accent-foreground: 222.2 47.4% 11.2%;
@@ -52,7 +52,7 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 16 100% 66%;
+    --primary: 265 84% 58%;
     --primary-foreground: 210 40% 98%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -64,17 +64,17 @@
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 16 100% 66%;
+    --ring: 265 84% 58%;
 
     /* Sidebar Colors */
     --sidebar-background: 222.2 84% 4.9%;
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 16 100% 66%;
+    --sidebar-primary: 265 84% 58%;
     --sidebar-primary-foreground: 210 40% 98%;
     --sidebar-accent: 217.2 32.6% 17.5%;
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 217.2 32.6% 17.5%;
-    --sidebar-ring: 16 100% 66%;
+    --sidebar-ring: 265 84% 58%;
   }
 }
 
@@ -87,23 +87,6 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     font-family: 'Poppins', system-ui, sans-serif;
-    background: linear-gradient(135deg, 
-      rgba(255, 247, 237, 1) 0%, 
-      rgba(255, 251, 247, 1) 25%,
-      rgba(255, 245, 235, 1) 50%,
-      rgba(254, 243, 239, 1) 75%,
-      rgba(255, 248, 240, 1) 100%
-    );
-  }
-
-  .dark body {
-    background: linear-gradient(135deg, 
-      rgba(20, 20, 30, 1) 0%, 
-      rgba(25, 25, 35, 1) 25%,
-      rgba(30, 25, 40, 1) 50%,
-      rgba(25, 30, 35, 1) 75%,
-      rgba(20, 25, 30, 1) 100%
-    );
   }
 
   html {
@@ -111,78 +94,33 @@
   }
 }
 
-@layer utilities {
-  /* Enhanced Glass Effects with Vibrant Orange Theme */
-  .glass-card {
-    @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-orange-200/30 dark:border-orange-700/30;
-    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3), 0 4px 16px rgba(255, 140, 66, 0.2);
-  }
-
-  .frosted-glass {
-    @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-3xl border border-orange-200/40 dark:border-orange-700/30;
-    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3), 0 4px 16px rgba(255, 140, 66, 0.2);
-  }
-
-  .neo-glass {
-    @apply bg-gradient-to-br from-white/80 to-orange-50/40 dark:from-slate-900/80 dark:to-slate-800/50 backdrop-blur-2xl border border-orange-200/50 dark:border-orange-700/30;
-    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3), 0 4px 16px rgba(255, 140, 66, 0.2);
-  }
-
-  .ultra-glass {
-    @apply bg-gradient-to-br from-white/70 to-orange-50/30 dark:from-slate-900/70 dark:to-slate-800/40 backdrop-blur-3xl border border-orange-200/40 dark:border-orange-700/40;
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.6), 0 0 60px rgba(255, 140, 66, 0.3);
-  }
-
-  .iridescent-glass {
-    @apply bg-gradient-to-br from-white/60 via-orange-50/40 to-amber-50/50 dark:from-slate-900/60 dark:via-orange-950/15 dark:to-amber-950/15 backdrop-blur-3xl border border-orange-200/30 dark:border-orange-700/30;
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.6), 0 0 60px rgba(255, 140, 66, 0.3);
-  }
-
-  .vibrant-glass {
-    @apply bg-gradient-to-br from-orange-50/80 via-amber-50/60 to-orange-100/30 dark:from-orange-950/80 dark:via-amber-950/60 dark:to-orange-900/30 backdrop-blur-3xl border border-orange-300/40 dark:border-orange-600/40;
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.6), 0 0 60px rgba(255, 140, 66, 0.3);
-  }
-
-  /* Shadow classes */
-  .shadow-vibrant {
-    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3), 0 4px 16px rgba(255, 140, 66, 0.2);
-  }
-
-  .shadow-vibrant-glow {
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.6), 0 0 60px rgba(255, 140, 66, 0.3);
-  }
-
-  /* Vibrant Button Styles */
-  .btn-primary {
-    @apply bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:via-amber-600 hover:to-orange-700 text-white font-semibold px-6 py-3 rounded-2xl transition-all duration-500 hover:scale-105;
-    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3), 0 4px 16px rgba(255, 140, 66, 0.2);
-  }
-
-  .btn-primary:hover {
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.6), 0 0 60px rgba(255, 140, 66, 0.3);
-  }
-
-  .btn-secondary {
-    @apply bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-700 border border-orange-200/60 dark:border-orange-700/60 text-orange-700 dark:text-orange-300 font-semibold px-6 py-3 rounded-2xl shadow-lg transition-all duration-500 hover:scale-105 backdrop-blur-xl;
-  }
-
-  .btn-secondary:hover {
-    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3), 0 4px 16px rgba(255, 140, 66, 0.2);
-  }
-
-  /* Enhanced Card Styles with Vibrant Theme */
-  .card-vibrant {
-    @apply bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-orange-200/50 dark:border-orange-700/50 rounded-3xl transition-all duration-500 hover:scale-[1.02];
-    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3), 0 4px 16px rgba(255, 140, 66, 0.2);
-  }
-
-  .card-vibrant:hover {
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.6), 0 0 60px rgba(255, 140, 66, 0.3);
-  }
+/* Enhanced Glass Effects with Sophisticated Atmospherics */
+.glass-card {
+  @apply bg-white/80 dark:bg-cosmic-deep/80 backdrop-blur-2xl border border-white/30 dark:border-cosmic-nebula/30 shadow-2xl;
 }
 
-/* Enhanced Vibrant Animations */
-@keyframes vibrant-pulse {
+.frosted-glass {
+  @apply bg-white/70 dark:bg-cosmic-deep/70 backdrop-blur-3xl border border-white/40 dark:border-cosmic-nebula/30 shadow-2xl;
+}
+
+.neo-glass {
+  @apply bg-gradient-to-br from-white/80 to-white/40 dark:from-cosmic-deep/80 dark:to-cosmic-space/50 backdrop-blur-2xl border border-white/50 dark:border-cosmic-nebula/30 shadow-2xl;
+}
+
+.ultra-glass {
+  @apply bg-gradient-to-br from-white/70 to-white/30 dark:from-cosmic-deep/70 dark:to-cosmic-space/40 backdrop-blur-3xl border border-white/40 dark:border-cosmic-nebula/40 shadow-cosmic;
+}
+
+.iridescent-glass {
+  @apply bg-gradient-to-br from-white/60 via-white/40 to-white/50 dark:from-cosmic-deep/60 dark:via-cosmic-nebula/15 dark:to-cosmic-highlight/15 backdrop-blur-3xl border border-white/30 dark:border-cosmic-nebula/30 shadow-cosmic-glow;
+}
+
+.cosmic-glass {
+  @apply bg-gradient-to-br from-cosmic-deep/80 via-cosmic-space/60 to-cosmic-nebula/30 backdrop-blur-3xl border border-cosmic-nebula/40 shadow-cosmic-glow;
+}
+
+/* Enhanced Cosmic Animations with Sophisticated Timing */
+@keyframes cosmic-pulse {
   0%, 100% {
     opacity: 0.8;
     transform: scale(1);
@@ -193,41 +131,113 @@
   }
 }
 
-@keyframes energy-flow {
+@keyframes nebula-drift {
   0% {
-    transform: translateX(-100%) rotate(0deg);
-    opacity: 0;
+    transform: rotate(0deg) scale(1);
+    opacity: 0.3;
   }
-  50% {
-    opacity: 1;
+  33% {
+    transform: rotate(120deg) scale(1.3);
+    opacity: 0.4;
+  }
+  66% {
+    transform: rotate(240deg) scale(0.8);
+    opacity: 0.2;
   }
   100% {
-    transform: translateX(100%) rotate(360deg);
-    opacity: 0;
+    transform: rotate(360deg) scale(1);
+    opacity: 0.3;
   }
 }
 
-@keyframes bounce-glow {
+@keyframes star-twinkle {
   0%, 100% {
-    transform: translateY(0);
-    box-shadow: 0 0 15px rgba(var(--vibrant-orange), 0.3);
+    opacity: 1;
+    transform: scale(1);
   }
   50% {
-    transform: translateY(-10px);
-    box-shadow: 0 0 30px rgba(var(--vibrant-orange), 0.6);
+    opacity: 0.3;
+    transform: scale(0.8);
   }
 }
 
-.animate-vibrant-pulse {
-  animation: vibrant-pulse 10s ease-in-out infinite;
+@keyframes spin-slow {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
-.animate-energy-flow {
-  animation: energy-flow 3s linear infinite;
+@keyframes spin-reverse-slow {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(-360deg);
+  }
 }
 
-.animate-bounce-glow {
-  animation: bounce-glow 2s ease-in-out infinite;
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-cosmic-pulse {
+  animation: cosmic-pulse 10s ease-in-out infinite;
+}
+
+.animate-nebula-drift {
+  animation: nebula-drift 40s linear infinite;
+}
+
+.animate-star-twinkle {
+  animation: star-twinkle 4s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 25s linear infinite;
+}
+
+.animate-spin-reverse-slow {
+  animation: spin-reverse-slow 20s linear infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out forwards;
 }
 
 /* Enhanced Star Field Effects */
@@ -273,62 +283,94 @@
   animation: star-twinkle 9s ease-in-out infinite alternate-reverse;
 }
 
-/* Enhanced Text Effects with Vibrant Theme */
+/* Enhanced Text Effects */
 .text-glow {
-  text-shadow: 0 0 15px rgba(var(--vibrant-orange), 0.8), 0 0 30px rgba(var(--vibrant-orange), 0.4);
+  text-shadow: 0 0 15px rgba(var(--cosmic-nebula), 0.8), 0 0 30px rgba(var(--cosmic-nebula), 0.4);
 }
 
-.text-vibrant {
-  background: linear-gradient(to right, rgb(var(--vibrant-orange)), rgb(var(--vibrant-teal)));
+.text-cosmic {
+  background: linear-gradient(to right, rgb(var(--cosmic-nebula)), rgb(var(--cosmic-highlight)));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-.text-energy {
-  background: linear-gradient(to right, rgb(var(--vibrant-orange)), rgb(var(--vibrant-amber)));
+.text-stellar {
+  background: linear-gradient(to right, rgb(var(--cosmic-highlight)), rgb(var(--cosmic-star)));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* Enhanced Scrollbar with Vibrant Theme */
+/* Enhanced Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(var(--vibrant-orange), 0.1);
+  background: rgba(var(--cosmic-deep), 0.1);
   border-radius: 12px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(var(--vibrant-orange), 0.6);
+  background: rgba(var(--cosmic-nebula), 0.6);
   border-radius: 12px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(var(--vibrant-orange), 0.9);
+  background: rgba(var(--cosmic-nebula), 0.9);
 }
 
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: rgba(var(--vibrant-orange), 0.6) rgba(var(--vibrant-deep), 0.1);
+  scrollbar-color: rgba(var(--cosmic-nebula), 0.6) rgba(var(--cosmic-deep), 0.1);
 }
 
-/* Enhanced Focus and Selection with Vibrant Theme */
+/* Enhanced Focus and Selection */
 ::selection {
-  background-color: rgba(var(--vibrant-orange), 0.4);
+  background-color: rgba(var(--cosmic-nebula), 0.4);
   color: white;
 }
 
 *:focus-visible {
-  outline: 2px solid rgba(var(--vibrant-orange), 0.7);
+  outline: 2px solid rgba(var(--cosmic-nebula), 0.7);
   outline-offset: 3px;
   border-radius: 8px;
+}
+
+/* Professional Interactive Elements */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.group-hover-scale {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.group:hover .group-hover-scale {
+  transform: scale(1.05);
+}
+
+/* Sophisticated Button Styles */
+.btn-primary {
+  @apply bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white font-semibold px-6 py-3 rounded-2xl shadow-2xl hover:shadow-cosmic transition-all duration-500 hover:scale-105;
+}
+
+.btn-secondary {
+  @apply bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-700 border border-gray-200/60 dark:border-gray-700/60 text-gray-700 dark:text-gray-200 font-semibold px-6 py-3 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 backdrop-blur-xl;
+}
+
+/* Professional Card Styles */
+.card-professional {
+  @apply bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-gray-200/50 dark:border-gray-700/50 rounded-3xl shadow-2xl hover:shadow-cosmic transition-all duration-500 hover:scale-[1.02];
 }
 
 /* Enhanced Animations for Better UX */

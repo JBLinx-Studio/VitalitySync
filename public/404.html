@@ -10,7 +10,7 @@
     var l = window.location;
     l.replace(
       l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-      '/Health-and-Fitness-Webapp/' +
+      '/VitalitySync/' +
       '?p=/' + l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
       (l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '') +
       l.hash
@@ -20,7 +20,7 @@
 <body>
   <div style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px;">
     <h1>Redirecting to VitalitySync...</h1>
-    <p>If you are not redirected automatically, <a href="/Health-and-Fitness-Webapp/">click here</a>.</p>
+    <p>If you are not redirected automatically, <a href="/VitalitySync/">click here</a>.</p>
   </div>
 </body>
 </html>
